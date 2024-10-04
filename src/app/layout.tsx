@@ -4,7 +4,7 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
-import { poppins } from "./fonts";
+import { poppins } from "../styles/fonts";
 
 export const metadata: Metadata = {
   title: "Rudy",
