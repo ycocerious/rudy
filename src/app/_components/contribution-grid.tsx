@@ -1,5 +1,5 @@
+import { blueShades } from "@/constants/uiConstants";
 import { generateMockData } from "@/lib/utils/generate-mock-data";
-import { getColor } from "@/lib/utils/getColor";
 
 const contributionData = generateMockData();
 
@@ -21,18 +21,16 @@ export const ContributionGrid = () => {
               return null;
             }
 
+            const boxColour = blueShades[row[weekIndex] ?? 0];
+
             return (
               <div
                 key={`${weekIndex}-${rowIndex}`}
                 className={`h-[0.85rem] w-[0.85rem] rounded-[2px] sm:h-[0.9rem] sm:w-[0.9rem] sm:rounded-[2px] md:h-4 md:w-4 md:rounded-[3px]`}
-                style={{ backgroundColor: getColor(row[weekIndex] ?? -1) }}
+                style={{ backgroundColor: boxColour }}
                 title={`Week ${weekIndex + 1}, Day ${rowIndex + 1}: ${
-                  row[weekIndex] === -1
-                    ? "No data"
-                    : row[weekIndex] === 0
-                      ? "Neutral day"
-                      : `${(row[weekIndex] ?? 0) * 20}% completed`
-                }`}
+                  (row[weekIndex] ?? 0) * 20
+                }% completed`}
               />
             );
           })}
