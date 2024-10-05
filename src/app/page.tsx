@@ -10,10 +10,10 @@ const ScrollRightWrapper = dynamic(() => import("./_components/scroll-right"), {
   loading: () => <LoadingSpinner />,
 });
 
-export default function ContributionTracker() {
+export default function Home() {
   return (
     <div className="flex min-h-screen items-start justify-center bg-gray-950 p-4">
-      <Card className="flex w-full flex-col border-gray-700 bg-gray-800 md:max-w-[1036px]">
+      <Card className="flex w-full min-w-[240px] flex-col border-gray-700 bg-gray-800 md:max-w-[1106px]">
         <CardHeader>
           <CardTitle className="text-center text-lg text-gray-100 sm:text-xl md:text-2xl">
             Contribution Tracker
