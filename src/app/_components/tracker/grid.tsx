@@ -3,7 +3,7 @@ import { generateMockData } from "@/lib/utils/generate-mock-data";
 
 const contributionData = generateMockData();
 
-export const ContributionGrid = () => {
+export const Grid = () => {
   const weekIndexes = Array.from({ length: 53 }, (_, i) => i + 1);
 
   const today = new Date();

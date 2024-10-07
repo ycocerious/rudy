@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react";
 
-export default function ScrollRight({
+export default function ScrollRightWrapper({
   children,
 }: {
   children: React.ReactNode;

@@ -1,16 +1,16 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ContributionGrid } from "./contribution-grid";
+import { Grid } from "./grid";
 import dynamic from "next/dynamic";
 import { LoadingSpinner } from "./loading-spinner";
 
-export const ContributionTrackerCard = () => {
-  const ScrollRightWrapper = dynamic(() => import("./scroll-right"), {
+export const TrackerCard = () => {
+  const ScrollRightWrapper = dynamic(() => import("./scroll-right-wrapper"), {
     ssr: false,
     loading: () => <LoadingSpinner />,
   });
 
   return (
-    <Card className="flex w-full min-w-[240px] flex-col border-gray-700 bg-gray-800 md:max-w-[1106px]">
+    <Card className="mb-4 flex w-full min-w-[240px] flex-col border-gray-700 bg-gray-800 md:max-w-[1106px]">
       <CardHeader>
         <CardTitle className="text-center text-lg text-gray-100 sm:text-xl md:text-2xl">
           Contribution Tracker
@@ -18,11 +18,9 @@ export const ContributionTrackerCard = () => {
       </CardHeader>
       <CardContent>
         <ScrollRightWrapper>
-          <ContributionGrid />
+          <Grid />
         </ScrollRightWrapper>
       </CardContent>
     </Card>
   );
 };
-
-export default ContributionTrackerCard;

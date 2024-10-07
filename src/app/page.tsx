@@ -1,10 +1,12 @@
 import "@/styles/globals.css";
-import ContributionTrackerCard from "./_components/contribution-tracker-card";
+import { TrackerCard } from "./_components/tracker/tracker-card";
+import { TabsComponent } from "./_components/task-list/tabs-component";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-start justify-center bg-gray-950 p-4">
-      <ContributionTrackerCard />
+    <div className="flex min-h-screen flex-col items-center justify-start bg-gray-950 p-4">
+      <TrackerCard />
+      <TabsComponent />
     </div>
   );
 }
