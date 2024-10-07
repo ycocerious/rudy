@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import {
   DialogOverlay,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+import { Plus, Save } from "lucide-react";
 import { SwipeableTask } from "./swipeable-task";
 import { Reorder } from "framer-motion";
 
@@ -23,6 +23,8 @@ interface Task {
   type: "today" | "all";
 }
 
+const STORAGE_KEY = "allTasks";
+
 export const AllTasksList: React.FC = () => {
   const exampleTasks: Task[] = [
     { id: 1, text: "Play", streak: 5, type: "all" },
@@ -30,39 +32,83 @@ export const AllTasksList: React.FC = () => {
     { id: 3, text: "Code", streak: 8, type: "all" },
     { id: 4, text: "Repeat", streak: 2, type: "all" },
   ];
-  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
+
+  // Initialize state from localStorage or fallback to exampleTasks
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    if (typeof window !== "undefined") {
+      const savedTasks = localStorage.getItem(STORAGE_KEY);
+      return savedTasks ? (JSON.parse(savedTasks) as Task[]) : exampleTasks;
+    }
+    return exampleTasks;
+  });
+
+  const [originalOrder, setOriginalOrder] = useState<Task[]>(tasks);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newTaskText, setNewTaskText] = useState("");
+  const [isReordered, setIsReordered] = useState(false);
+
+  // Persist tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }, [tasks]);
 
   const completeTask = (id: number) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+    setTasks(updatedTasks);
+    setOriginalOrder(updatedTasks);
   };
 
   const addTask = () => {
     if (newTaskText.trim()) {
-      setTasks([
-        ...tasks,
-        {
-          id: Date.now(),
-          text: newTaskText.trim(),
-          streak: 0,
-          type: "all",
-        },
-      ]);
+      const newTask = {
+        id: Date.now(),
+        text: newTaskText.trim(),
+        streak: 0,
+        type: "all" as const,
+      };
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+      setOriginalOrder(updatedTasks);
       setNewTaskText("");
       setIsDialogOpen(false);
     }
   };
 
-  const renderAddTaskButton = () => (
-    <Button
-      className="fixed bottom-4 right-4 h-14 w-14 rounded-full bg-[#00A3A3]"
-      onClick={() => setIsDialogOpen(true)}
-    >
-      <Plus size={24} />
-    </Button>
-  );
+  const handleReorder = (newOrder: Task[]) => {
+    setTasks(newOrder);
+    setIsReordered(JSON.stringify(newOrder) !== JSON.stringify(originalOrder));
+  };
 
+  const saveNewOrder = () => {
+    setOriginalOrder(tasks);
+    setIsReordered(false);
+    // Order is automatically saved to localStorage via useEffect
+  };
+
+  // Rest of the component remains the same
+  const renderActionButton = () => {
+    if (isReordered) {
+      return (
+        <Button
+          className="fixed bottom-4 right-4 h-14 w-auto bg-[#00A3A3] hover:bg-[#00A3A3]"
+          onClick={saveNewOrder}
+        >
+          <Save size={24} className="mr-2" />
+          Save Order
+        </Button>
+      );
+    }
+    return (
+      <Button
+        className="fixed bottom-4 right-4 h-14 w-14 rounded-full bg-[#00A3A3]"
+        onClick={() => setIsDialogOpen(true)}
+      >
+        <Plus size={24} />
+      </Button>
+    );
+  };
+
+  // Rest of the render logic remains the same
   const renderAddTaskDialog = () => (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogOverlay className="bg-gray-950/40" />
@@ -101,7 +147,7 @@ export const AllTasksList: React.FC = () => {
   if (tasks.length === 0) {
     return (
       <>
-        {renderAddTaskButton()}
+        {renderActionButton()}
         {renderAddTaskDialog()}
       </>
     );
@@ -112,10 +158,9 @@ export const AllTasksList: React.FC = () => {
       <p className="mb-1 px-2 text-center text-sm text-[#A1A1AA]">
         Swipe to delete a task, Hold and drag to reorder
       </p>
-      <p className="mb-1 px-2 text-center text-sm text-[#A1A1AA]"></p>
       <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
         <CardContent className="p-2 pb-[1px]">
-          <Reorder.Group axis="y" values={tasks} onReorder={setTasks}>
+          <Reorder.Group axis="y" values={tasks} onReorder={handleReorder}>
             {tasks.map((task) => (
               <SwipeableTask
                 key={task.id}
@@ -125,7 +170,7 @@ export const AllTasksList: React.FC = () => {
             ))}
           </Reorder.Group>
         </CardContent>
-        {renderAddTaskButton()}
+        {renderActionButton()}
         {renderAddTaskDialog()}
       </Card>
     </>
