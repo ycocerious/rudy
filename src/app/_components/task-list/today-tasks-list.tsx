@@ -31,7 +31,7 @@ export const TodayTasksList: React.FC = () => {
 
   return (
     <>
-      <p className="mb-1 px-2 text-center text-sm text-[#A1A1AA]">
+      <p className="mb-1 px-2 text-center text-xs text-[#A1A1AA]">
         Swipe to complete a task
       </p>
       <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">

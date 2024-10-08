@@ -124,7 +124,7 @@ export const AllTasksList: React.FC = () => {
               setNewTaskText(input);
             }
           }}
-          placeholder="Enter task name (max 20 characters)"
+          placeholder="Enter task name (max 20 chars)"
           className="border-gray-600 bg-gray-800 text-white"
           maxLength={30}
         />
@@ -155,7 +155,7 @@ export const AllTasksList: React.FC = () => {
 
   return (
     <>
-      <p className="mb-1 px-2 text-center text-sm text-[#A1A1AA]">
+      <p className="mb-1 px-2 text-center text-xs text-[#A1A1AA]">
         Swipe to delete a task, Hold and drag to reorder
       </p>
       <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
