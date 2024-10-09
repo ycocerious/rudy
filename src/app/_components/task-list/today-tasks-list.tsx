@@ -5,9 +5,10 @@ import React, { useState } from "react";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
 import { type Task } from "@/types/task";
 import { exampleTasks } from "@/constants/mockData";
+import { sortTasks } from "@/lib/utils/sort-tasks";
 
 export const TodayTasksList: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
+  const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
 
   const completeTask = (id: string) => {
     setTasks(tasks.filter((task) => task.id !== id));

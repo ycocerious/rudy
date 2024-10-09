@@ -8,9 +8,10 @@ import { Plus } from "lucide-react";
 import React, { useState } from "react";
 import { AddOrEditTaskDialog } from "./add-or-edit-task-dialog";
 import { SwipeableAllTask } from "./swipeable-all-task";
+import { sortTasks } from "@/lib/utils/sort-tasks";
 
 export const AllTasksList: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
+  const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const deleteTask = (id: string) => {

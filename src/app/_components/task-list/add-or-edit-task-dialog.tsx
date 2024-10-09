@@ -22,6 +22,7 @@ import { MonthlyDialogContent } from "./monthly-dialog-content";
 import { WeeklyDialogContent } from "./weekly-dialog-content";
 import { XdayDialogContent } from "./xday-dialog-content";
 import { Button } from "@/components/ui/button";
+import { sortTasks } from "@/lib/utils/sort-tasks";
 
 type BaseAddOrEditTaskDialogProps = {
   isDialogOpen: boolean;
@@ -103,15 +104,15 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
       customMonthDate: newTaskCustomMonthDate ?? undefined,
     };
 
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
     handleDialogClose();
   };
 
   const editTask = () => {
     if (!isTaskValid || taskType !== "edit") return;
 
-    setTasks((prevTasks) =>
-      prevTasks.map((individualTask) =>
+    setTasks((prevTasks) => {
+      const newTasks = prevTasks.map((individualTask) =>
         individualTask.id === props.task.id
           ? {
               ...individualTask,
@@ -121,12 +122,11 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
               customMonthDate: newTaskCustomMonthDate ?? undefined,
             }
           : individualTask,
-      ),
-    );
+      );
+      return sortTasks(newTasks);
+    });
 
     setIsDialogOpen(false);
-
-    // handleDialogClose();
   };
 
   return (
