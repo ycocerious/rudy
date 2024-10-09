@@ -81,19 +81,19 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
             style={{ color: categoryColors[task.category] }}
           >
             {task.category === "daily" && (
-              <span className="mr-1">Repeats everyday</span>
+              <span className="mr-1">Everyday</span>
             )}
             {task.category === "xdays" && (
-              <span className="mr-1">{`Repeats every ${task.repeatValue} days`}</span>
+              <span className="mr-1">{`Every ${task.repeatValue} days`}</span>
             )}
             {task.category === "weekly" && (
-              <span className="mr-1">{`Repeats every ${task.repeatValue}`}</span>
+              <span className="mr-1">{`Every ${task.repeatValue}`}</span>
             )}
             {task.category === "monthly" &&
               (task.repeatValue !== "custom" ? (
-                <span className="mr-1">{`Repeats every ${task.repeatValue} of month`}</span>
+                <span className="mr-1">{`Every ${task.repeatValue} of month`}</span>
               ) : (
-                <span className="mr-1">{`Repeats every ${task.customMonthDate} of month`}</span>
+                <span className="mr-1">{`Every ${task.customMonthDate} of month`}</span>
               ))}
           </div>
         </motion.div>

@@ -134,7 +134,11 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
       open={isDialogOpen}
       onOpenChange={(open) => {
         if (!open) {
-          handleDialogClose();
+          if (taskType === "add") {
+            handleDialogClose();
+          } else {
+            setIsDialogOpen(false);
+          }
         }
       }}
     >

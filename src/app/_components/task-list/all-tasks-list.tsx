@@ -20,10 +20,10 @@ export const AllTasksList: React.FC = () => {
 
   return (
     <>
-      {tasks.length !== 0 && (
+      {tasks.length !== 0 ? (
         <>
           <p className="mb-1 px-2 text-center text-xs text-[#A1A1AA]">
-            Swipe to delete a task, Tap to edit
+            Tap to edit a task, Swipe to delete
           </p>
           <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
             <CardContent className="p-2 pb-[1px]">
@@ -38,13 +38,17 @@ export const AllTasksList: React.FC = () => {
             </CardContent>
           </Card>
         </>
+      ) : (
+        <p className="mb-1 px-2 text-center text-xs text-[#A1A1AA]">
+          Click the + icon to add your first task!
+        </p>
       )}
 
       <Button
-        className="fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full bg-[#00A3A3]"
+        className="fixed bottom-4 left-1/2 z-50 h-14 w-14 -translate-x-1/2 rounded-full bg-[#00A3A3]"
         onClick={() => setIsDialogOpen(true)}
       >
-        <Plus size={24} />
+        <Plus size={24} className="text-white" />
       </Button>
 
       <AddOrEditTaskDialog
