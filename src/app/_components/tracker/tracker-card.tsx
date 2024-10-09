@@ -13,7 +13,7 @@ export const TrackerCard = () => {
     <Card className="mb-4 flex w-full min-w-[240px] flex-col border-gray-700 bg-gray-800 md:max-w-[1106px]">
       <CardHeader>
         <CardTitle className="text-center text-lg text-gray-100 sm:text-xl md:text-2xl">
-          Contribution Tracker
+          Tracker Card
         </CardTitle>
       </CardHeader>
       <CardContent>

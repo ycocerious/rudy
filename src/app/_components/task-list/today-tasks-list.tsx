@@ -2,26 +2,14 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import React, { useState } from "react";
-import { SwipeableTask } from "./swipeable-task";
-
-interface Task {
-  id: number;
-  text: string;
-  streak: number;
-  type: "today" | "all";
-}
-
-const exampleTasks: Task[] = [
-  { id: 1, text: "Play", streak: 5, type: "today" },
-  { id: 2, text: "Eat", streak: 10, type: "today" },
-  { id: 3, text: "Code", streak: 8, type: "today" },
-  { id: 4, text: "Repeat", streak: 2, type: "today" },
-];
+import { SwipeableTodaysTask } from "./swipeable-todays-task";
+import { type Task } from "@/types/task";
+import { exampleTasks } from "@/constants/mockData";
 
 export const TodayTasksList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(exampleTasks);
 
-  const completeTask = (id: number) => {
+  const completeTask = (id: string) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
@@ -37,7 +25,7 @@ export const TodayTasksList: React.FC = () => {
       <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
         <CardContent className="p-2 pb-[1px]">
           {tasks.map((task) => (
-            <SwipeableTask
+            <SwipeableTodaysTask
               key={task.id}
               task={task}
               onComplete={() => completeTask(task.id)}
