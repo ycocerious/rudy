@@ -27,7 +27,7 @@ export const MonthlySelectContent = ({
         value={newRepeatValue ?? undefined}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select monthly option" />
+          <SelectValue placeholder="Select repetition option" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="1st">1st of every month</SelectItem>
@@ -44,15 +44,12 @@ export const MonthlySelectContent = ({
 
       {newRepeatValue === "custom" && (
         <div className="mt-4">
-          <label className="mb-2 block text-sm font-medium">
-            Select custom date
-          </label>
           <Select
             onValueChange={(value) => setNewCustomMonthDate(value)}
             value={newCustomMonthDate ?? undefined}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select day of month" />
+              <SelectValue placeholder="Select custom date of month" />
             </SelectTrigger>
             <SelectContent>
               {[

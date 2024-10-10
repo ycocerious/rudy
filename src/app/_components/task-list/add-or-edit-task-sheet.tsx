@@ -204,7 +204,11 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
         <Select
           value={newTaskCategory ?? undefined}
-          onValueChange={(value: taskCateogry) => setNewTaskCategory(value)}
+          onValueChange={(value: taskCateogry) => {
+            setNewTaskCategory(value);
+            setNewTaskRepeatValue(null);
+            setNewTaskCustomMonthDate(null);
+          }}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Repetition duration" />
