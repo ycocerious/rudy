@@ -7,20 +7,28 @@ import {
   useTransform,
 } from "framer-motion";
 import { Check } from "lucide-react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface SwipeableTaskProps {
   task: Task;
   onComplete: () => void;
+  completeTask: boolean;
 }
 
 export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   task,
   onComplete,
+  completeTask,
 }) => {
   const constraintsRef = useRef(null);
   const x = useMotionValue(0);
   const controls = useAnimation();
+
+  useEffect(() => {
+    if (completeTask) {
+      void controls.start({ x: 0 });
+    }
+  }, [completeTask, controls]);
 
   const borderColor = useTransform(
     x,

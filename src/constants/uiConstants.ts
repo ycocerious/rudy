@@ -13,3 +13,5 @@ export const categoryColors = {
   weekly: "#54a0ff", // Sky blue
   monthly: "#e6c9f8", // Soft pink
 };
+
+export const theOnlyToastId = "the-only-toast";

@@ -9,14 +9,35 @@ import React, { useState } from "react";
 import { AddOrEditTaskDialog } from "./add-or-edit-task-dialog";
 import { SwipeableAllTask } from "./swipeable-all-task";
 import { sortTasks } from "@/lib/utils/sort-tasks";
+import { theOnlyToastId } from "@/constants/uiConstants";
+import toast from "react-hot-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const AllTasksList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
-  const deleteTask = (id: string) => {
-    const updatedTasks = tasks.filter((task) => task.id !== id);
-    setTasks(updatedTasks);
+  const initiateDeleteTask = (id: string) => {
+    setTaskToDelete(id);
+  };
+
+  const confirmDeleteTask = () => {
+    if (taskToDelete) {
+      const updatedTasks = tasks.filter((task) => task.id !== taskToDelete);
+      setTasks(updatedTasks);
+      setTaskToDelete(null);
+      toast.success("Task deleted successfully!", { id: theOnlyToastId });
+    }
   };
 
   return (
@@ -33,7 +54,8 @@ export const AllTasksList: React.FC = () => {
                   key={task.id}
                   setTasks={setTasks}
                   task={task}
-                  onComplete={() => deleteTask(task.id)}
+                  onComplete={() => initiateDeleteTask(task.id)}
+                  deleteTask={!!taskToDelete}
                 />
               ))}
             </CardContent>
@@ -58,6 +80,31 @@ export const AllTasksList: React.FC = () => {
         setTasks={setTasks}
         taskType="add"
       />
+
+      <AlertDialog
+        open={taskToDelete !== null}
+        onOpenChange={() => setTaskToDelete(null)}
+      >
+        <AlertDialogContent className="max-w-[calc(100%-3rem)] rounded-xl border-none bg-white sm:max-w-[24rem]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the task.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setTaskToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteTask}
+              className="bg-[#c72626]"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

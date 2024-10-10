@@ -9,25 +9,33 @@ import {
   useTransform,
 } from "framer-motion";
 import { Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AddOrEditTaskDialog } from "./add-or-edit-task-dialog";
 
 interface SwipeableTaskProps {
   task: Task;
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   onComplete: () => void;
+  deleteTask: boolean;
 }
 
 export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   task,
   setTasks,
   onComplete,
+  deleteTask,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
   const constraintsRef = useRef(null);
   const x = useMotionValue(0);
   const controls = useAnimation();
+
+  useEffect(() => {
+    if (deleteTask) {
+      void controls.start({ x: 0 });
+    }
+  }, [deleteTask, controls]);
 
   const borderColor = useTransform(
     x,

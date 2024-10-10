@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
 import { poppins } from "../styles/fonts";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Rudy",
@@ -19,7 +20,16 @@ export default function RootLayout({
     <html lang="en" className={`${poppins.variable}`}>
       <body>
         <TRPCReactProvider>
-          <HydrateClient>{children}</HydrateClient>
+          <HydrateClient>
+            {children}
+            <Toaster
+              position="top-center"
+              gutter={10}
+              toastOptions={{
+                duration: 2000,
+              }}
+            />
+          </HydrateClient>
         </TRPCReactProvider>
       </body>
     </html>

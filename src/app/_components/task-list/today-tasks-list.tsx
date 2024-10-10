@@ -1,17 +1,41 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import React, { useState } from "react";
-import { SwipeableTodaysTask } from "./swipeable-todays-task";
-import { type Task } from "@/types/task";
 import { exampleTasks } from "@/constants/mockData";
+import { theOnlyToastId } from "@/constants/uiConstants";
 import { sortTasks } from "@/lib/utils/sort-tasks";
+import { type Task } from "@/types/task";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { SwipeableTodaysTask } from "./swipeable-todays-task";
 
 export const TodayTasksList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
+  const [taskToComplete, setTaskToComplete] = useState<Task | null>(null);
 
-  const completeTask = (id: string) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const initiateCompleteTask = (id: string) => {
+    const taskToComplete = tasks.find((task) => task.id === id);
+    if (taskToComplete) setTaskToComplete(taskToComplete);
+  };
+
+  const confirmCompleteTask = () => {
+    if (taskToComplete) {
+      setTasks(tasks.filter((task) => task.id !== taskToComplete.id));
+      setTaskToComplete(null);
+      toast("Hooray! Well done!", {
+        id: theOnlyToastId,
+        icon: "🎉👏",
+      });
+    }
   };
 
   if (tasks.length === 0) {
@@ -29,11 +53,34 @@ export const TodayTasksList: React.FC = () => {
             <SwipeableTodaysTask
               key={task.id}
               task={task}
-              onComplete={() => completeTask(task.id)}
+              onComplete={() => initiateCompleteTask(task.id)}
+              completeTask={!!taskToComplete}
             />
           ))}
         </CardContent>
       </Card>
+
+      <AlertDialog
+        open={taskToComplete !== null}
+        onOpenChange={() => setTaskToComplete(null)}
+      >
+        <AlertDialogContent className="max-w-[calc(100%-3rem)] rounded-xl border-none bg-white sm:max-w-[24rem]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{`Finished ${taskToComplete?.text}?`}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setTaskToComplete(null)}>
+              No I swiped by mistake
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCompleteTask}
+              className="bg-[#00a3a3]"
+            >
+              Yessir!!
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,15 +15,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { categoryDisplayText } from "@/constants/mappings";
+import { theOnlyToastId } from "@/constants/uiConstants";
+import { sortTasks } from "@/lib/utils/sort-tasks";
 import { type Task } from "@/types/task";
 import { type taskCateogry } from "@/types/task-category";
 import { nanoid } from "nanoid";
 import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { MonthlyDialogContent } from "./monthly-dialog-content";
 import { WeeklyDialogContent } from "./weekly-dialog-content";
 import { XdayDialogContent } from "./xday-dialog-content";
-import { Button } from "@/components/ui/button";
-import { sortTasks } from "@/lib/utils/sort-tasks";
 
 type BaseAddOrEditTaskDialogProps = {
   isDialogOpen: boolean;
@@ -44,18 +46,18 @@ type AddOrEditTaskDialogProps = AddTaskDialogProps | EditTaskDialogProps;
 export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
   console.log("Hi", props.taskType === "edit" ? props.task : "");
   const { isDialogOpen, setIsDialogOpen, setTasks, taskType } = props;
-  const [newTaskText, setNewTaskText] = useState(
-    taskType === "add" ? "" : props.task.text,
-  );
+
+  const originalTask = taskType === "edit" ? props.task : null;
+  const [newTaskText, setNewTaskText] = useState(originalTask?.text ?? "");
   const [newTaskCategory, setNewTaskCategory] = useState<taskCateogry | null>(
-    taskType === "add" ? null : props.task.category,
+    originalTask?.category ?? null,
   );
   const [newTaskRepeatValue, setNewTaskRepeatValue] = useState<string | null>(
-    taskType === "add" ? null : (props.task.repeatValue ?? null),
+    originalTask?.repeatValue ?? null,
   );
   const [newTaskCustomMonthDate, setNewTaskCustomMonthDate] = useState<
     string | null
-  >(taskType === "add" ? null : (props.task.customMonthDate ?? null));
+  >(originalTask?.customMonthDate ?? null);
 
   const handleDialogClose = () => {
     setNewTaskText("");
@@ -65,9 +67,29 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
     setNewTaskCustomMonthDate(null);
   };
 
+  const hasChanges = useMemo(() => {
+    if (taskType === "add") return true;
+    if (!originalTask) return false;
+
+    return (
+      newTaskText !== originalTask.text ||
+      newTaskCategory !== originalTask.category ||
+      newTaskRepeatValue !== (originalTask.repeatValue ?? null) ||
+      newTaskCustomMonthDate !== (originalTask.customMonthDate ?? null)
+    );
+  }, [
+    taskType,
+    originalTask,
+    newTaskText,
+    newTaskCategory,
+    newTaskRepeatValue,
+    newTaskCustomMonthDate,
+  ]);
+
   const isTaskValid: boolean = useMemo<boolean>(() => {
     const isValidBasicTask = newTaskText.trim() && newTaskCategory;
     if (!isValidBasicTask) return false;
+    if (taskType === "edit" && !hasChanges) return false;
 
     if (newTaskCategory === "daily") {
       return true;
@@ -89,6 +111,8 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
   }, [
     newTaskText,
     newTaskCategory,
+    taskType,
+    hasChanges,
     newTaskRepeatValue,
     newTaskCustomMonthDate,
   ]);
@@ -106,6 +130,7 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
 
     setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
     handleDialogClose();
+    toast.success("Added Task Successfully", { id: theOnlyToastId });
   };
 
   const editTask = () => {
@@ -113,7 +138,7 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
 
     setTasks((prevTasks) => {
       const newTasks = prevTasks.map((individualTask) =>
-        individualTask.id === props.task.id
+        individualTask.id === originalTask?.id
           ? {
               ...individualTask,
               text: newTaskText,
@@ -127,6 +152,7 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
     });
 
     setIsDialogOpen(false);
+    toast.success("Edited Task Successfully", { id: theOnlyToastId });
   };
 
   return (
@@ -150,7 +176,7 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
           <DialogTitle>
             {taskType === "add"
               ? "Add New Task"
-              : `Edit Task: ${props.task.text}`}
+              : `Edit Task: ${originalTask?.text}`}
           </DialogTitle>
         </DialogHeader>
         <div>
@@ -164,6 +190,14 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
             }}
             placeholder="Enter task name (max 15 chars)"
             maxLength={15}
+            autoFocus={taskType === "edit"}
+            onFocus={(e) => {
+              if (taskType === "edit") {
+                const value = e.target.value;
+                e.target.value = "";
+                e.target.value = value;
+              }
+            }}
           />
         </div>
 
