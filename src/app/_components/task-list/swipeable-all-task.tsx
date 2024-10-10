@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import { Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { AddOrEditTaskDialog } from "./add-or-edit-task-dialog";
+import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 
 interface SwipeableTaskProps {
   task: Task;
@@ -25,7 +25,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   onComplete,
   deleteTask,
 }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
   const constraintsRef = useRef(null);
   const x = useMotionValue(0);
@@ -59,7 +59,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           borderStyle: "solid",
           borderColor: borderColor,
         }}
-        onClick={() => setIsDialogOpen(true)}
+        onClick={() => setIsSheetOpen(true)}
       >
         <motion.div
           style={{ x }}
@@ -113,9 +113,9 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
         </motion.div>
       </motion.button>
 
-      <AddOrEditTaskDialog
-        isDialogOpen={isDialogOpen}
-        setIsDialogOpen={setIsDialogOpen}
+      <AddOrEditTaskSheet
+        isSheetOpen={isSheetOpen}
+        setIsSheetOpen={setIsSheetOpen}
         setTasks={setTasks}
         taskType="edit"
         task={task}

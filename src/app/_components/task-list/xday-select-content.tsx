@@ -7,15 +7,15 @@ import {
 } from "@/components/ui/select";
 import { type Dispatch, type SetStateAction } from "react";
 
-type XdayDialogContentProps = {
+type XdaySelectContentProps = {
   newRepeatValue: string | null;
   setNewRepeatValue: Dispatch<SetStateAction<string | null>>;
 };
 
-export const XdayDialogContent = ({
+export const XdaySelectContent = ({
   newRepeatValue,
   setNewRepeatValue,
-}: XdayDialogContentProps) => {
+}: XdaySelectContentProps) => {
   return (
     <Select
       onValueChange={(value) => setNewRepeatValue(value)}

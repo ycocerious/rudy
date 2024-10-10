@@ -1,11 +1,4 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -14,6 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { categoryDisplayText } from "@/constants/mappings";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { sortTasks } from "@/lib/utils/sort-tasks";
@@ -22,30 +22,30 @@ import { type taskCateogry } from "@/types/task-category";
 import { nanoid } from "nanoid";
 import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { MonthlyDialogContent } from "./monthly-dialog-content";
-import { WeeklyDialogContent } from "./weekly-dialog-content";
-import { XdayDialogContent } from "./xday-dialog-content";
+import { MonthlySelectContent } from "./monthly-select-content";
+import { WeeklySelectContent } from "./weekly-select-content";
+import { XdaySelectContent } from "./xday-select-content";
 
-type BaseAddOrEditTaskDialogProps = {
-  isDialogOpen: boolean;
-  setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
+type BaseAddOrEditTaskSheetProps = {
+  isSheetOpen: boolean;
+  setIsSheetOpen: Dispatch<SetStateAction<boolean>>;
   setTasks: Dispatch<SetStateAction<Task[]>>;
 };
 
-type AddTaskDialogProps = BaseAddOrEditTaskDialogProps & {
+type AddTaskSheetProps = BaseAddOrEditTaskSheetProps & {
   taskType: "add";
 };
 
-type EditTaskDialogProps = BaseAddOrEditTaskDialogProps & {
+type EditTaskSheetProps = BaseAddOrEditTaskSheetProps & {
   taskType: "edit";
   task: Task;
 };
 
-type AddOrEditTaskDialogProps = AddTaskDialogProps | EditTaskDialogProps;
+type AddOrEditTaskSheetProps = AddTaskSheetProps | EditTaskSheetProps;
 
-export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
+export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   console.log("Hi", props.taskType === "edit" ? props.task : "");
-  const { isDialogOpen, setIsDialogOpen, setTasks, taskType } = props;
+  const { isSheetOpen, setIsSheetOpen, setTasks, taskType } = props;
 
   const originalTask = taskType === "edit" ? props.task : null;
   const [newTaskText, setNewTaskText] = useState(originalTask?.text ?? "");
@@ -59,9 +59,9 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
     string | null
   >(originalTask?.customMonthDate ?? null);
 
-  const handleDialogClose = () => {
+  const handleSheetClose = () => {
     setNewTaskText("");
-    setIsDialogOpen(false);
+    setIsSheetOpen(false);
     setNewTaskCategory(null);
     setNewTaskRepeatValue(null);
     setNewTaskCustomMonthDate(null);
@@ -129,7 +129,7 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
     };
 
     setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
-    handleDialogClose();
+    handleSheetClose();
     toast.success("Added Task Successfully", { id: theOnlyToastId });
   };
 
@@ -151,34 +151,35 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
       return sortTasks(newTasks);
     });
 
-    setIsDialogOpen(false);
+    setIsSheetOpen(false);
     toast.success("Edited Task Successfully", { id: theOnlyToastId });
   };
 
   return (
-    <Dialog
-      open={isDialogOpen}
+    <Sheet
+      open={isSheetOpen}
       onOpenChange={(open) => {
         if (!open) {
           if (taskType === "add") {
-            handleDialogClose();
+            handleSheetClose();
           } else {
-            setIsDialogOpen(false);
+            setIsSheetOpen(false);
           }
         }
       }}
     >
-      <DialogContent
-        className="max-w-[calc(100%-3rem)] rounded-xl border-none bg-white sm:max-w-[24rem]"
-        aria-describedby="add task dialog"
+      <SheetContent
+        side="bottom"
+        className="space-y-4 rounded-t-xl border-none bg-white sm:max-w-[24rem]"
       >
-        <DialogHeader>
-          <DialogTitle>
+        <SheetHeader>
+          <SheetTitle>
             {taskType === "add"
               ? "Add New Task"
               : `Edit Task: ${originalTask?.text}`}
-          </DialogTitle>
-        </DialogHeader>
+          </SheetTitle>
+        </SheetHeader>
+
         <div>
           <Input
             value={newTaskText}
@@ -219,25 +220,25 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
         </Select>
 
         {newTaskCategory && newTaskCategory === "monthly" ? (
-          <MonthlyDialogContent
+          <MonthlySelectContent
             newRepeatValue={newTaskRepeatValue}
             newCustomMonthDate={newTaskCustomMonthDate}
             setNewRepeatValue={setNewTaskRepeatValue}
             setNewCustomMonthDate={setNewTaskCustomMonthDate}
           />
         ) : newTaskCategory === "weekly" ? (
-          <WeeklyDialogContent
+          <WeeklySelectContent
             newRepeatValue={newTaskRepeatValue}
             setNewRepeatValue={setNewTaskRepeatValue}
           />
         ) : newTaskCategory === "xdays" ? (
-          <XdayDialogContent
+          <XdaySelectContent
             newRepeatValue={newTaskRepeatValue}
             setNewRepeatValue={setNewTaskRepeatValue}
           />
         ) : null}
 
-        <DialogFooter>
+        <SheetFooter>
           <Button
             onClick={taskType === "add" ? addTask : editTask}
             className="bg-[#00A3A3] hover:bg-[#00A3A3]"
@@ -245,8 +246,8 @@ export const AddOrEditTaskDialog = (props: AddOrEditTaskDialogProps) => {
           >
             {taskType === "add" ? "Add Task" : "Save"}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 };

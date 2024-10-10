@@ -7,19 +7,19 @@ import {
 } from "@/components/ui/select";
 import { type Dispatch, type SetStateAction } from "react";
 
-type monthlyDialogContentProps = {
+type monthlySelectContentProps = {
   newRepeatValue: string | null;
   newCustomMonthDate: string | null;
   setNewRepeatValue: Dispatch<SetStateAction<string | null>>;
   setNewCustomMonthDate: Dispatch<SetStateAction<string | null>>;
 };
 
-export const MonthlyDialogContent = ({
+export const MonthlySelectContent = ({
   newRepeatValue,
   newCustomMonthDate,
   setNewRepeatValue,
   setNewCustomMonthDate,
-}: monthlyDialogContentProps) => {
+}: monthlySelectContentProps) => {
   return (
     <>
       <Select

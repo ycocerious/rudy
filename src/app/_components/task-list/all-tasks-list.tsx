@@ -6,7 +6,7 @@ import { exampleTasks } from "@/constants/mockData";
 import { type Task } from "@/types/task";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
-import { AddOrEditTaskDialog } from "./add-or-edit-task-dialog";
+import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { SwipeableAllTask } from "./swipeable-all-task";
 import { sortTasks } from "@/lib/utils/sort-tasks";
 import { theOnlyToastId } from "@/constants/uiConstants";
@@ -24,7 +24,7 @@ import {
 
 export const AllTasksList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
   const initiateDeleteTask = (id: string) => {
@@ -69,14 +69,14 @@ export const AllTasksList: React.FC = () => {
 
       <Button
         className="fixed bottom-4 left-1/2 z-50 h-14 w-14 -translate-x-1/2 rounded-full bg-[#00A3A3]"
-        onClick={() => setIsDialogOpen(true)}
+        onClick={() => setIsSheetOpen(true)}
       >
         <Plus size={24} className="text-white" />
       </Button>
 
-      <AddOrEditTaskDialog
-        isDialogOpen={isDialogOpen}
-        setIsDialogOpen={setIsDialogOpen}
+      <AddOrEditTaskSheet
+        isSheetOpen={isSheetOpen}
+        setIsSheetOpen={setIsSheetOpen}
         setTasks={setTasks}
         taskType="add"
       />

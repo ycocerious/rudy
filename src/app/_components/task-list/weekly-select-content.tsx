@@ -7,15 +7,15 @@ import {
 } from "@/components/ui/select";
 import { type Dispatch, type SetStateAction } from "react";
 
-type WeeklyDialogContentProps = {
+type WeeklySelectContentProps = {
   newRepeatValue: string | null;
   setNewRepeatValue: Dispatch<SetStateAction<string | null>>;
 };
 
-export const WeeklyDialogContent = ({
+export const WeeklySelectContent = ({
   newRepeatValue,
   setNewRepeatValue,
-}: WeeklyDialogContentProps) => {
+}: WeeklySelectContentProps) => {
   return (
     <Select
       onValueChange={(value) => setNewRepeatValue(value)}
