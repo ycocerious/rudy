@@ -55,7 +55,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
       if (prev === null) return [day];
       if (prev.includes(day)) return prev.filter((d) => d !== day);
       if (prev.length < newRepeatFrequency) return [...prev, day];
-      return prev;
+      return [...prev.slice(0, -1), day];
     });
   };
 

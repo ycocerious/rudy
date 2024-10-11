@@ -15,6 +15,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
+import { areArraysEqual } from "@/lib/utils/are-arrays-equal";
 import { sortTasks } from "@/lib/utils/sort-tasks";
 import {
   repeatFrequencyType,
@@ -52,6 +53,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const { isSheetOpen, setIsSheetOpen, setTasks, taskType } = props;
 
   const originalTask = taskType === "edit" ? props.task : null;
+
   const [newName, setNewName] = useState(originalTask?.name ?? "");
   const [newCategory, setNewCategory] = useState<taskCategoryType | null>(
     originalTask?.category ?? null,
@@ -97,10 +99,12 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     return (
       newName !== originalTask.name ||
       newCategory !== originalTask.category ||
-      newXValue !== originalTask.xValue ||
-      newStartDate !== originalTask.startDate ||
-      newRepeatFrequency !== originalTask.repeatFrequency ||
-      newRepeatDays !== originalTask.repeatDays
+      (originalTask.startDate && newXValue !== originalTask.xValue) ||
+      (originalTask.startDate && newStartDate !== originalTask.startDate) ||
+      (originalTask.repeatFrequency &&
+        newRepeatFrequency !== originalTask.repeatFrequency) ||
+      (originalTask.repeatDays &&
+        !areArraysEqual(newRepeatDays, originalTask.repeatDays))
     );
   }, [
     taskType,

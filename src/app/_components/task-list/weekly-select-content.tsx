@@ -39,7 +39,7 @@ export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
       if (prev === null) return [day];
       if (prev.includes(day)) return prev.filter((d) => d !== day);
       if (prev.length < newRepeatFrequency) return [...prev, day];
-      return prev;
+      return [...prev.slice(0, -1), day];
     });
   };
 
