@@ -4,7 +4,7 @@ import { categoryColors } from "@/constants/uiConstants";
 import { type Task } from "@/types/task";
 import {
   motion,
-  PanInfo,
+  type PanInfo,
   useAnimation,
   useMotionValue,
   useTransform,
@@ -43,7 +43,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
       void controls.start({ x: 0 });
       onCancelSwipe();
     }
-  }, [isCancelled, controls]);
+  }, [isCancelled, controls, onCancelSwipe]);
 
   const borderColor = useTransform(
     x,

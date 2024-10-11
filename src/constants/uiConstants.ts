@@ -11,7 +11,14 @@ export const categoryColors = {
   daily: "#5ce1e6", // Light blue (as requested)
   xdays: "#5f27cd", // Purple
   weekly: "#54a0ff", // Sky blue
-  monthly: "#e6c9f8", // Soft pink
+  monthly: "#B388F5", // Soft pink
+};
+
+export const categoryColorsNew = {
+  daily: "#5ce1e6", // Light blue (as requested)
+  xdays: "#AFFC41", // Green
+  weekly: "#FAA916", // Orange
+  monthly: "#C200FB", // Purple
 };
 
 export const theOnlyToastId = "the-only-toast";

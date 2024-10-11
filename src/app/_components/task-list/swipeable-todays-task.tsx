@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import { categoryColors } from "@/constants/uiConstants";
+import { type Task } from "@/types/task";
 import {
   motion,
-  PanInfo,
+  type PanInfo,
   useAnimation,
   useMotionValue,
   useTransform,
 } from "framer-motion";
 import { Check } from "lucide-react";
-import { categoryColors } from "@/constants/uiConstants";
-import { type Task } from "@/types/task";
+import React, { useEffect, useRef, useState } from "react";
 
 interface SwipeableTaskProps {
   task: Task;
@@ -36,7 +36,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
       void controls.start({ x: 0 });
       onCancelSwipe();
     }
-  }, [isCancelled, controls]);
+  }, [isCancelled, controls, onCancelSwipe]);
 
   const borderColor = useTransform(
     x,

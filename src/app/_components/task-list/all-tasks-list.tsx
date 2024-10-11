@@ -81,10 +81,10 @@ export const AllTasksList: React.FC = () => {
       )}
 
       <Button
-        className="fixed bottom-4 left-1/2 z-50 h-14 w-14 -translate-x-1/2 rounded-full bg-[#00A3A3]"
+        className="fixed bottom-4 left-1/2 z-50 h-14 w-14 -translate-x-1/2 rounded-full bg-[#5ce1e6]"
         onClick={() => setIsSheetOpen(true)}
       >
-        <Plus size={24} className="text-white" />
+        <Plus size={24} className="text-gray-950" />
       </Button>
 
       <AddOrEditTaskSheet

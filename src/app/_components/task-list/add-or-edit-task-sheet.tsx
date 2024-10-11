@@ -18,8 +18,8 @@ import { theOnlyToastId } from "@/constants/uiConstants";
 import { areArraysEqual } from "@/lib/utils/are-arrays-equal";
 import { sortTasks } from "@/lib/utils/sort-tasks";
 import {
-  repeatFrequencyType,
-  xValueType,
+  type repeatFrequencyType,
+  type xValueType,
   type monthDaysType,
   type taskCategoryType,
   type weekDaysType,
@@ -99,9 +99,12 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     return (
       newName !== originalTask.name ||
       newCategory !== originalTask.category ||
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       (originalTask.startDate && newXValue !== originalTask.xValue) ||
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       (originalTask.startDate && newStartDate !== originalTask.startDate) ||
       (originalTask.repeatFrequency &&
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         newRepeatFrequency !== originalTask.repeatFrequency) ||
       (originalTask.repeatDays &&
         !areArraysEqual(newRepeatDays, originalTask.repeatDays))

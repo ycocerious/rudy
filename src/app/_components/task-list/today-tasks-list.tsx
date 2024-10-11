@@ -57,7 +57,7 @@ export const TodayTasksList: React.FC = () => {
     <>
       <p className="mb-1 px-2 text-center text-xs">
         <span className="text-[#A1A1AA]">Swipe to complete a task, </span>
-        <span className="text-[#00a3a3]">
+        <span className="text-[#5ce1e6]">
           {`Only ${tasks.length} tasks left!`}
         </span>
       </p>
