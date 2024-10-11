@@ -5,13 +5,13 @@ export const exampleTasks: Task[] = [
   { id: "2", name: "Eat again", category: "daily" },
   { id: "3", name: "Eat once more", category: "daily" },
   { id: "4", name: "Eat - yeah", category: "daily" },
-  // {
-  //   id: "5",
-  //   name: "Sleep",
-  //   category: "xdays",
-  //   xValue: 3,
-  //   startDate: new Date(),
-  // },
+  {
+    id: "5",
+    name: "Sleep",
+    category: "xdays",
+    xValue: 3,
+    startDate: new Date(),
+  },
   {
     id: "6",
     name: "Play",

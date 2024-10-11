@@ -209,7 +209,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     >
       <SheetContent
         side="bottom"
-        className="space-y-4 rounded-t-xl border-none bg-white sm:max-w-[24rem]"
+        className="mx-auto space-y-4 rounded-t-xl border-none bg-white sm:max-w-md"
       >
         <SheetHeader>
           <SheetTitle>
