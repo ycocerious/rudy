@@ -1,16 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { exampleTasks } from "@/constants/mockData";
-import { type Task } from "@/types/task";
-import { Plus } from "lucide-react";
-import React, { useState } from "react";
-import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
-import { SwipeableAllTask } from "./swipeable-all-task";
-import { sortTasks } from "@/lib/utils/sort-tasks";
-import { theOnlyToastId } from "@/constants/uiConstants";
-import toast from "react-hot-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +10,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { exampleTasks } from "@/constants/mockData";
+import { theOnlyToastId } from "@/constants/uiConstants";
+import { sortTasks } from "@/lib/utils/sort-tasks";
+import { type Task } from "@/types/task";
+import { Plus } from "lucide-react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
+import { SwipeableAllTask } from "./swipeable-all-task";
 
 export const AllTasksList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));

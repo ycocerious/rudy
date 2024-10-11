@@ -83,7 +83,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           animate={controls}
           className="flex h-full w-full items-center justify-between py-2 pl-4 pr-1"
         >
-          <span className="text-md z-10 text-white">{task.text}</span>
+          <span className="text-md z-10 text-white">{task.name}</span>
           <div
             className="max-w-[40%] text-right text-xs"
             style={{ color: categoryColors[task.category] }}
@@ -92,17 +92,14 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
               <span className="mr-1">Everyday</span>
             )}
             {task.category === "xdays" && (
-              <span className="mr-1">{`Every ${task.repeatValue} days`}</span>
+              <span className="mr-1">{`Every ${task.xValue} days`}</span>
             )}
             {task.category === "weekly" && (
-              <span className="mr-1">{`Every ${task.repeatValue}`}</span>
+              <span className="mr-1">{`Every ${task.repeatDays!.map((day) => day.slice(0, 3)).join(", ")}`}</span>
             )}
-            {task.category === "monthly" &&
-              (task.repeatValue !== "custom" ? (
-                <span className="mr-1">{`Every ${task.repeatValue} of month`}</span>
-              ) : (
-                <span className="mr-1">{`Every ${task.customMonthDate} of month`}</span>
-              ))}
+            {task.category === "monthly" && (
+              <span className="mr-1">{`Every ${task.repeatDays!.map((day) => day.replace("-", " ")).join(", ")}`}</span>
+            )}
           </div>
         </motion.div>
         <motion.div

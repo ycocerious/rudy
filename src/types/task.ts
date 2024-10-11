@@ -1,10 +1,19 @@
-import { type taskCateogry } from "./task-category";
+import {
+  type monthDaysType,
+  type weekDaysType,
+  type taskCategoryType,
+  xValueType,
+  repeatFrequencyType,
+} from "./form-types";
 
 export type Task = {
   id: string;
-  text: string;
-  category: taskCateogry;
-  repeatValue?: string;
+  name: string;
+  category: taskCategoryType;
+
+  xValue?: xValueType;
   startDate?: Date;
-  customMonthDate?: string;
+
+  repeatFrequency?: repeatFrequencyType;
+  repeatDays?: weekDaysType[] | monthDaysType[];
 };

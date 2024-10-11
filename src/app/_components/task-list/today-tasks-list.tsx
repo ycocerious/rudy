@@ -66,7 +66,7 @@ export const TodayTasksList: React.FC = () => {
       >
         <AlertDialogContent className="max-w-[calc(100%-3rem)] rounded-xl border-none bg-white sm:max-w-[24rem]">
           <AlertDialogHeader>
-            <AlertDialogTitle>{`Finished ${taskToComplete?.text}?`}</AlertDialogTitle>
+            <AlertDialogTitle>{`Finished ${taskToComplete?.name}?`}</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setTaskToComplete(null)}>

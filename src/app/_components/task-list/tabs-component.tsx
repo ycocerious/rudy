@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TodayTasksList } from "./today-tasks-list";
 import { AllTasksList } from "./all-tasks-list";
+import { TodayTasksList } from "./today-tasks-list";
 
 export function TabsComponent() {
   return (

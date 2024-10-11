@@ -1,27 +1,26 @@
 import { type Task } from "@/types/task";
 
 export const exampleTasks: Task[] = [
-  { id: "7", text: "Playe", category: "daily" },
-  {
-    id: "1",
-    text: "Repeat",
-    category: "monthly",
-    repeatValue: "custom",
-    customMonthDate: "21st",
-  },
-  { id: "9", text: "Playl", category: "daily" },
+  { id: "1", name: "Eat", category: "daily" },
   {
     id: "2",
-    text: "Repeatt",
-    category: "monthly",
-    repeatValue: "last weekend",
+    name: "Sleep",
+    category: "xdays",
+    xValue: 3,
+    startDate: new Date(),
   },
-  { id: "10", text: "Playg", category: "daily" },
-  { id: "3", text: "Code", category: "weekly", repeatValue: "Monday" },
-
-  { id: "5", text: "Eat", category: "xdays", repeatValue: "3" },
-  { id: "6", text: "Play", category: "daily" },
-  { id: "8", text: "Playq", category: "daily" },
-  { id: "4", text: "Codee", category: "weekly", repeatValue: "Sunday" },
-  { id: "11", text: "Playf", category: "daily" },
+  {
+    id: "3",
+    name: "Play",
+    category: "weekly",
+    repeatFrequency: 3,
+    repeatDays: ["Monday", "Thursday", "Wednesday"],
+  },
+  {
+    id: "4",
+    name: "Repeat",
+    category: "monthly",
+    repeatFrequency: 2,
+    repeatDays: ["1st", "last-date"],
+  },
 ];

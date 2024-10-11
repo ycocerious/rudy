@@ -75,7 +75,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         className="flex h-full w-full cursor-grab items-center justify-between p-4"
       >
         <span className="text-md z-10 max-w-[60%] break-words text-white">
-          {task.text}
+          {task.name}
         </span>
         <div className="z-10 flex items-center space-x-2">
           <span

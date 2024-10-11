@@ -1,7 +1,7 @@
 import { type Task } from "@/types/task";
-import { type taskCateogry } from "@/types/task-category";
+import { type taskCategoryType } from "@/types/form-types";
 
-export const categoryOrder: Record<taskCateogry, number> = {
+export const categoryOrder: Record<taskCategoryType, number> = {
   monthly: 0,
   weekly: 1,
   xdays: 2,
