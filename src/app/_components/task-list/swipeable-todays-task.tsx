@@ -1,46 +1,63 @@
-import { categoryColors } from "@/constants/uiConstants";
-import { type Task } from "@/types/task";
+import React, { useState, useEffect, useRef } from "react";
 import {
   motion,
+  PanInfo,
   useAnimation,
   useMotionValue,
   useTransform,
 } from "framer-motion";
 import { Check } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { categoryColors } from "@/constants/uiConstants";
+import { type Task } from "@/types/task";
 
 interface SwipeableTaskProps {
   task: Task;
-  onComplete: () => void;
-  completeTask: boolean;
+  isCancelled: boolean;
+  onSwipe: () => void;
+  onCancelSwipe: () => void;
 }
 
 export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   task,
-  onComplete,
-  completeTask,
+  isCancelled,
+  onSwipe,
+  onCancelSwipe,
 }) => {
   const constraintsRef = useRef(null);
   const x = useMotionValue(0);
   const controls = useAnimation();
+  const [isSwiped, setIsSwiped] = useState(false);
+
+  const threshold = 200; // Full swipe threshold
 
   useEffect(() => {
-    if (completeTask) {
+    if (isCancelled) {
+      setIsSwiped(false);
       void controls.start({ x: 0 });
+      onCancelSwipe();
     }
-  }, [completeTask, controls]);
+  }, [isCancelled, controls]);
 
   const borderColor = useTransform(
     x,
     [0, 50, 250],
-    [
-      categoryColors[task.category],
-      "rgba(74, 222, 128, 1)",
-      "rgba(74, 222, 128, 1)",
-    ],
+    [categoryColors[task.category], "#00A3A3", "#00A3A3"],
   );
 
   const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
+
+  const handleDragEnd = (
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo,
+  ) => {
+    if (info.offset.x >= threshold) {
+      setIsSwiped(true);
+      void controls.start({ x: threshold });
+      onSwipe(); // Trigger the swipe action
+    } else {
+      void controls.start({ x: 0 });
+    }
+  };
 
   return (
     <motion.div
@@ -54,7 +71,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
     >
       <motion.div
         style={{ x }}
-        drag="x"
+        drag={!isSwiped ? "x" : false}
         dragConstraints={{ left: 0, right: 250 }}
         dragElastic={0}
         onDrag={(_, info) => {
@@ -62,15 +79,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
             void controls.start({ x: 0 });
           }
         }}
-        onDragEnd={(_, info) => {
-          const threshold = 200; // Full swipe threshold
-          if (info.offset.x >= threshold) {
-            void controls.start({ x: threshold });
-            onComplete();
-          } else {
-            void controls.start({ x: 0 });
-          }
-        }}
+        onDragEnd={handleDragEnd}
         animate={controls}
         className="flex h-full w-full cursor-grab items-center justify-between p-4"
       >
@@ -94,7 +103,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         className="absolute right-4 z-20 ml-2"
         style={{ opacity: iconOpacity }}
       >
-        <Check className="text-green-400" size={24} />
+        <Check className="text-[#00A3A3]" size={24} />
       </motion.div>
     </motion.div>
   );

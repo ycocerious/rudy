@@ -21,21 +21,32 @@ import { SwipeableTodaysTask } from "./swipeable-todays-task";
 export const TodayTasksList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
   const [taskToComplete, setTaskToComplete] = useState<Task | null>(null);
+  const [isCancelled, setIsCancelled] = useState<boolean>(false);
 
-  const initiateCompleteTask = (id: string) => {
+  const handleSwipe = (id: string) => {
     const taskToComplete = tasks.find((task) => task.id === id);
     if (taskToComplete) setTaskToComplete(taskToComplete);
+  };
+
+  const handleCancelSwipe = () => {
+    setIsCancelled(false);
   };
 
   const confirmCompleteTask = () => {
     if (taskToComplete) {
       setTasks(tasks.filter((task) => task.id !== taskToComplete.id));
       setTaskToComplete(null);
+      setIsCancelled(false);
       toast("Hooray! Well done!", {
         id: theOnlyToastId,
         icon: "🎉👏",
       });
     }
+  };
+
+  const cancelCompleteTask = () => {
+    setTaskToComplete(null);
+    setIsCancelled(true);
   };
 
   if (tasks.length === 0) {
@@ -44,22 +55,26 @@ export const TodayTasksList: React.FC = () => {
 
   return (
     <>
-      <p className="mb-1 px-2 text-center text-xs text-[#A1A1AA]">
-        Swipe to complete a task
+      <p className="mb-1 px-2 text-center text-xs">
+        <span className="text-[#A1A1AA]">Swipe to complete a task, </span>
+        <span className="text-[#00a3a3]">
+          {`Only ${tasks.length} tasks left!`}
+        </span>
       </p>
+
       <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
         <CardContent className="p-2 pb-[1px]">
           {tasks.map((task) => (
             <SwipeableTodaysTask
               key={task.id}
               task={task}
-              onComplete={() => initiateCompleteTask(task.id)}
-              completeTask={!!taskToComplete}
+              isCancelled={isCancelled}
+              onSwipe={() => handleSwipe(task.id)}
+              onCancelSwipe={handleCancelSwipe}
             />
           ))}
         </CardContent>
       </Card>
-
       <AlertDialog
         open={taskToComplete !== null}
         onOpenChange={() => setTaskToComplete(null)}
@@ -69,7 +84,7 @@ export const TodayTasksList: React.FC = () => {
             <AlertDialogTitle>{`Finished ${taskToComplete?.name}?`}</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setTaskToComplete(null)}>
+            <AlertDialogCancel onClick={cancelCompleteTask}>
               No I swiped by mistake
             </AlertDialogCancel>
             <AlertDialogAction

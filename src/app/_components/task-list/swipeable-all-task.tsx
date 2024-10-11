@@ -4,6 +4,7 @@ import { categoryColors } from "@/constants/uiConstants";
 import { type Task } from "@/types/task";
 import {
   motion,
+  PanInfo,
   useAnimation,
   useMotionValue,
   useTransform,
@@ -15,27 +16,34 @@ import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 interface SwipeableTaskProps {
   task: Task;
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
-  onComplete: () => void;
-  deleteTask: boolean;
+  isCancelled: boolean;
+  onSwipe: () => void;
+  onCancelSwipe: () => void;
 }
 
 export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   task,
   setTasks,
-  onComplete,
-  deleteTask,
+  isCancelled,
+  onSwipe,
+  onCancelSwipe,
 }) => {
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+  const [isSwiped, setIsSwiped] = useState(false);
 
   const constraintsRef = useRef(null);
   const x = useMotionValue(0);
   const controls = useAnimation();
 
+  const threshold = 200;
+
   useEffect(() => {
-    if (deleteTask) {
+    if (isCancelled) {
+      setIsSwiped(false);
       void controls.start({ x: 0 });
+      onCancelSwipe();
     }
-  }, [deleteTask, controls]);
+  }, [isCancelled, controls]);
 
   const borderColor = useTransform(
     x,
@@ -48,6 +56,19 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   );
 
   const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
+
+  const handleDragEnd = (
+    _: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo,
+  ) => {
+    if (info.offset.x >= threshold) {
+      setIsSwiped(true);
+      void controls.start({ x: threshold });
+      onSwipe(); // Trigger the swipe action
+    } else {
+      void controls.start({ x: 0 });
+    }
+  };
 
   return (
     <>
@@ -63,7 +84,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
       >
         <motion.div
           style={{ x }}
-          drag="x"
+          drag={!isSwiped ? "x" : false}
           dragConstraints={{ left: 0, right: 250 }}
           dragElastic={0}
           onDrag={(_, info) => {
@@ -71,15 +92,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
               void controls.start({ x: 0 });
             }
           }}
-          onDragEnd={(_, info) => {
-            const threshold = 200; // Full swipe threshold
-            if (info.offset.x >= threshold) {
-              void controls.start({ x: threshold });
-              onComplete();
-            } else {
-              void controls.start({ x: 0 });
-            }
-          }}
+          onDragEnd={handleDragEnd}
           animate={controls}
           className="flex h-full w-full items-center justify-between py-2 pl-4 pr-1"
         >

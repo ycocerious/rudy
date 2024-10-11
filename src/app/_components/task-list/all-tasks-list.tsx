@@ -26,9 +26,15 @@ export const AllTasksList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [isCancelled, setIsCancelled] = useState<boolean>(false);
 
-  const initiateDeleteTask = (id: string) => {
-    setTaskToDelete(id);
+  const handleSwipe = (id: string) => {
+    const taskToDelete = tasks.find((task) => task.id === id);
+    if (taskToDelete) setTaskToDelete(taskToDelete.id);
+  };
+
+  const handleCancelSwipe = () => {
+    setIsCancelled(false);
   };
 
   const confirmDeleteTask = () => {
@@ -36,8 +42,14 @@ export const AllTasksList: React.FC = () => {
       const updatedTasks = tasks.filter((task) => task.id !== taskToDelete);
       setTasks(updatedTasks);
       setTaskToDelete(null);
+      setIsCancelled(false);
       toast.success("Task deleted successfully!", { id: theOnlyToastId });
     }
+  };
+
+  const cancelDeleteTask = () => {
+    setTaskToDelete(null);
+    setIsCancelled(true);
   };
 
   return (
@@ -54,8 +66,9 @@ export const AllTasksList: React.FC = () => {
                   key={task.id}
                   setTasks={setTasks}
                   task={task}
-                  onComplete={() => initiateDeleteTask(task.id)}
-                  deleteTask={!!taskToDelete}
+                  isCancelled={isCancelled}
+                  onSwipe={() => handleSwipe(task.id)}
+                  onCancelSwipe={handleCancelSwipe}
                 />
               ))}
             </CardContent>
@@ -93,7 +106,7 @@ export const AllTasksList: React.FC = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setTaskToDelete(null)}>
+            <AlertDialogCancel onClick={cancelDeleteTask}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
