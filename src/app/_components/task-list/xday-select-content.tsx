@@ -11,24 +11,24 @@ import { addDays, format, startOfDay } from "date-fns";
 import React, { useMemo, type Dispatch, type SetStateAction } from "react";
 
 type XdaySelectContentProps = {
-  newTaskXValue: xValueType | null;
-  setNewTaskXValue: Dispatch<SetStateAction<xValueType | null>>;
-  newTaskStartDate: Date | null;
-  setNewTaskStartDate: Dispatch<SetStateAction<Date | null>>;
+  newXValue: xValueType | null;
+  setNewXValue: Dispatch<SetStateAction<xValueType | null>>;
+  newStartDate: Date | null;
+  setNewStartDate: Dispatch<SetStateAction<Date | null>>;
 };
 
 export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
-  newTaskXValue,
-  setNewTaskXValue,
-  newTaskStartDate,
-  setNewTaskStartDate,
+  newXValue,
+  setNewXValue,
+  newStartDate,
+  setNewStartDate,
 }) => {
   const today = useMemo(() => startOfDay(new Date()), []);
   const oneWeekFromToday = useMemo(() => addDays(today, 6), [today]);
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
-      setNewTaskStartDate(date);
+      setNewStartDate(date);
     }
   };
 
@@ -40,10 +40,10 @@ export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
     <div className="space-y-4">
       <Select
         onValueChange={(value) => {
-          setNewTaskXValue(Number(value) as xValueType);
-          // setNewTaskStartDate(null); // Reset start date when x-value changes
+          setNewXValue(Number(value) as xValueType);
+          // setNewStartDate(null); // Reset start date when x-value changes
         }}
-        value={newTaskXValue?.toString() ?? undefined}
+        value={newXValue?.toString() ?? undefined}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select value of x" />
@@ -57,12 +57,12 @@ export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
         </SelectContent>
       </Select>
 
-      {newTaskXValue !== null && (
+      {newXValue !== null && (
         <div>
           <p className="ml-1 text-sm">Select start date:</p>
           <Calendar
             mode="single"
-            selected={newTaskStartDate ?? undefined}
+            selected={newStartDate ?? undefined}
             onSelect={handleDateSelect}
             disabled={isDateDisabled}
             initialFocus
@@ -71,10 +71,10 @@ export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
         </div>
       )}
 
-      {newTaskXValue && newTaskStartDate && today <= newTaskStartDate && (
+      {newXValue && newStartDate && today <= newStartDate && (
         <p className="ml-1 text-sm">
-          Task will repeat every {newTaskXValue} days, starting from{" "}
-          {format(newTaskStartDate, "MMMM d, yyyy")}
+          Task will repeat every {newXValue} days, starting from{" "}
+          {format(newStartDate, "MMMM d, yyyy")}
         </p>
       )}
     </div>

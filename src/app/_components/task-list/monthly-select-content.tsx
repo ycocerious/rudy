@@ -19,19 +19,17 @@ import React, {
 } from "react";
 
 type MonthlySelectContentProps = {
-  newTaskRepeatFrequency: repeatFrequencyType | null;
-  newTaskRepeatDays: monthDaysType[] | null;
-  setNewTaskRepeatFrequency: Dispatch<
-    SetStateAction<repeatFrequencyType | null>
-  >;
-  setNewTaskRepeatDays: Dispatch<SetStateAction<monthDaysType[] | null>>;
+  newRepeatFrequency: repeatFrequencyType | null;
+  newRepeatDays: monthDaysType[] | null;
+  setNewRepeatFrequency: Dispatch<SetStateAction<repeatFrequencyType | null>>;
+  setNewRepeatDays: Dispatch<SetStateAction<monthDaysType[] | null>>;
 };
 
 export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
-  newTaskRepeatFrequency,
-  newTaskRepeatDays,
-  setNewTaskRepeatFrequency,
-  setNewTaskRepeatDays,
+  newRepeatFrequency,
+  newRepeatDays,
+  setNewRepeatFrequency,
+  setNewRepeatDays,
 }) => {
   const [showCustom, setShowCustom] = useState(false);
 
@@ -44,19 +42,19 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
   ];
 
   useEffect(() => {
-    if (newTaskRepeatFrequency === null) {
-      setNewTaskRepeatDays(null);
+    if (newRepeatFrequency === null) {
+      setNewRepeatDays(null);
       setShowCustom(false);
     }
-  }, [newTaskRepeatFrequency, setNewTaskRepeatDays]);
+  }, [newRepeatFrequency, setNewRepeatDays]);
 
   const handleDaySelection = (day: monthDaysType) => {
-    if (newTaskRepeatFrequency === null) return;
+    if (newRepeatFrequency === null) return;
 
-    setNewTaskRepeatDays((prev) => {
+    setNewRepeatDays((prev) => {
       if (prev === null) return [day];
       if (prev.includes(day)) return prev.filter((d) => d !== day);
-      if (prev.length < newTaskRepeatFrequency) return [...prev, day];
+      if (prev.length < newRepeatFrequency) return [...prev, day];
       return prev;
     });
   };
@@ -64,8 +62,8 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
   return (
     <>
       <Select
-        onValueChange={(value) => setNewTaskRepeatFrequency(Number(value))}
-        value={newTaskRepeatFrequency?.toString() ?? undefined}
+        onValueChange={(value) => setNewRepeatFrequency(Number(value))}
+        value={newRepeatFrequency?.toString() ?? undefined}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select repetition frequency" />
@@ -79,18 +77,18 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
         </SelectContent>
       </Select>
 
-      {newTaskRepeatFrequency !== null && (
+      {newRepeatFrequency !== null && (
         <div className="mt-4">
           <p className="ml-1">
-            Select {newTaskRepeatFrequency} option
-            {newTaskRepeatFrequency > 1 ? "s" : ""}:
+            Select {newRepeatFrequency} option
+            {newRepeatFrequency > 1 ? "s" : ""}:
           </p>
           {initialOptions.map(([value, label]) => (
             <button
               key={value}
               onClick={() => handleDaySelection(value)}
               className={`m-1 rounded-lg border p-2 text-sm ${
-                newTaskRepeatDays?.includes(value)
+                newRepeatDays?.includes(value)
                   ? "bg-[#00a3a3] text-white"
                   : "bg-white"
               }`}
@@ -115,7 +113,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
                     key={day}
                     onClick={() => handleDaySelection(day as monthDaysType)}
                     className={`m-1 h-9 w-9 rounded-lg border ${
-                      newTaskRepeatDays?.includes(day as monthDaysType)
+                      newRepeatDays?.includes(day as monthDaysType)
                         ? "bg-[#00a3a3] text-white"
                         : "bg-white"
                     }`}

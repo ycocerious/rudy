@@ -14,33 +14,31 @@ import {
 import React, { type Dispatch, type SetStateAction, useEffect } from "react";
 
 type WeeklySelectContentProps = {
-  newTaskRepeatFrequency: repeatFrequencyType | null;
-  newTaskRepeatDays: weekDaysType[] | null;
-  setNewTaskRepeatFrequency: Dispatch<
-    SetStateAction<repeatFrequencyType | null>
-  >;
-  setNewTaskRepeatDays: Dispatch<SetStateAction<weekDaysType[] | null>>;
+  newRepeatFrequency: repeatFrequencyType | null;
+  newRepeatDays: weekDaysType[] | null;
+  setNewRepeatFrequency: Dispatch<SetStateAction<repeatFrequencyType | null>>;
+  setNewRepeatDays: Dispatch<SetStateAction<weekDaysType[] | null>>;
 };
 
 export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
-  newTaskRepeatFrequency,
-  newTaskRepeatDays,
-  setNewTaskRepeatFrequency,
-  setNewTaskRepeatDays,
+  newRepeatFrequency,
+  newRepeatDays,
+  setNewRepeatFrequency,
+  setNewRepeatDays,
 }) => {
   useEffect(() => {
-    if (newTaskRepeatFrequency === null) {
-      setNewTaskRepeatDays(null);
+    if (newRepeatFrequency === null) {
+      setNewRepeatDays(null);
     }
-  }, [newTaskRepeatFrequency, setNewTaskRepeatDays]);
+  }, [newRepeatFrequency, setNewRepeatDays]);
 
   const handleDaySelection = (day: weekDaysType) => {
-    if (newTaskRepeatFrequency === null) return;
+    if (newRepeatFrequency === null) return;
 
-    setNewTaskRepeatDays((prev) => {
+    setNewRepeatDays((prev) => {
       if (prev === null) return [day];
       if (prev.includes(day)) return prev.filter((d) => d !== day);
-      if (prev.length < newTaskRepeatFrequency) return [...prev, day];
+      if (prev.length < newRepeatFrequency) return [...prev, day];
       return prev;
     });
   };
@@ -48,8 +46,8 @@ export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
   return (
     <>
       <Select
-        onValueChange={(value) => setNewTaskRepeatFrequency(Number(value))}
-        value={newTaskRepeatFrequency?.toString() ?? undefined}
+        onValueChange={(value) => setNewRepeatFrequency(Number(value))}
+        value={newRepeatFrequency?.toString() ?? undefined}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select repetition frequency" />
@@ -63,11 +61,11 @@ export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
         </SelectContent>
       </Select>
 
-      {newTaskRepeatFrequency !== null && (
+      {newRepeatFrequency !== null && (
         <div className="mt-4">
           <p className="ml-1">
-            Select {newTaskRepeatFrequency} day
-            {newTaskRepeatFrequency > 1 ? "s" : ""}:
+            Select {newRepeatFrequency} day
+            {newRepeatFrequency > 1 ? "s" : ""}:
           </p>
           <div className="flex flex-wrap">
             {weekDaysEnum.map((day) => (
@@ -75,7 +73,7 @@ export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
                 key={day}
                 onClick={() => handleDaySelection(day)}
                 className={`m-1 h-10 w-24 rounded-lg border text-sm ${
-                  newTaskRepeatDays?.includes(day)
+                  newRepeatDays?.includes(day)
                     ? "bg-[#00a3a3] text-white"
                     : "bg-white"
                 }`}

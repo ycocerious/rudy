@@ -52,31 +52,42 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const { isSheetOpen, setIsSheetOpen, setTasks, taskType } = props;
 
   const originalTask = taskType === "edit" ? props.task : null;
-  const [newTaskName, setNewTaskName] = useState(originalTask?.name ?? "");
-  const [newTaskCategory, setNewTaskCategory] =
-    useState<taskCategoryType | null>(originalTask?.category ?? null);
+  const [newName, setNewName] = useState(originalTask?.name ?? "");
+  const [newCategory, setNewCategory] = useState<taskCategoryType | null>(
+    originalTask?.category ?? null,
+  );
 
-  const [newTaskXValue, setNewTaskXValue] = useState<xValueType | null>(
+  const [newXValue, setNewXValue] = useState<xValueType | null>(
     originalTask?.xValue ?? null,
   );
-  const [newTaskStartDate, setNewTaskStartDate] = useState<Date | null>(
+  const [newStartDate, setNewStartDate] = useState<Date | null>(
     originalTask?.startDate ?? null,
   );
 
-  const [newTaskRepeatFrequency, setNewTaskRepeatFrequency] =
+  const [newRepeatFrequency, setNewRepeatFrequency] =
     useState<repeatFrequencyType | null>(originalTask?.repeatFrequency ?? null);
-  const [newTaskRepeatDays, setNewTaskRepeatDays] = useState<
+  const [newRepeatDays, setNewRepeatDays] = useState<
     weekDaysType[] | monthDaysType[] | null
   >(originalTask?.repeatDays ?? null);
 
-  const handleSheetClose = () => {
+  const handleAddSheetClose = () => {
     setIsSheetOpen(false);
-    setNewTaskName("");
-    setNewTaskCategory(null);
-    setNewTaskXValue(null);
-    setNewTaskStartDate(null);
-    setNewTaskRepeatFrequency(null);
-    setNewTaskRepeatDays(null);
+    setNewName("");
+    setNewCategory(null);
+    setNewXValue(null);
+    setNewStartDate(null);
+    setNewRepeatFrequency(null);
+    setNewRepeatDays(null);
+  };
+
+  const handleEditSheetClose = () => {
+    setIsSheetOpen(false);
+    setNewName(originalTask?.name ?? "");
+    setNewCategory(originalTask?.category ?? null);
+    setNewXValue(originalTask?.xValue ?? null);
+    setNewStartDate(originalTask?.startDate ?? null);
+    setNewRepeatFrequency(originalTask?.repeatFrequency ?? null);
+    setNewRepeatDays(originalTask?.repeatDays ?? null);
   };
 
   const hasChanges = useMemo(() => {
@@ -84,55 +95,54 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     if (!originalTask) return false;
 
     return (
-      newTaskName !== originalTask.name ||
-      newTaskCategory !== originalTask.category ||
-      newTaskXValue !== originalTask.xValue ||
-      newTaskStartDate !== originalTask.startDate ||
-      newTaskRepeatFrequency !== originalTask.repeatFrequency ||
-      newTaskRepeatDays !== originalTask.repeatDays
+      newName !== originalTask.name ||
+      newCategory !== originalTask.category ||
+      newXValue !== originalTask.xValue ||
+      newStartDate !== originalTask.startDate ||
+      newRepeatFrequency !== originalTask.repeatFrequency ||
+      newRepeatDays !== originalTask.repeatDays
     );
   }, [
     taskType,
     originalTask,
-    newTaskName,
-    newTaskCategory,
-    newTaskXValue,
-    newTaskStartDate,
-    newTaskRepeatFrequency,
-    newTaskRepeatDays,
+    newName,
+    newCategory,
+    newXValue,
+    newStartDate,
+    newRepeatFrequency,
+    newRepeatDays,
   ]);
 
   const isTaskValid: boolean = useMemo<boolean>(() => {
-    const isValidBasicTask = newTaskName.trim() && newTaskCategory;
+    const isValidBasicTask = newName.trim() && newCategory;
     if (!isValidBasicTask) return false;
     if (taskType === "edit" && !hasChanges) return false;
 
-    if (newTaskCategory === "daily") {
+    if (newCategory === "daily") {
       return true;
     }
 
-    if (newTaskCategory === "xdays" && (!newTaskXValue || !newTaskStartDate)) {
+    if (newCategory === "xdays" && (!newXValue || !newStartDate)) {
       return false;
     }
 
     if (
-      (newTaskCategory === "weekly" || newTaskCategory === "monthly") &&
-      (!newTaskRepeatFrequency ||
-        newTaskRepeatDays?.length !== newTaskRepeatFrequency)
+      (newCategory === "weekly" || newCategory === "monthly") &&
+      (!newRepeatFrequency || newRepeatDays?.length !== newRepeatFrequency)
     ) {
       return false;
     }
 
     return true;
   }, [
-    newTaskName,
-    newTaskCategory,
+    newName,
+    newCategory,
     taskType,
     hasChanges,
-    newTaskXValue,
-    newTaskStartDate,
-    newTaskRepeatFrequency,
-    newTaskRepeatDays,
+    newXValue,
+    newStartDate,
+    newRepeatFrequency,
+    newRepeatDays,
   ]);
 
   const addTask = () => {
@@ -140,16 +150,16 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
     const newTask: Task = {
       id: nanoid(),
-      name: newTaskName.trim(),
-      category: newTaskCategory!,
-      xValue: newTaskXValue ?? undefined,
-      startDate: newTaskStartDate ?? undefined,
-      repeatFrequency: newTaskRepeatFrequency ?? undefined,
-      repeatDays: newTaskRepeatDays ?? undefined,
+      name: newName.trim(),
+      category: newCategory!,
+      xValue: newXValue ?? undefined,
+      startDate: newStartDate ?? undefined,
+      repeatFrequency: newRepeatFrequency ?? undefined,
+      repeatDays: newRepeatDays ?? undefined,
     };
 
     setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
-    handleSheetClose();
+    handleAddSheetClose();
     toast.success("Added Task Successfully", { id: theOnlyToastId });
   };
 
@@ -161,19 +171,19 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         individualTask.id === originalTask?.id
           ? {
               ...individualTask,
-              name: newTaskName,
-              category: newTaskCategory!,
-              xValue: newTaskXValue ?? undefined,
-              startDate: newTaskStartDate ?? undefined,
-              repeatFrequency: newTaskRepeatFrequency ?? undefined,
-              repeatDays: newTaskRepeatDays ?? undefined,
+              name: newName,
+              category: newCategory!,
+              xValue: newXValue ?? undefined,
+              startDate: newStartDate ?? undefined,
+              repeatFrequency: newRepeatFrequency ?? undefined,
+              repeatDays: newRepeatDays ?? undefined,
             }
           : individualTask,
       );
       return sortTasks(newTasks);
     });
 
-    setIsSheetOpen(false);
+    handleEditSheetClose();
     toast.success("Edited Task Successfully", { id: theOnlyToastId });
   };
 
@@ -183,15 +193,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       onOpenChange={(open) => {
         if (!open) {
           if (taskType === "add") {
-            handleSheetClose();
+            handleAddSheetClose();
           } else {
-            setIsSheetOpen(false);
-            setNewTaskName(originalTask?.name ?? "");
-            setNewTaskCategory(originalTask?.category ?? null);
-            setNewTaskXValue(originalTask?.xValue ?? null);
-            setNewTaskStartDate(originalTask?.startDate ?? null);
-            setNewTaskRepeatFrequency(originalTask?.repeatFrequency ?? null);
-            setNewTaskRepeatDays(originalTask?.repeatDays ?? null);
+            handleEditSheetClose();
           }
         }
       }}
@@ -210,11 +214,11 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
         <div>
           <Input
-            value={newTaskName}
+            value={newName}
             onChange={(e) => {
               const input = e.target.value;
               if (input.length <= 15) {
-                setNewTaskName(input);
+                setNewName(input);
               }
             }}
             placeholder="Enter task name (max 15 chars)"
@@ -232,13 +236,13 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         </div>
 
         <Select
-          value={newTaskCategory ?? undefined}
+          value={newCategory ?? undefined}
           onValueChange={(value: taskCategoryType) => {
-            setNewTaskCategory(value);
-            setNewTaskXValue(null);
-            setNewTaskStartDate(null);
-            setNewTaskRepeatFrequency(null);
-            setNewTaskRepeatDays(null);
+            setNewCategory(value);
+            setNewXValue(null);
+            setNewStartDate(null);
+            setNewRepeatFrequency(null);
+            setNewRepeatDays(null);
           }}
         >
           <SelectTrigger className="w-full">
@@ -252,47 +256,36 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           </SelectContent>
         </Select>
 
-        {newTaskCategory && newTaskCategory === "monthly" ? (
+        {newCategory && newCategory === "monthly" ? (
           <MonthlySelectContent
-            newTaskRepeatFrequency={newTaskRepeatFrequency}
-            newTaskRepeatDays={newTaskRepeatDays as monthDaysType[]}
-            setNewTaskRepeatFrequency={setNewTaskRepeatFrequency}
-            setNewTaskRepeatDays={
-              setNewTaskRepeatDays as Dispatch<
+            newRepeatFrequency={newRepeatFrequency}
+            newRepeatDays={newRepeatDays as monthDaysType[]}
+            setNewRepeatFrequency={setNewRepeatFrequency}
+            setNewRepeatDays={
+              setNewRepeatDays as Dispatch<
                 SetStateAction<monthDaysType[] | null>
               >
             }
           />
-        ) : newTaskCategory === "weekly" ? (
+        ) : newCategory === "weekly" ? (
           <WeeklySelectContent
-            newTaskRepeatFrequency={newTaskRepeatFrequency}
-            newTaskRepeatDays={newTaskRepeatDays as weekDaysType[]}
-            setNewTaskRepeatFrequency={setNewTaskRepeatFrequency}
-            setNewTaskRepeatDays={
-              setNewTaskRepeatDays as Dispatch<
+            newRepeatFrequency={newRepeatFrequency}
+            newRepeatDays={newRepeatDays as weekDaysType[]}
+            setNewRepeatFrequency={setNewRepeatFrequency}
+            setNewRepeatDays={
+              setNewRepeatDays as Dispatch<
                 SetStateAction<weekDaysType[] | null>
               >
             }
           />
-        ) : newTaskCategory === "xdays" ? (
+        ) : newCategory === "xdays" ? (
           <XdaySelectContent
-            newTaskXValue={newTaskXValue}
-            newTaskStartDate={newTaskStartDate}
-            setNewTaskXValue={setNewTaskXValue}
-            setNewTaskStartDate={setNewTaskStartDate}
+            newXValue={newXValue}
+            newStartDate={newStartDate}
+            setNewXValue={setNewXValue}
+            setNewStartDate={setNewStartDate}
           />
         ) : null}
-        {/* // ) : newTaskCategory === "weekly" ? (
-        //   <WeeklySelectContent
-        //     newRepeatValue={newTaskRepeatValue}
-        //     setNewRepeatValue={setNewTaskRepeatValue}
-        //   />
-        // ) : newTaskCategory === "xdays" ? (
-        //   <XdaySelectContent
-        //     newRepeatValue={newTaskRepeatValue}
-        //     setNewRepeatValue={setNewTaskRepeatValue}
-        //   />
-        // ) : null} */}
 
         <SheetFooter>
           <Button
