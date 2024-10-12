@@ -14,19 +14,17 @@ export const TrackerCard = () => {
 
   return (
     <Card className="mb-4 flex w-full min-w-[240px] flex-col border-gray-700 bg-gray-800 md:max-w-[1106px]">
-      <CardHeader
-        className="flex cursor-pointer flex-row items-center justify-center p-4"
-        onClick={toggleExpand}
-      >
+      <CardHeader className="relative flex cursor-pointer flex-row items-center justify-center p-4">
         <CardTitle
           className={`mr-2 text-center text-lg ${isExpanded ? "text-gray-100" : "text-[#5ce1e6]"} sm:text-xl md:text-2xl`}
+          onClick={toggleExpand}
         >
           Tracker Card
         </CardTitle>
         {isExpanded ? (
-          <ChevronUp className="text-gray-400" />
+          <ChevronUp className="text-gray-400" onClick={toggleExpand} />
         ) : (
-          <ChevronDown className="text-[#5ce1e6]" />
+          <ChevronDown className="text-[#5ce1e6]" onClick={toggleExpand} />
         )}
       </CardHeader>
       <AnimatePresence>
