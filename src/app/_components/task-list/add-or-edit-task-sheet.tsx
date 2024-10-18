@@ -16,13 +16,12 @@ import {
 } from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { areArraysEqual } from "@/lib/utils/are-arrays-equal";
-import { sortTasks } from "@/lib/utils/sort-tasks";
 import {
-  type repeatFrequencyType,
-  type xValueType,
   type monthDaysType,
+  type repeatFrequencyType,
   type taskCategoryType,
   type weekDaysType,
+  type xValueType,
 } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { nanoid } from "nanoid";
@@ -165,7 +164,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       repeatDays: newRepeatDays ?? undefined,
     };
 
-    setTasks((prevTasks) => sortTasks([...prevTasks, newTask]));
+    setTasks((prevTasks) => [...prevTasks, newTask]);
     handleAddSheetClose();
     toast.success("Added Task Successfully", { id: theOnlyToastId });
   };
@@ -174,7 +173,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     if (!isTaskValid || taskType !== "edit") return;
 
     setTasks((prevTasks) => {
-      const newTasks = prevTasks.map((individualTask) =>
+      return prevTasks.map((individualTask) =>
         individualTask.id === originalTask?.id
           ? {
               ...individualTask,
@@ -187,7 +186,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             }
           : individualTask,
       );
-      return sortTasks(newTasks);
     });
 
     handleEditSheetClose();

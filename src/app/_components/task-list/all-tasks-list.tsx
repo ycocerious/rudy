@@ -14,22 +14,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { sortTasks } from "@/lib/utils/sort-tasks";
 import { type Task } from "@/types/task";
 import { Plus } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { SwipeableAllTask } from "./swipeable-all-task";
+import { useSortedTasks } from "@/hooks/useSortedTasks";
 
-export const AllTasksList: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
+export const AllTasksList = () => {
+  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
+  const sortedTasks = useSortedTasks(tasks);
+
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   const [isCancelled, setIsCancelled] = useState<boolean>(false);
 
   const handleSwipe = (id: string) => {
-    const taskToDelete = tasks.find((task) => task.id === id);
+    const taskToDelete = sortedTasks.find((task) => task.id === id);
     if (taskToDelete) setTaskToDelete(taskToDelete.id);
   };
 
@@ -39,7 +41,9 @@ export const AllTasksList: React.FC = () => {
 
   const confirmDeleteTask = () => {
     if (taskToDelete) {
-      const updatedTasks = tasks.filter((task) => task.id !== taskToDelete);
+      const updatedTasks = sortedTasks.filter(
+        (task) => task.id !== taskToDelete,
+      );
       setTasks(updatedTasks);
       setTaskToDelete(null);
       setIsCancelled(false);
@@ -54,14 +58,14 @@ export const AllTasksList: React.FC = () => {
 
   return (
     <>
-      {tasks.length !== 0 ? (
+      {sortedTasks.length !== 0 ? (
         <>
           <p className="mb-1 px-2 text-center text-xs text-[#A1A1AA]">
             Tap to edit a task, Swipe to delete
           </p>
           <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
             <CardContent className="p-2 pb-[1px]">
-              {tasks.map((task) => (
+              {sortedTasks.map((task) => (
                 <SwipeableAllTask
                   key={task.id}
                   setTasks={setTasks}

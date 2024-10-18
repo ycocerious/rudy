@@ -12,19 +12,21 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { sortTasks } from "@/lib/utils/sort-tasks";
 import { type Task } from "@/types/task";
-import React, { useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
+import { useSortedTasks } from "@/hooks/useSortedTasks";
 
-export const TodayTasksList: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>(sortTasks(exampleTasks));
+export const TodayTasksList = () => {
+  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
+  const sortedTasks = useSortedTasks(tasks);
+
   const [taskToComplete, setTaskToComplete] = useState<Task | null>(null);
   const [isCancelled, setIsCancelled] = useState<boolean>(false);
 
   const handleSwipe = (id: string) => {
-    const taskToComplete = tasks.find((task) => task.id === id);
+    const taskToComplete = sortedTasks.find((task) => task.id === id);
     if (taskToComplete) setTaskToComplete(taskToComplete);
   };
 
@@ -34,7 +36,7 @@ export const TodayTasksList: React.FC = () => {
 
   const confirmCompleteTask = () => {
     if (taskToComplete) {
-      setTasks(tasks.filter((task) => task.id !== taskToComplete.id));
+      setTasks(sortedTasks.filter((task) => task.id !== taskToComplete.id));
       setTaskToComplete(null);
       setIsCancelled(false);
       toast("Hooray! Well done!", {
@@ -49,7 +51,7 @@ export const TodayTasksList: React.FC = () => {
     setIsCancelled(true);
   };
 
-  if (tasks.length === 0) {
+  if (sortedTasks.length === 0) {
     return null;
   }
 
@@ -58,13 +60,13 @@ export const TodayTasksList: React.FC = () => {
       <p className="mb-1 px-2 text-center text-xs">
         <span className="text-[#A1A1AA]">Swipe to complete a task, </span>
         <span className="text-[#5ce1e6]">
-          {`Only ${tasks.length} tasks left!`}
+          {`Only ${sortedTasks.length} tasks left!`}
         </span>
       </p>
 
       <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
         <CardContent className="p-2 pb-[1px]">
-          {tasks.map((task) => (
+          {sortedTasks.map((task) => (
             <SwipeableTodaysTask
               key={task.id}
               task={task}

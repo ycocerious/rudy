@@ -1,4 +1,4 @@
-import { monthDaysType, weekDaysType } from "@/types/form-types";
+import { type monthDaysType, type weekDaysType } from "@/types/form-types";
 
 export const areArraysEqual = (
   arr1: weekDaysType[] | monthDaysType[] | null,

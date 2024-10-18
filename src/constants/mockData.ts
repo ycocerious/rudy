@@ -20,14 +20,14 @@ export const exampleTasks: Task[] = [
     repeatDays: ["Monday", "Thursday", "Wednesday"],
   },
   {
-    id: "6",
+    id: "7",
     name: "Play",
     category: "weekly",
     repeatFrequency: 3,
     repeatDays: ["Monday", "Thursday", "Wednesday"],
   },
   {
-    id: "7",
+    id: "8",
     name: "Repeat",
     category: "monthly",
     repeatFrequency: 2,

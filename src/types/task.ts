@@ -2,8 +2,8 @@ import {
   type monthDaysType,
   type weekDaysType,
   type taskCategoryType,
-  xValueType,
-  repeatFrequencyType,
+  type xValueType,
+  type repeatFrequencyType,
 } from "./form-types";
 
 export type Task = {
