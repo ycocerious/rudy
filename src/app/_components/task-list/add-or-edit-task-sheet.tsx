@@ -17,6 +17,7 @@ import {
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { areArraysEqual } from "@/lib/utils/are-arrays-equal";
 import {
+  type dailyCountTotalType,
   type monthDaysType,
   type repeatFrequencyType,
   type taskCategoryType,
@@ -30,6 +31,7 @@ import toast from "react-hot-toast";
 import { MonthlySelectContent } from "./monthly-select-content";
 import { WeeklySelectContent } from "./weekly-select-content";
 import { XdaySelectContent } from "./xday-select-content";
+import { DailySelectContent } from "./daily-select-content";
 
 type BaseAddOrEditTaskSheetProps = {
   isSheetOpen: boolean;
@@ -57,6 +59,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const [newCategory, setNewCategory] = useState<taskCategoryType | null>(
     originalTask?.category ?? null,
   );
+
+  const [newDailyCountTotal, setNewDailyCountTotal] =
+    useState<dailyCountTotalType | null>(originalTask?.dailyCountTotal ?? null);
 
   const [newXValue, setNewXValue] = useState<xValueType | null>(
     originalTask?.xValue ?? null,
@@ -99,6 +104,10 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       newName !== originalTask.name ||
       newCategory !== originalTask.category ||
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      (originalTask.dailyCountTotal &&
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        newDailyCountTotal !== originalTask.dailyCountTotal) ||
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       (originalTask.startDate && newXValue !== originalTask.xValue) ||
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       (originalTask.startDate && newStartDate !== originalTask.startDate) ||
@@ -113,6 +122,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     originalTask,
     newName,
     newCategory,
+    newDailyCountTotal,
     newXValue,
     newStartDate,
     newRepeatFrequency,
@@ -124,8 +134,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     if (!isValidBasicTask) return false;
     if (taskType === "edit" && !hasChanges) return false;
 
-    if (newCategory === "daily") {
-      return true;
+    if (newCategory === "daily" && !newDailyCountTotal) {
+      return false;
     }
 
     if (newCategory === "xdays" && (!newXValue || !newStartDate)) {
@@ -145,10 +155,11 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     newCategory,
     taskType,
     hasChanges,
+    newDailyCountTotal,
     newXValue,
     newStartDate,
     newRepeatFrequency,
-    newRepeatDays,
+    newRepeatDays?.length,
   ]);
 
   const addTask = () => {
@@ -158,6 +169,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       id: nanoid(),
       name: newName.trim(),
       category: newCategory!,
+      dailyCountTotal: newDailyCountTotal ?? undefined,
       xValue: newXValue ?? undefined,
       startDate: newStartDate ?? undefined,
       repeatFrequency: newRepeatFrequency ?? undefined,
@@ -179,6 +191,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
               ...individualTask,
               name: newName,
               category: newCategory!,
+              dailyCountTotal: newDailyCountTotal ?? undefined,
               xValue: newXValue ?? undefined,
               startDate: newStartDate ?? undefined,
               repeatFrequency: newRepeatFrequency ?? undefined,
@@ -289,6 +302,11 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             newStartDate={newStartDate}
             setNewXValue={setNewXValue}
             setNewStartDate={setNewStartDate}
+          />
+        ) : newCategory === "daily" ? (
+          <DailySelectContent
+            newDailyCountTotal={newDailyCountTotal}
+            setNewDailyCountTotal={setNewDailyCountTotal}
           />
         ) : null}
 

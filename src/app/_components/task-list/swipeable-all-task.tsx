@@ -102,7 +102,11 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
             style={{ color: categoryColors[task.category] }}
           >
             {task.category === "daily" && (
-              <span className="mr-1">Everyday</span>
+              <span className="mr-1">
+                {"Everyday" +
+                  " " +
+                  `${task.dailyCountTotal && task.dailyCountTotal === 1 ? "once" : `${task.dailyCountTotal} times`}`}
+              </span>
             )}
             {task.category === "xdays" && (
               <span className="mr-1">{`Every ${task.xValue} days`}</span>

@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { xValueEnum, xValueType } from "@/types/form-types";
+import { xValueEnum, type xValueType } from "@/types/form-types";
 import { addDays, format, startOfDay } from "date-fns";
 import React, { useMemo, type Dispatch, type SetStateAction } from "react";
 
