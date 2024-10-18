@@ -7,6 +7,14 @@ export const taskCategoryEnum = [
 ] as const;
 export type taskCategoryType = (typeof taskCategoryEnum)[number];
 
+//dailyCountTotal
+export const dailyCountTotalEnum = [1, 2, 3, 4, 5] as const;
+export type dailyCountTotalType = (typeof dailyCountTotalEnum)[number];
+
+//dailyCountFinished
+export const dailyCountFinishedEnum = [0, 1, 2, 3, 4, 5] as const;
+export type dailyCountFinishedType = (typeof dailyCountFinishedEnum)[number];
+
 //xValue
 export const xValueEnum = [2, 3, 4, 5, 6] as const;
 export type xValueType = (typeof xValueEnum)[number];

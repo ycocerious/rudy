@@ -1,8 +1,8 @@
 import { type monthDaysType, type weekDaysType } from "@/types/form-types";
 
 export const areArraysEqual = (
-  arr1: weekDaysType[] | monthDaysType[] | null,
-  arr2: weekDaysType[] | monthDaysType[] | null,
+  arr1: weekDaysType[] | monthDaysType[] | null | undefined,
+  arr2: weekDaysType[] | monthDaysType[] | null | undefined,
 ): boolean => {
   if (arr1 === arr2) return true;
   if (arr1 == null || arr2 == null) return false;

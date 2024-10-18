@@ -93,10 +93,18 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
           >
             {task.category.charAt(0).toUpperCase() + task.category.slice(1)}
           </span>
+          {task.category === "daily" && (
+            <span
+              className="text-xs"
+              style={{ color: categoryColors[task.category] }}
+            >
+              {"(" + task.dailyCountFinished + "/" + task.dailyCountTotal + ")"}
+            </span>
+          )}
           <div
             className="h-2 w-2 rounded-full"
             style={{ backgroundColor: categoryColors[task.category] }}
-          ></div>
+          />
         </div>
       </motion.div>
       <motion.div

@@ -1,6 +1,7 @@
 import { useMemo, useRef } from "react";
 import { type Task } from "@/types/task";
 import { sortTasks } from "@/lib/utils/sort-tasks";
+import { areArraysEqual } from "@/lib/utils/are-arrays-equal";
 
 function areTasksEqual(prev: Task[], next: Task[]): boolean {
   if (prev.length !== next.length) return false;
@@ -8,7 +9,15 @@ function areTasksEqual(prev: Task[], next: Task[]): boolean {
     if (
       prev[i]?.id !== next[i]?.id ||
       prev[i]?.name !== next[i]?.name ||
-      prev[i]?.category !== next[i]?.category
+      prev[i]?.category !== next[i]?.category ||
+      prev[i]?.dailyCountTotal !== next[i]?.dailyCountTotal ||
+      prev[i]?.dailyCountFinished !== next[i]?.dailyCountFinished ||
+      prev[i]?.xValue !== next[i]?.xValue ||
+      prev[i]?.startDate !== next[i]?.startDate ||
+      prev[i]?.repeatFrequency !== next[i]?.repeatFrequency ||
+      (prev[i]?.repeatDays &&
+        next[i]?.repeatDays &&
+        !areArraysEqual(prev[i]?.repeatDays, next[i]?.repeatDays))
     ) {
       return false;
     }
@@ -17,13 +26,14 @@ function areTasksEqual(prev: Task[], next: Task[]): boolean {
 }
 
 export function useSortedTasks(tasks: Task[]) {
-  const tasksRef = useRef(tasks); //persists across rerenders
+  const tasksRef = useRef<Task[]>([]);
+  const sortedTasksRef = useRef<Task[]>([]);
 
   return useMemo(() => {
     if (!areTasksEqual(tasks, tasksRef.current)) {
       tasksRef.current = tasks;
-      return sortTasks(tasks);
+      sortedTasksRef.current = sortTasks(tasks);
     }
-    return tasksRef.current;
+    return sortedTasksRef.current;
   }, [tasks]);
 }
