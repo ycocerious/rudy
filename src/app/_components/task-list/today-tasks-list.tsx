@@ -122,7 +122,7 @@ export const TodayTasksList = () => {
       >
         <AlertDialogContent className="max-w-[calc(100%-3rem)] rounded-xl border-none bg-white sm:max-w-[24rem]">
           <AlertDialogHeader>
-            <AlertDialogTitle>{`Finished ${taskToComplete?.name}?`}</AlertDialogTitle>
+            <AlertDialogTitle>{`Finished ${taskToComplete?.name} ${taskToComplete?.category === "daily" ? "once" : ""}?`}</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={cancelCompleteTask}>

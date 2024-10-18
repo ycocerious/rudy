@@ -8,17 +8,19 @@ export const blueShades = [
 ];
 
 export const categoryColors = {
-  daily: "#5ce1e6", // Light blue (as requested)
-  xdays: "#5f27cd", // Purple
-  weekly: "#54a0ff", // Sky blue
-  monthly: "#B388F5", // Soft pink
+  daily: "#98FF98", // Light blue (as requested)
+  xdays: "#87CEEB", // Purple
+  weekly: "#FF69B4", // Sky blue
+  monthly: "#FFFF99", // Soft pink
 };
 
 export const categoryColorsNew = {
-  daily: "#5ce1e6", // Light blue (as requested)
+  daily: "#A8F89B", // Light blue (as requested)
   xdays: "#AFFC41", // Green
   weekly: "#FAA916", // Orange
   monthly: "#C200FB", // Purple
 };
 
 export const theOnlyToastId = "the-only-toast";
+
+//logo colours: lime: #A8F89B, bluish green: [#6AD2D2]

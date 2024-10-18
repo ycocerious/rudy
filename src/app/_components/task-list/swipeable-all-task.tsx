@@ -76,7 +76,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
         ref={constraintsRef}
         className="relative mb-2 flex h-auto min-h-[3.25rem] w-full items-center justify-start overflow-hidden rounded-md bg-transparent focus:outline-none"
         style={{
-          borderWidth: "2px",
+          borderWidth: "1px",
           borderStyle: "solid",
           borderColor,
         }}

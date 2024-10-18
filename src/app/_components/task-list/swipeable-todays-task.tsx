@@ -64,7 +64,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
       ref={constraintsRef}
       className="relative mb-2 flex h-[3.25rem] items-center overflow-hidden rounded-md bg-transparent"
       style={{
-        borderWidth: "2px",
+        borderWidth: "1px",
         borderStyle: "solid",
         borderColor,
       }}
