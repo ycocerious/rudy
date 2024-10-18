@@ -74,14 +74,20 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
     <>
       <motion.button
         ref={constraintsRef}
-        className="relative mb-2 flex h-auto min-h-[3.25rem] w-full items-center justify-start overflow-hidden rounded-lg bg-[rgb(0,3,3)] focus:outline-none"
+        className="relative mb-2 flex h-auto min-h-[3.25rem] w-full items-center justify-start overflow-hidden rounded-md bg-transparent focus:outline-none"
         style={{
-          borderWidth: "1px",
+          borderWidth: "2px",
           borderStyle: "solid",
-          borderColor: borderColor,
+          borderColor,
         }}
         onClick={() => setIsSheetOpen(true)}
       >
+        <motion.div
+          className="absolute left-0 h-full w-1"
+          style={{
+            backgroundColor: borderColor,
+          }}
+        ></motion.div>
         <motion.div
           style={{ x }}
           drag={!isSwiped ? "x" : false}

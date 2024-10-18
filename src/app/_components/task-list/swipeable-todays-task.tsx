@@ -62,13 +62,19 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   return (
     <motion.div
       ref={constraintsRef}
-      className="relative mb-2 flex h-[3.25rem] items-center overflow-hidden rounded-lg bg-[rgb(0,3,3)]"
+      className="relative mb-2 flex h-[3.25rem] items-center overflow-hidden rounded-md bg-transparent"
       style={{
-        borderWidth: "1px",
+        borderWidth: "2px",
         borderStyle: "solid",
-        borderColor: borderColor,
+        borderColor,
       }}
     >
+      <motion.div
+        className="absolute left-0 h-full w-1"
+        style={{
+          backgroundColor: borderColor,
+        }}
+      ></motion.div>
       <motion.div
         style={{ x }}
         drag={!isSwiped ? "x" : false}
