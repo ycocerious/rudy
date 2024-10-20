@@ -41,7 +41,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   const borderColor = useTransform(
     x,
     [0, 50, 250],
-    [categoryColors[task.category], "#00A3A3", "#00A3A3"],
+    ["rgb(127, 233, 238)", "#00A3A3", "#00A3A3"],
   );
 
   const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
@@ -70,12 +70,6 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
       }}
     >
       <motion.div
-        className="absolute left-0 h-full w-1"
-        style={{
-          backgroundColor: borderColor,
-        }}
-      ></motion.div>
-      <motion.div
         style={{ x }}
         drag={!isSwiped ? "x" : false}
         dragConstraints={{ left: 0, right: 250 }}
@@ -87,31 +81,16 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         }}
         onDragEnd={handleDragEnd}
         animate={controls}
-        className="flex h-full w-full cursor-grab items-center justify-between p-4"
+        className="flex h-full w-full cursor-grab items-center justify-start p-4"
       >
-        <span className="text-md z-10 max-w-[60%] break-words text-white">
+        <span className="text-md z-10 mr-2 max-w-[60%] break-words text-white">
           {task.name}
         </span>
-        <div className="z-10 flex items-center space-x-2">
-          <span
-            className="text-xs"
-            style={{ color: categoryColors[task.category] }}
-          >
-            {task.category.charAt(0).toUpperCase() + task.category.slice(1)}
+        {task.category === "daily" && (
+          <span className="text-xs text-[#5ce1e6]">
+            {"(" + task.dailyCountFinished + "/" + task.dailyCountTotal + ")"}
           </span>
-          {task.category === "daily" && (
-            <span
-              className="text-xs"
-              style={{ color: categoryColors[task.category] }}
-            >
-              {"(" + task.dailyCountFinished + "/" + task.dailyCountTotal + ")"}
-            </span>
-          )}
-          <div
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: categoryColors[task.category] }}
-          />
-        </div>
+        )}
       </motion.div>
       <motion.div
         className="absolute right-4 z-20 ml-2"

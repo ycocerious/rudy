@@ -1,6 +1,5 @@
 "use client";
 
-import { categoryColors } from "@/constants/uiConstants";
 import { type Task } from "@/types/task";
 import {
   motion,
@@ -48,11 +47,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   const borderColor = useTransform(
     x,
     [0, 50, 250],
-    [
-      categoryColors[task.category],
-      "rgba(255, 36, 0, 1)",
-      "rgba(255, 36, 0, 1)",
-    ],
+    ["rgb(127, 233, 238)", "rgba(255, 36, 0, 1)", "rgba(255, 36, 0, 1)"],
   );
 
   const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
@@ -83,12 +78,6 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
         onClick={() => setIsSheetOpen(true)}
       >
         <motion.div
-          className="absolute left-0 h-full w-1"
-          style={{
-            backgroundColor: borderColor,
-          }}
-        ></motion.div>
-        <motion.div
           style={{ x }}
           drag={!isSwiped ? "x" : false}
           dragConstraints={{ left: 0, right: 250 }}
@@ -103,10 +92,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           className="flex h-full w-full items-center justify-between py-2 pl-4 pr-1"
         >
           <span className="text-md z-10 text-white">{task.name}</span>
-          <div
-            className="max-w-[40%] text-right text-xs"
-            style={{ color: categoryColors[task.category] }}
-          >
+          <div className="max-w-[40%] text-right text-xs text-gray-400">
             {task.category === "daily" && (
               <span className="mr-1">
                 {"Everyday" +
@@ -126,7 +112,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           </div>
         </motion.div>
         <motion.div
-          className="absolute right-4 top-4 z-30 ml-2"
+          className="30 absolute right-4 top-4 ml-2"
           style={{ opacity: iconOpacity }}
         >
           <Trash2 className="text-red-800" size={24} />
