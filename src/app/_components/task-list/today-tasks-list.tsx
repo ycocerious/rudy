@@ -1,16 +1,16 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import Confetti from "@/components/ui/confetti";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
 import { type dailyCountFinishedType } from "@/types/form-types";
 import { type Task } from "@/types/task";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
-import Confetti from "@/components/ui/confetti";
 
 export const TodayTasksList = () => {
   const [tasks, setTasks] = useState<Task[]>(exampleTasks);
@@ -31,7 +31,7 @@ export const TodayTasksList = () => {
     ) {
       setIsDialogOpen(false);
       setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 2500);
+      setTimeout(() => setShowConfetti(false), 2000);
     }
   }, [selectedCategory, sortedTasks]);
 
@@ -94,33 +94,39 @@ export const TodayTasksList = () => {
     daily: "Daily Tasks",
   };
 
-  if (tasks.length === 0) {
-    return null;
-  }
-
   return (
     <>
       <div className="w-full">
-        <div className="grid h-full grid-cols-2 gap-6 overflow-auto px-2 pb-12 pt-6">
-          {Object.entries(sortedTasks).map(([category, tasks]) =>
-            tasks.length > 0 ? (
-              <Card
-                key={category}
-                className="flex max-h-[25vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white"
-                onClick={() => handleCardClick(category)}
-              >
-                <CardContent className="p-6 text-center">
-                  <p className="text-lg text-[#5ce1e6]">
-                    {categoryMapping[category as keyof typeof categoryMapping]}
-                  </p>
-                  <p className="text-xs text-gray-300">
-                    ({tasks.length} task{tasks.length > 1 ? "s" : ""} left)
-                  </p>
-                </CardContent>
-              </Card>
-            ) : null,
-          )}
-        </div>
+        {tasks.length !== 0 ? (
+          <div className="grid h-full grid-cols-2 gap-6 overflow-auto px-2 pb-12 pt-6">
+            {Object.entries(sortedTasks).map(([category, tasks]) =>
+              tasks.length > 0 ? (
+                <Card
+                  key={category}
+                  className="flex max-h-[25vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white"
+                  onClick={() => handleCardClick(category)}
+                >
+                  <CardContent className="p-6 text-center">
+                    <p className="text-lg text-[#5ce1e6]">
+                      {
+                        categoryMapping[
+                          category as keyof typeof categoryMapping
+                        ]
+                      }
+                    </p>
+                    <p className="text-xs text-gray-300">
+                      ({tasks.length} task{tasks.length > 1 ? "s" : ""} left)
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : null,
+            )}
+          </div>
+        ) : (
+          <div className="mt-2 flex flex-grow items-center justify-center text-center text-white">
+            No more tasks left for today! 🙆‍♀️
+          </div>
+        )}
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
