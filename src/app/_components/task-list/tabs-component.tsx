@@ -4,7 +4,10 @@ import { TodayTasksList } from "./today-tasks-list";
 
 export function TabsComponent() {
   return (
-    <Tabs defaultValue="today" className="mb-2 w-full min-w-[240px] max-w-lg">
+    <Tabs
+      defaultValue="today"
+      className="flex w-full min-w-[240px] max-w-lg flex-grow flex-col"
+    >
       <TabsList className="grid h-11 w-full grid-cols-2 rounded-lg bg-gray-800 text-[#A1A1AA]">
         <TabsTrigger
           value="today"
@@ -19,7 +22,7 @@ export function TabsComponent() {
           All Tasks
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="today">
+      <TabsContent value="today" className="flex flex-grow">
         <TodayTasksList />
       </TabsContent>
       <TabsContent value="all">

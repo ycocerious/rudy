@@ -1,8 +1,8 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Grid } from "./grid";
 import dynamic from "next/dynamic";
+import { Grid } from "./grid";
 import { LoadingSpinner } from "./loading-spinner";
 
 const ScrollRightWrapper = dynamic(() => import("./scroll-right-wrapper"), {
@@ -13,7 +13,7 @@ const ScrollRightWrapper = dynamic(() => import("./scroll-right-wrapper"), {
 export const ConsistencyTracker = () => {
   return (
     <Card className="mb-4 flex w-full min-w-[240px] flex-col border-gray-700 bg-gray-800 md:max-w-[1106px]">
-      <CardHeader>
+      <CardHeader className="py-4">
         <CardTitle className="text-center text-lg font-semibold text-gray-100 sm:text-xl md:text-2xl">
           Consistency Tracker
         </CardTitle>

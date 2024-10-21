@@ -25,6 +25,38 @@ function areTasksEqual(prev: Task[], next: Task[]): boolean {
   return true;
 }
 
+type SortedTasks = {
+  monthly: Task[];
+  weekly: Task[];
+  xday: Task[];
+  daily: Task[];
+};
+
+function sortTasksByCategory(tasks: Task[]): SortedTasks {
+  return tasks.reduce<SortedTasks>(
+    (acc, task) => {
+      switch (task.category) {
+        case "monthly":
+          acc.monthly.push(task);
+          break;
+        case "weekly":
+          acc.weekly.push(task);
+          break;
+        case "xdays":
+          acc.xday.push(task);
+          break;
+        case "daily":
+          acc.daily.push(task);
+          break;
+        default:
+          console.warn(`Unknown task category`);
+      }
+      return acc;
+    },
+    { monthly: [], weekly: [], xday: [], daily: [] },
+  );
+}
+
 export function useSortedTasks(tasks: Task[]) {
   const tasksRef = useRef<Task[]>([]);
   const sortedTasksRef = useRef<Task[]>([]);
@@ -33,6 +65,24 @@ export function useSortedTasks(tasks: Task[]) {
     if (!areTasksEqual(tasks, tasksRef.current)) {
       tasksRef.current = tasks;
       sortedTasksRef.current = sortTasks(tasks);
+    }
+    return sortedTasksRef.current;
+  }, [tasks]);
+}
+
+export function useSortedByCategoryTasks(tasks: Task[]): SortedTasks {
+  const tasksRef = useRef<Task[]>([]);
+  const sortedTasksRef = useRef<SortedTasks>({
+    monthly: [],
+    weekly: [],
+    xday: [],
+    daily: [],
+  });
+
+  return useMemo(() => {
+    if (!areTasksEqual(tasks, tasksRef.current)) {
+      tasksRef.current = tasks;
+      sortedTasksRef.current = sortTasksByCategory(tasks);
     }
     return sortedTasksRef.current;
   }, [tasks]);

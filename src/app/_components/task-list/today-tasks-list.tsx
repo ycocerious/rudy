@@ -1,44 +1,42 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { useSortedTasks } from "@/hooks/useSortedTasks";
+import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
 import { type dailyCountFinishedType } from "@/types/form-types";
 import { type Task } from "@/types/task";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
+import Confetti from "@/components/ui/confetti";
 
 export const TodayTasksList = () => {
   const [tasks, setTasks] = useState<Task[]>(exampleTasks);
-  const sortedTasks = useSortedTasks(tasks);
+  const sortedTasks = useSortedByCategoryTasks(tasks);
 
-  const [taskToComplete, setTaskToComplete] = useState<Task | null>(null);
-  const [shouldReturnToPosition, setShouldReturnToPosition] =
-    useState<boolean>(false);
+  const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
 
-  const handleSwipe = (id: string) => {
-    const taskToComplete = sortedTasks.find((task) => task.id === id);
-    if (taskToComplete) {
-      setTaskToComplete(taskToComplete);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
+
+  useEffect(() => {
+    console.log(sortedTasks[selectedCategory as keyof typeof sortedTasks]);
+    if (
+      sortedTasks[selectedCategory as keyof typeof sortedTasks] &&
+      sortedTasks[selectedCategory as keyof typeof sortedTasks].length === 0
+    ) {
+      setIsDialogOpen(false);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2500);
     }
-  };
+  }, [selectedCategory, sortedTasks]);
 
-  const handleCancelSwipe = () => {
-    setShouldReturnToPosition(false);
-  };
-
-  const confirmCompleteTask = () => {
+  const completeTask = (id: string) => {
+    const taskToComplete = tasks.find((task) => task.id === id);
     if (!taskToComplete) return;
 
     setTasks((prevTasks) => {
@@ -58,10 +56,10 @@ export const TodayTasksList = () => {
           newDailyCountFinished === taskToComplete.dailyCountTotal;
 
         if (shouldRemove) {
-          setShouldReturnToPosition(false);
+          setReturnToPosition(false);
           return prevTasks.filter((task) => task.id !== taskToComplete.id);
         } else {
-          setShouldReturnToPosition(true);
+          setReturnToPosition(true);
           return prevTasks.map((task) =>
             task.id === taskToComplete.id
               ? {
@@ -73,70 +71,87 @@ export const TodayTasksList = () => {
           );
         }
       } else {
-        setShouldReturnToPosition(false);
+        setReturnToPosition(false);
         return prevTasks.filter((task) => task.id !== taskToComplete.id);
       }
     });
 
-    setTaskToComplete(null);
     toast("Hooray! Well done!", {
       id: theOnlyToastId,
       icon: "🎉👏",
     });
   };
 
-  const cancelCompleteTask = () => {
-    setTaskToComplete(null);
-    setShouldReturnToPosition(true);
+  const handleCardClick = (category: string) => {
+    setSelectedCategory(category);
+    setIsDialogOpen(true);
   };
 
-  if (sortedTasks.length === 0) {
+  const categoryMapping = {
+    monthly: "Monthly Tasks",
+    weekly: "Weekly Tasks",
+    xday: "X-day Tasks",
+    daily: "Daily Tasks",
+  };
+
+  if (tasks.length === 0) {
     return null;
   }
 
   return (
     <>
-      <p className="mb-1 px-2 text-center text-xs">
-        <span className="text-[#A1A1AA]">Swipe to complete a task, </span>
-        <span className="text-[#5ce1e6]">
-          {`Only ${sortedTasks.length} tasks left!`}
-        </span>
-      </p>
+      <div className="w-full">
+        <div className="grid h-full grid-cols-2 gap-6 overflow-auto px-2 pb-12 pt-6">
+          {Object.entries(sortedTasks).map(([category, tasks]) =>
+            tasks.length > 0 ? (
+              <Card
+                key={category}
+                className="flex max-h-[25vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white"
+                onClick={() => handleCardClick(category)}
+              >
+                <CardContent className="p-6 text-center">
+                  <p className="text-lg text-[#5ce1e6]">
+                    {categoryMapping[category as keyof typeof categoryMapping]}
+                  </p>
+                  <p className="text-xs text-gray-300">
+                    ({tasks.length} task{tasks.length > 1 ? "s" : ""} left)
+                  </p>
+                </CardContent>
+              </Card>
+            ) : null,
+          )}
+        </div>
+      </div>
 
-      <Card className="mx-auto w-full min-w-[240px] max-w-lg border-none bg-gray-950 text-white">
-        <CardContent className="p-2 pb-[1px]">
-          {sortedTasks.map((task) => (
-            <SwipeableTodaysTask
-              key={task.id}
-              task={task}
-              isCancelled={shouldReturnToPosition}
-              onSwipe={() => handleSwipe(task.id)}
-              onCancelSwipe={handleCancelSwipe}
-            />
-          ))}
-        </CardContent>
-      </Card>
-      <AlertDialog
-        open={taskToComplete !== null}
-        onOpenChange={() => setTaskToComplete(null)}
-      >
-        <AlertDialogContent className="max-w-[calc(100%-3rem)] rounded-xl border-none bg-white sm:max-w-[24rem]">
-          <AlertDialogHeader>
-            <AlertDialogTitle>{`Finished ${taskToComplete?.name} ${taskToComplete?.category === "daily" ? "once" : ""}?`}</AlertDialogTitle>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={cancelCompleteTask}>
-              No I swiped by mistake
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmCompleteTask}
-              className="bg-[#00a3a3]"
-            >
-              Yessir!!
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[85vw] max-w-none items-center justify-center overflow-y-auto rounded-md border-[#00A3A3] bg-gray-200 px-0 pb-6 pt-0 text-black">
+          <div className="p-2 pb-[1px] pt-10">
+            <p className="mb-1 px-2 pb-2 text-center text-sm">
+              <span className="text-black">Swipe to complete a task, </span>
+              <span className="text-[#00A3A3]">
+                {`Only ${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length || 0} task${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length > 1 ? "s" : ""} left!`}
+              </span>
+            </p>
+            <div className="px-1">
+              {sortedTasks[selectedCategory as keyof typeof sortedTasks]?.map(
+                (task) => (
+                  <SwipeableTodaysTask
+                    key={task.id}
+                    task={task}
+                    returnToPosition={returnToPosition}
+                    handleSwipe={() => completeTask(task.id)}
+                    handleReturnToPosition={() => setReturnToPosition(false)}
+                  />
+                ),
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {showConfetti && (
+        <Confetti className="absolute left-0 top-0 z-0 size-full" />
+      )}
     </>
   );
 };

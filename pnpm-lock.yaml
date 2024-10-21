@@ -47,6 +47,12 @@ importers:
       '@trpc/server':
         specifier: ^11.0.0-rc.446
         version: 11.0.0-rc.553
+      '@types/canvas-confetti':
+        specifier: ^1.6.4
+        version: 1.6.4
+      canvas-confetti:
+        specifier: ^1.9.3
+        version: 1.9.3
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -997,6 +1003,9 @@ packages:
   '@trpc/server@11.0.0-rc.553':
     resolution: {integrity: sha512-pYUhxV3QU834jP1ugJk1uhtPwwaY1ymIuupb4DiWOhNCl68syuXPlUdD8IYsYKd3BjLkmnjlsOUMoyd/aoOF/Q==}
 
+  '@types/canvas-confetti@1.6.4':
+    resolution: {integrity: sha512-fNyZ/Fdw/Y92X0vv7B+BD6ysHL4xVU5dJcgzgxLdGbn8O3PezZNIJpml44lKM0nsGur+o/6+NZbZeNTt00U1uA==}
+
   '@types/eslint@8.56.12':
     resolution: {integrity: sha512-03ruubjWyOHlmljCVoxSuNDdmfZDzsrrz0P2LeJsOXr+ZwFQ+0yQIwNCwt/GYhV7Z31fgtXJTAEs+FYlEL851g==}
 
@@ -1215,6 +1224,9 @@ packages:
 
   caniuse-lite@1.0.30001664:
     resolution: {integrity: sha512-AmE7k4dXiNKQipgn7a2xg558IRqPN3jMQY/rOsbxDhrd0tyChwbITBfiwtnqz8bi2M5mIWbxAYBvk7W7QBUS2g==}
+
+  canvas-confetti@1.9.3:
+    resolution: {integrity: sha512-rFfTURMvmVEX1gyXFgn5QMn81bYk70qa0HLzcIOSVEyl57n6o9ItHeBtUSWdvKAPY0xlvBHno4/v3QPrT83q9g==}
 
   chalk@4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
@@ -3408,6 +3420,8 @@ snapshots:
 
   '@trpc/server@11.0.0-rc.553': {}
 
+  '@types/canvas-confetti@1.6.4': {}
+
   '@types/eslint@8.56.12':
     dependencies:
       '@types/estree': 1.0.6
@@ -3670,6 +3684,8 @@ snapshots:
   camelcase-css@2.0.1: {}
 
   caniuse-lite@1.0.30001664: {}
+
+  canvas-confetti@1.9.3: {}
 
   chalk@4.1.2:
     dependencies:

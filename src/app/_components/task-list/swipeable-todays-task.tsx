@@ -1,4 +1,3 @@
-import { categoryColors } from "@/constants/uiConstants";
 import { type Task } from "@/types/task";
 import {
   motion,
@@ -12,16 +11,16 @@ import React, { useEffect, useRef, useState } from "react";
 
 interface SwipeableTaskProps {
   task: Task;
-  isCancelled: boolean;
-  onSwipe: () => void;
-  onCancelSwipe: () => void;
+  returnToPosition: boolean;
+  handleSwipe: () => void;
+  handleReturnToPosition: () => void;
 }
 
 export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   task,
-  isCancelled,
-  onSwipe,
-  onCancelSwipe,
+  returnToPosition: returnToPosition,
+  handleSwipe,
+  handleReturnToPosition,
 }) => {
   const constraintsRef = useRef(null);
   const x = useMotionValue(0);
@@ -31,17 +30,17 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   const threshold = 200; // Full swipe threshold
 
   useEffect(() => {
-    if (isCancelled) {
+    if (returnToPosition) {
       setIsSwiped(false);
       void controls.start({ x: 0 });
-      onCancelSwipe();
+      handleReturnToPosition();
     }
-  }, [isCancelled, controls, onCancelSwipe]);
+  }, [returnToPosition, controls, handleReturnToPosition]);
 
   const borderColor = useTransform(
     x,
     [0, 50, 250],
-    ["rgb(127, 233, 238)", "#00A3A3", "#00A3A3"],
+    ["#00A3A3", "#00A3A3", "#00A3A3"],
   );
 
   const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
@@ -53,7 +52,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
     if (info.offset.x >= threshold) {
       setIsSwiped(true);
       void controls.start({ x: threshold });
-      onSwipe(); // Trigger the swipe action
+      handleSwipe(); // Trigger the swipe action
     } else {
       void controls.start({ x: 0 });
     }
@@ -83,11 +82,11 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         animate={controls}
         className="flex h-full w-full cursor-grab items-center justify-start p-4"
       >
-        <span className="text-md z-10 mr-2 max-w-[60%] break-words text-white">
+        <span className="text-md z-10 mr-2 max-w-[60%] break-words text-black">
           {task.name}
         </span>
         {task.category === "daily" && (
-          <span className="text-xs text-[#5ce1e6]">
+          <span className="text-xs text-[#00A3A3]">
             {"(" + task.dailyCountFinished + "/" + task.dailyCountTotal + ")"}
           </span>
         )}
