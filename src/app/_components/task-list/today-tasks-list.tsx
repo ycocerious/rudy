@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
 import { type dailyCountFinishedType } from "@/types/form-types";
 import { type Task } from "@/types/task";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
 
@@ -37,10 +37,10 @@ export const TodayTasksList = () => {
 
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
-  const dialogOpenChange = () => {
+  const dialogOpenChange = useCallback(() => {
     setIsDialogOpen(!isDialogOpen);
     setSelectedCategory("");
-  };
+  }, [isDialogOpen]);
 
   useEffect(() => {
     if (
@@ -51,7 +51,7 @@ export const TodayTasksList = () => {
       setTimeout(() => setShowConfetti(false), 3000);
       dialogOpenChange();
     }
-  }, [selectedCategory, sortedTasks]);
+  }, [dialogOpenChange, selectedCategory, sortedTasks]);
 
   const completeTask = (id: string) => {
     const taskToComplete = tasks.find((task) => task.id === id);

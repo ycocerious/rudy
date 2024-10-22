@@ -80,7 +80,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         }}
         onDragEnd={handleDragEnd}
         animate={controls}
-        className="flex h-full w-full cursor-grab items-center justify-between py-2 pl-4 pr-1"
+        className="flex h-full w-full cursor-grab items-center justify-between py-2 pl-4 pr-2"
       >
         <div>
           <span className="text-md z-10 mr-2 max-w-[60%] break-words text-white">

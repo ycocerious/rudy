@@ -77,7 +77,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           }}
           onDragEnd={handleDragEnd}
           animate={controls}
-          className="flex h-full w-full items-center justify-between py-2 pl-4 pr-1"
+          className="flex h-full w-full items-center justify-between py-2 pl-4 pr-2"
         >
           <span className="text-md z-10 text-white">{task.name}</span>
           <div className="max-w-[40%] text-right text-xs text-gray-400">

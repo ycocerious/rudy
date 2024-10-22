@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
 import { type Task } from "@/types/task";
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { SwipeableAllTask } from "./swipeable-all-task";
@@ -30,10 +30,10 @@ export const AllTasksList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const dialogOpenChange = () => {
+  const dialogOpenChange = useCallback(() => {
     setIsDialogOpen(!isDialogOpen);
     setSelectedCategory("");
-  };
+  }, [isDialogOpen]);
 
   useEffect(() => {
     if (
@@ -42,7 +42,7 @@ export const AllTasksList = () => {
     ) {
       dialogOpenChange();
     }
-  }, [selectedCategory, sortedTasks]);
+  }, [dialogOpenChange, selectedCategory, sortedTasks]);
 
   const deleteTask = (id: string) => {
     const taskToDelete = tasks.find((task) => task.id === id);
