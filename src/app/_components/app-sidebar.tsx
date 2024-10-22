@@ -4,10 +4,11 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarItem,
+  SidebarHeader,
   SidebarLabel,
 } from "@/components/ui/sidebar";
 import { UserButton, useUser } from "@clerk/nextjs";
+import Image from "next/image";
 
 export function AppSidebar() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -18,11 +19,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarContent>
-        <SidebarItem>
-          <SidebarLabel className="text-white">Sidebar</SidebarLabel>
-        </SidebarItem>
-      </SidebarContent>
+      <SidebarHeader className="border-gray-700">
+        <SidebarLabel className="text-lg text-white">Rudy</SidebarLabel>
+        <Image src="/logo.png" alt="logo" width={30} height={30} />
+      </SidebarHeader>
+      <SidebarContent></SidebarContent>
       <SidebarFooter>
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm transition-all">
           <UserButton />

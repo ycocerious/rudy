@@ -1,12 +1,12 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import * as React from "react";
-import { PanelLeft } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/useMobile";
+import { cn } from "@/lib/utils";
 
 export const SIDEBAR_STATE_COOKIE = "sidebar:state";
 
@@ -55,7 +55,7 @@ const SidebarLayout = React.forwardRef<
           } as React.CSSProperties
         }
         className={cn(
-          "flex bg-none pl-0 text-[#5ce1e6] transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 sm:pl-[--sidebar-width]",
+          "flex bg-none pl-0 text-white transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 sm:pl-[--sidebar-width]",
           className,
         )}
         {...props}
@@ -80,7 +80,7 @@ const SidebarTrigger = React.forwardRef<
       onClick={() => onOpenChange(!open)}
       {...props}
     >
-      <PanelLeft className="h-5 w-5" />
+      <Menu className="h-5 w-5" />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
