@@ -8,7 +8,7 @@ export function TabsComponent() {
       defaultValue="today"
       className="flex w-full min-w-[240px] max-w-lg flex-grow flex-col"
     >
-      <TabsList className="grid h-11 w-full grid-cols-2 rounded-lg bg-gray-800 text-[#A1A1AA]">
+      <TabsList className="mb-6 grid h-11 w-full grid-cols-2 rounded-lg bg-gray-800 text-[#A1A1AA]">
         <TabsTrigger
           value="today"
           className="h-9 rounded-md data-[state=active]:bg-gray-950 data-[state=active]:text-white"
@@ -23,10 +23,10 @@ export function TabsComponent() {
         </TabsTrigger>
       </TabsList>
       <div className="flex flex-grow justify-center">
-        <TabsContent value="today">
+        <TabsContent value="today" className="mt-0">
           <TodayTasksList />
         </TabsContent>
-        <TabsContent value="all">
+        <TabsContent value="all" className="mt-0">
           <AllTasksList />
         </TabsContent>
       </div>

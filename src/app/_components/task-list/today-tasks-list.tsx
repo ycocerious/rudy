@@ -109,14 +109,14 @@ export const TodayTasksList = () => {
     <>
       <div className="z-10 h-full w-full">
         {tasks.length !== 0 ? (
-          <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-12 pt-6">
+          <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-4">
             {Object.entries(sortedTasks)
               .filter(([_, tasks]) => tasks.length > 0)
               .map(([category, tasks], index) => (
                 <Card
                   key={category}
                   className={cn(
-                    "flex max-h-[25vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white",
+                    "flex max-h-[27vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white",
                     getGridPosition(index),
                   )}
                   onClick={() => handleCardClick(category)}
@@ -137,7 +137,7 @@ export const TodayTasksList = () => {
               ))}
           </div>
         ) : (
-          <div className="mt-2 flex flex-grow items-center justify-center text-center text-white">
+          <div className="flex flex-grow items-center justify-center text-center text-white">
             No more tasks left for today! 🙆‍♀️
           </div>
         )}
