@@ -31,14 +31,19 @@ export const TodayTasksList = () => {
 
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
+  const dialogOpenChange = () => {
+    setIsDialogOpen(!isDialogOpen);
+    setSelectedCategory("");
+  };
+
   useEffect(() => {
     if (
       sortedTasks[selectedCategory as keyof typeof sortedTasks] &&
       sortedTasks[selectedCategory as keyof typeof sortedTasks].length === 0
     ) {
-      setIsDialogOpen(false);
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 2000);
+      dialogOpenChange();
     }
   }, [selectedCategory, sortedTasks]);
 
@@ -142,7 +147,7 @@ export const TodayTasksList = () => {
         )}
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
         <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-gray-500 bg-gray-800 px-0 pb-10 pt-14 text-black">
           <p className="text-md mb-1 px-2 pb-2 text-center">
             <span className="text-white">Swipe to complete a task, </span>
