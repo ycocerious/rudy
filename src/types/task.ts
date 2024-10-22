@@ -12,6 +12,8 @@ export type Task = {
   id: string;
   name: string;
   category: taskCategoryType;
+  currentStreak: number;
+  highestStreak: number;
 
   dailyCountTotal?: dailyCountTotalType;
   dailyCountFinished?: dailyCountFinishedType;
