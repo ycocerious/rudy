@@ -95,9 +95,9 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
 
         {/* Updated this part */}
         <div className="max-w-[40%] text-right">
-          <div className="flex flex-wrap justify-end">
+          <div className="flex flex-wrap justify-end gap-2">
             {(task.currentStreak ?? 0) > 0 && (
-              <div className="mr-2 flex items-center gap-1">
+              <div className="flex items-center gap-1">
                 <Flame size={20} className="text-orange-500" />
                 <span className="text-sm text-orange-500">
                   {task.currentStreak}

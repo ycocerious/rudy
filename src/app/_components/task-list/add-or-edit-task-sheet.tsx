@@ -30,6 +30,7 @@ import {
 import { type Task } from "@/types/task";
 import { nanoid } from "nanoid";
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -87,14 +88,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const [isTaskUpdated, setIsTaskUpdated] = useState(false);
 
-  useEffect(() => {
-    if (taskType === "edit" && isTaskUpdated) {
-      handleEditSheetClose();
-      toast.success("Edited Task Successfully", { id: theOnlyToastId });
-      setIsTaskUpdated(false);
-    }
-  }, [isTaskUpdated, taskType]);
-
   const handleAddSheetClose = () => {
     setIsSheetOpen(false);
     setNewName("");
@@ -105,7 +98,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     setNewRepeatDays(null);
   };
 
-  const handleEditSheetClose = () => {
+  const handleEditSheetClose = useCallback(() => {
     setIsSheetOpen(false);
     setNewName(originalTask?.name ?? "");
     setNewCategory(originalTask?.category ?? null);
@@ -114,7 +107,23 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     setNewRepeatFrequency(originalTask?.repeatFrequency ?? null);
     setNewRepeatDays(originalTask?.repeatDays ?? null);
     setIsTaskUpdated(false);
-  };
+  }, [
+    originalTask?.category,
+    originalTask?.name,
+    originalTask?.repeatDays,
+    originalTask?.repeatFrequency,
+    originalTask?.startDate,
+    originalTask?.xValue,
+    setIsSheetOpen,
+  ]);
+
+  useEffect(() => {
+    if (taskType === "edit" && isTaskUpdated) {
+      handleEditSheetClose();
+      toast.success("Edited Task Successfully", { id: theOnlyToastId });
+      setIsTaskUpdated(false);
+    }
+  }, [handleEditSheetClose, isTaskUpdated, taskType]);
 
   const hasChanges = useMemo(() => {
     if (taskType === "add") return true;
@@ -131,6 +140,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       (originalTask.startDate && newXValue !== originalTask.xValue) ||
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       (originalTask.startDate &&
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         !areDatesEqual(newStartDate, originalTask.startDate)) ||
       (originalTask.repeatFrequency &&
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -195,6 +205,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       startDate: newStartDate ?? undefined,
       repeatFrequency: newRepeatFrequency ?? undefined,
       repeatDays: newRepeatDays ?? undefined,
+      currentStreak: 0,
+      highestStreak: 0,
     };
 
     setTasks((prevTasks) => [...prevTasks, newTask]);

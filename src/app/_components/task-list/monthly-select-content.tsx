@@ -8,7 +8,7 @@ import {
 import {
   customMonthDayEnum,
   repeatFrequencyEnum,
-  repeatFrequencyType,
+  type repeatFrequencyType,
   type monthDaysType,
 } from "@/types/form-types";
 import React, {

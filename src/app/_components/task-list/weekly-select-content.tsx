@@ -8,7 +8,7 @@ import {
 import {
   type weekDaysType,
   repeatFrequencyEnum,
-  repeatFrequencyType,
+  type repeatFrequencyType,
   weekDaysEnum,
 } from "@/types/form-types";
 import React, { type Dispatch, type SetStateAction, useEffect } from "react";

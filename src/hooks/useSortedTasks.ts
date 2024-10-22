@@ -1,5 +1,5 @@
 import { areArraysEqual } from "@/lib/utils/referential-equality-checks";
-import { SortedTasks, sortTasksByCategory } from "@/lib/utils/sort-tasks";
+import { type SortedTasks, sortTasksByCategory } from "@/lib/utils/sort-tasks";
 import { type Task } from "@/types/task";
 import { useMemo, useRef } from "react";
 
@@ -30,7 +30,7 @@ export function useSortedByCategoryTasks(tasks: Task[]): SortedTasks {
   const sortedTasksRef = useRef<SortedTasks>({
     monthly: [],
     weekly: [],
-    xday: [],
+    xdays: [],
     daily: [],
   });
 

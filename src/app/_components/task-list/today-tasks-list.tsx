@@ -13,7 +13,10 @@ import { theOnlyToastId } from "@/constants/uiConstants";
 import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
-import { type dailyCountFinishedType } from "@/types/form-types";
+import {
+  type taskCategoryType,
+  type dailyCountFinishedType,
+} from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -22,9 +25,9 @@ import { SwipeableTodaysTask } from "./swipeable-todays-task";
 export const categoryMapping = {
   monthly: "Monthly Tasks",
   weekly: "Weekly Tasks",
-  xday: "X-day Tasks",
+  xdays: "X-day Tasks",
   daily: "Daily Tasks",
-};
+} satisfies Record<taskCategoryType, string>;
 
 export const TodayTasksList = () => {
   const [tasks, setTasks] = useState<Task[]>(exampleTasks);

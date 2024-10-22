@@ -1,10 +1,9 @@
-import { type taskCategoryType } from "@/types/form-types";
 import { type Task } from "@/types/task";
 
 export type SortedTasks = {
   monthly: Task[];
   weekly: Task[];
-  xday: Task[];
+  xdays: Task[];
   daily: Task[];
 };
 
@@ -19,7 +18,7 @@ export function sortTasksByCategory(tasks: Task[]): SortedTasks {
           acc.weekly.push(task);
           break;
         case "xdays":
-          acc.xday.push(task);
+          acc.xdays.push(task);
           break;
         case "daily":
           acc.daily.push(task);
@@ -29,6 +28,6 @@ export function sortTasksByCategory(tasks: Task[]): SortedTasks {
       }
       return acc;
     },
-    { monthly: [], weekly: [], xday: [], daily: [] },
+    { monthly: [], weekly: [], xdays: [], daily: [] },
   );
 }
