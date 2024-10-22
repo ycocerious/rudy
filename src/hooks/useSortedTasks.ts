@@ -1,7 +1,7 @@
-import { useMemo, useRef } from "react";
-import { type Task } from "@/types/task";
-import { sortTasks } from "@/lib/utils/sort-tasks";
 import { areArraysEqual } from "@/lib/utils/referential-equality-checks";
+import { SortedTasks, sortTasksByCategory } from "@/lib/utils/sort-tasks";
+import { type Task } from "@/types/task";
+import { useMemo, useRef } from "react";
 
 function areTasksEqual(prev: Task[], next: Task[]): boolean {
   if (prev.length !== next.length) return false;
@@ -23,51 +23,6 @@ function areTasksEqual(prev: Task[], next: Task[]): boolean {
     }
   }
   return true;
-}
-
-type SortedTasks = {
-  monthly: Task[];
-  weekly: Task[];
-  xday: Task[];
-  daily: Task[];
-};
-
-function sortTasksByCategory(tasks: Task[]): SortedTasks {
-  return tasks.reduce<SortedTasks>(
-    (acc, task) => {
-      switch (task.category) {
-        case "monthly":
-          acc.monthly.push(task);
-          break;
-        case "weekly":
-          acc.weekly.push(task);
-          break;
-        case "xdays":
-          acc.xday.push(task);
-          break;
-        case "daily":
-          acc.daily.push(task);
-          break;
-        default:
-          console.warn(`Unknown task category`);
-      }
-      return acc;
-    },
-    { monthly: [], weekly: [], xday: [], daily: [] },
-  );
-}
-
-export function useSortedTasks(tasks: Task[]) {
-  const tasksRef = useRef<Task[]>([]);
-  const sortedTasksRef = useRef<Task[]>([]);
-
-  return useMemo(() => {
-    if (!areTasksEqual(tasks, tasksRef.current)) {
-      tasksRef.current = tasks;
-      sortedTasksRef.current = sortTasks(tasks);
-    }
-    return sortedTasksRef.current;
-  }, [tasks]);
 }
 
 export function useSortedByCategoryTasks(tasks: Task[]): SortedTasks {

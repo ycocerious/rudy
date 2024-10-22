@@ -11,12 +11,13 @@ import {
 import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
+import { cn } from "@/lib/utils";
+import { getGridPosition } from "@/lib/utils/get-grid-position";
 import { type dailyCountFinishedType } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
-import { cn } from "@/lib/utils";
 
 export const categoryMapping = {
   monthly: "Monthly Tasks",
@@ -102,16 +103,6 @@ export const TodayTasksList = () => {
   const handleCardClick = (category: string) => {
     setSelectedCategory(category);
     setIsDialogOpen(true);
-  };
-
-  const getGridPosition = (index: number) => {
-    const positions = {
-      0: "col-start-1 row-start-1", // top-left
-      1: "col-start-2 row-start-1", // top-right
-      2: "col-start-1 row-start-2", // bottom-left
-      3: "col-start-2 row-start-2", // bottom-right
-    };
-    return positions[index as keyof typeof positions] || "";
   };
 
   return (

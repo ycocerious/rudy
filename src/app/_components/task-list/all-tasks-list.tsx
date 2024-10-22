@@ -2,27 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { exampleTasks } from "@/constants/mockData";
-import { theOnlyToastId } from "@/constants/uiConstants";
-import {
-  useSortedByCategoryTasks,
-  useSortedTasks,
-} from "@/hooks/useSortedTasks";
-import { type Task } from "@/types/task";
-import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
-import { SwipeableAllTask } from "./swipeable-all-task";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { SwipeableTodaysTask } from "./swipeable-todays-task";
-import { categoryMapping } from "./today-tasks-list";
+import { exampleTasks } from "@/constants/mockData";
+import { theOnlyToastId } from "@/constants/uiConstants";
+import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
+import { getGridPosition } from "@/lib/utils/get-grid-position";
+import { type Task } from "@/types/task";
+import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
+import { SwipeableAllTask } from "./swipeable-all-task";
+import { categoryMapping } from "./today-tasks-list";
 
 export const AllTasksList = () => {
   const [tasks, setTasks] = useState<Task[]>(exampleTasks);
@@ -60,16 +57,6 @@ export const AllTasksList = () => {
   const handleCardClick = (category: string) => {
     setSelectedCategory(category);
     setIsDialogOpen(true);
-  };
-
-  const getGridPosition = (index: number) => {
-    const positions = {
-      0: "col-start-1 row-start-1", // top-left
-      1: "col-start-2 row-start-1", // top-right
-      2: "col-start-1 row-start-2", // bottom-left
-      3: "col-start-2 row-start-2", // bottom-right
-    };
-    return positions[index as keyof typeof positions] || "";
   };
 
   return (

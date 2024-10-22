@@ -1,17 +1,34 @@
 import { type taskCategoryType } from "@/types/form-types";
 import { type Task } from "@/types/task";
 
-export const sortTasks = (tasks: Task[]): Task[] => {
-  const categoryOrder: Record<taskCategoryType, number> = {
-    monthly: 0,
-    weekly: 1,
-    xdays: 2,
-    daily: 3,
-  };
-
-  return [...tasks].sort((a, b) => {
-    const orderA = categoryOrder[a.category];
-    const orderB = categoryOrder[b.category];
-    return orderA - orderB;
-  });
+export type SortedTasks = {
+  monthly: Task[];
+  weekly: Task[];
+  xday: Task[];
+  daily: Task[];
 };
+
+export function sortTasksByCategory(tasks: Task[]): SortedTasks {
+  return tasks.reduce<SortedTasks>(
+    (acc, task) => {
+      switch (task.category) {
+        case "monthly":
+          acc.monthly.push(task);
+          break;
+        case "weekly":
+          acc.weekly.push(task);
+          break;
+        case "xdays":
+          acc.xday.push(task);
+          break;
+        case "daily":
+          acc.daily.push(task);
+          break;
+        default:
+          console.warn(`Unknown task category`);
+      }
+      return acc;
+    },
+    { monthly: [], weekly: [], xday: [], daily: [] },
+  );
+}
