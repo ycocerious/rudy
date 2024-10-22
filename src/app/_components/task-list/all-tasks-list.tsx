@@ -14,7 +14,12 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { SwipeableAllTask } from "./swipeable-all-task";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
 import { categoryMapping } from "./today-tasks-list";
 import { cn } from "@/lib/utils";
@@ -121,11 +126,21 @@ export const AllTasksList = () => {
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
         <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-gray-500 bg-gray-800 px-0 pb-10 pt-14 text-black">
+          <DialogTitle className="sr-only">
+            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
+            Tasks
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            List of tasks for{" "}
+            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}
+          </DialogDescription>
+
           <p className="text-md mb-1 px-2 pb-2 text-center">
             <span className="text-white">
               Swipe to delete a task, Tap to edit
             </span>
           </p>
+
           <div className="w-full px-6">
             {sortedTasks[selectedCategory as keyof typeof sortedTasks]?.map(
               (task) => (

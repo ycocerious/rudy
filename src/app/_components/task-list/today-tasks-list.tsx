@@ -2,7 +2,12 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import Confetti from "@/components/ui/confetti";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
@@ -42,7 +47,7 @@ export const TodayTasksList = () => {
       sortedTasks[selectedCategory as keyof typeof sortedTasks].length === 0
     ) {
       setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 2000);
+      setTimeout(() => setShowConfetti(false), 3000);
       dialogOpenChange();
     }
   }, [selectedCategory, sortedTasks]);
@@ -111,7 +116,7 @@ export const TodayTasksList = () => {
 
   return (
     <>
-      <div className="h-full w-full">
+      <div className="z-10 h-full w-full">
         {tasks.length !== 0 ? (
           <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-12 pt-6">
             {Object.entries(sortedTasks)
@@ -149,12 +154,23 @@ export const TodayTasksList = () => {
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
         <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-gray-500 bg-gray-800 px-0 pb-10 pt-14 text-black">
+          <DialogTitle className="sr-only">
+            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
+            Tasks
+          </DialogTitle>
+
+          <DialogDescription className="sr-only">
+            List of tasks for{" "}
+            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}
+          </DialogDescription>
+
           <p className="text-md mb-1 px-2 pb-2 text-center">
             <span className="text-white">Swipe to complete a task, </span>
             <span className="text-[#5ce1e6]">
               {`Only ${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length || 0} task${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length > 1 ? "s" : ""} left!`}
             </span>
           </p>
+
           <div className="w-full px-6">
             {sortedTasks[selectedCategory as keyof typeof sortedTasks]?.map(
               (task) => (
@@ -172,7 +188,9 @@ export const TodayTasksList = () => {
       </Dialog>
 
       {showConfetti && (
-        <Confetti className="absolute left-0 top-0 z-0 size-full" />
+        <div className="pointer-events-none fixed inset-0 z-50">
+          <Confetti className="absolute left-0 top-0 size-full" />
+        </div>
       )}
     </>
   );
