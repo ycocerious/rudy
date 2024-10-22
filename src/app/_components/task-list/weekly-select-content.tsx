@@ -49,7 +49,7 @@ export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
         onValueChange={(value) => setNewRepeatFrequency(Number(value))}
         value={newRepeatFrequency?.toString() ?? undefined}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="h-12 w-full text-white placeholder:text-gray-400">
           <SelectValue placeholder="Select repetition frequency" />
         </SelectTrigger>
         <SelectContent>
@@ -63,7 +63,7 @@ export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
 
       {newRepeatFrequency !== null && (
         <div className="mt-4">
-          <p className="ml-1">
+          <p className="ml-1 text-white">
             Select {newRepeatFrequency} day
             {newRepeatFrequency > 1 ? "s" : ""}:
           </p>
@@ -73,9 +73,7 @@ export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
                 key={day}
                 onClick={() => handleDaySelection(day)}
                 className={`m-1 h-10 w-24 rounded-lg border text-sm ${
-                  newRepeatDays?.includes(day)
-                    ? "bg-[#00a3a3] text-white"
-                    : "bg-white"
+                  newRepeatDays?.includes(day) ? "bg-[#5ce1e6]" : "bg-white"
                 }`}
               >
                 {day}

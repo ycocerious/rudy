@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react";
 import { type Task } from "@/types/task";
 import { sortTasks } from "@/lib/utils/sort-tasks";
-import { areArraysEqual } from "@/lib/utils/are-arrays-equal";
+import { areArraysEqual } from "@/lib/utils/referential-equality-checks";
 
 function areTasksEqual(prev: Task[], next: Task[]): boolean {
   if (prev.length !== next.length) return false;

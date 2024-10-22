@@ -40,7 +40,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   const borderColor = useTransform(
     x,
     [0, 50, 250],
-    ["#00A3A3", "#00A3A3", "#00A3A3"],
+    ["#5ce1e6", "#00A3A3", "#00A3A3"],
   );
 
   const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
@@ -82,7 +82,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         animate={controls}
         className="flex h-full w-full cursor-grab items-center justify-start p-4"
       >
-        <span className="text-md z-10 mr-2 max-w-[60%] break-words text-black">
+        <span className="text-md z-10 mr-2 max-w-[60%] break-words text-white">
           {task.name}
         </span>
         {task.category === "daily" && (

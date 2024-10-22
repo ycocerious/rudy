@@ -9,23 +9,19 @@ import {
   useTransform,
 } from "framer-motion";
 import { Trash2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 
 interface SwipeableTaskProps {
   task: Task;
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
-  isCancelled: boolean;
-  onSwipe: () => void;
-  onCancelSwipe: () => void;
+  handleSwipe: () => void;
 }
 
 export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   task,
   setTasks,
-  isCancelled,
-  onSwipe,
-  onCancelSwipe,
+  handleSwipe,
 }) => {
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
   const [isSwiped, setIsSwiped] = useState(false);
@@ -35,14 +31,6 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   const controls = useAnimation();
 
   const threshold = 200;
-
-  useEffect(() => {
-    if (isCancelled) {
-      setIsSwiped(false);
-      void controls.start({ x: 0 });
-      onCancelSwipe();
-    }
-  }, [isCancelled, controls, onCancelSwipe]);
 
   const borderColor = useTransform(
     x,
@@ -59,7 +47,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
     if (info.offset.x >= threshold) {
       setIsSwiped(true);
       void controls.start({ x: threshold });
-      onSwipe(); // Trigger the swipe action
+      handleSwipe(); // Trigger the swipe action
     } else {
       void controls.start({ x: 0 });
     }

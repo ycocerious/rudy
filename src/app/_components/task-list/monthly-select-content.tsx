@@ -65,7 +65,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
         onValueChange={(value) => setNewRepeatFrequency(Number(value))}
         value={newRepeatFrequency?.toString() ?? undefined}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="h-12 w-full text-white placeholder:text-gray-400">
           <SelectValue placeholder="Select repetition frequency" />
         </SelectTrigger>
         <SelectContent>
@@ -79,7 +79,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
 
       {newRepeatFrequency !== null && (
         <div className="mt-4">
-          <p className="ml-1">
+          <p className="ml-1 text-white">
             Select {newRepeatFrequency} option
             {newRepeatFrequency > 1 ? "s" : ""}:
           </p>
@@ -88,9 +88,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
               key={value}
               onClick={() => handleDaySelection(value)}
               className={`m-1 rounded-lg border p-2 text-sm ${
-                newRepeatDays?.includes(value)
-                  ? "bg-[#00a3a3] text-white"
-                  : "bg-white"
+                newRepeatDays?.includes(value) ? "bg-[#5ce1e6]" : "bg-white"
               }`}
             >
               {label}
@@ -99,7 +97,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
           <button
             onClick={() => setShowCustom(!showCustom)}
             className={`m-1 rounded-lg border p-2 text-sm ${
-              showCustom ? "bg-[#00a3a3] text-white" : "bg-white"
+              showCustom ? "bg-[#5ce1e6]" : "bg-white"
             }`}
           >
             Custom Dates
@@ -114,7 +112,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
                     onClick={() => handleDaySelection(day as monthDaysType)}
                     className={`m-1 h-9 w-9 rounded-lg border ${
                       newRepeatDays?.includes(day as monthDaysType)
-                        ? "bg-[#00a3a3] text-white"
+                        ? "bg-[#5ce1e6]"
                         : "bg-white"
                     }`}
                   >

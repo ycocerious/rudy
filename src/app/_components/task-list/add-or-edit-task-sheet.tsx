@@ -15,7 +15,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { areArraysEqual } from "@/lib/utils/are-arrays-equal";
+import {
+  areArraysEqual,
+  areDatesEqual,
+} from "@/lib/utils/referential-equality-checks";
 import {
   type dailyCountTotalType,
   type monthDaysType,
@@ -26,7 +29,13 @@ import {
 } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { nanoid } from "nanoid";
-import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import toast from "react-hot-toast";
 import { MonthlySelectContent } from "./monthly-select-content";
 import { WeeklySelectContent } from "./weekly-select-content";
@@ -76,6 +85,16 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     weekDaysType[] | monthDaysType[] | null
   >(originalTask?.repeatDays ?? null);
 
+  const [isTaskUpdated, setIsTaskUpdated] = useState(false);
+
+  useEffect(() => {
+    if (taskType === "edit" && isTaskUpdated) {
+      handleEditSheetClose();
+      toast.success("Edited Task Successfully", { id: theOnlyToastId });
+      setIsTaskUpdated(false);
+    }
+  }, [isTaskUpdated, taskType]);
+
   const handleAddSheetClose = () => {
     setIsSheetOpen(false);
     setNewName("");
@@ -94,6 +113,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     setNewStartDate(originalTask?.startDate ?? null);
     setNewRepeatFrequency(originalTask?.repeatFrequency ?? null);
     setNewRepeatDays(originalTask?.repeatDays ?? null);
+    setIsTaskUpdated(false);
   };
 
   const hasChanges = useMemo(() => {
@@ -110,7 +130,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       (originalTask.startDate && newXValue !== originalTask.xValue) ||
       // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      (originalTask.startDate && newStartDate !== originalTask.startDate) ||
+      (originalTask.startDate &&
+        !areDatesEqual(newStartDate, originalTask.startDate)) ||
       (originalTask.repeatFrequency &&
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         newRepeatFrequency !== originalTask.repeatFrequency) ||
@@ -185,7 +206,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     if (!isTaskValid || taskType !== "edit") return;
 
     setTasks((prevTasks) => {
-      return prevTasks.map((individualTask) =>
+      const updatedTasks = prevTasks.map((individualTask) =>
         individualTask.id === originalTask?.id
           ? {
               ...individualTask,
@@ -199,10 +220,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             }
           : individualTask,
       );
+      setIsTaskUpdated(true);
+      return updatedTasks;
     });
-
-    handleEditSheetClose();
-    toast.success("Edited Task Successfully", { id: theOnlyToastId });
   };
 
   return (
@@ -220,10 +240,10 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     >
       <SheetContent
         side="bottom"
-        className="mx-auto space-y-4 rounded-t-xl border-none bg-white sm:max-w-md"
+        className="mx-auto space-y-4 rounded-t-xl border-none bg-gray-800 sm:max-w-md"
       >
         <SheetHeader>
-          <SheetTitle>
+          <SheetTitle className="text-white">
             {taskType === "add"
               ? "Add New Task"
               : `Edit Task: ${originalTask?.name}`}
@@ -249,7 +269,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 e.target.value = value;
               }
             }}
-            className="placeholder:text-black"
+            className="h-12 text-white placeholder:text-gray-400"
           />
         </div>
 
@@ -263,7 +283,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             setNewRepeatDays(null);
           }}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="h-12 w-full text-gray-200 placeholder:text-gray-400">
             <SelectValue placeholder="Select Repetition duration" />
           </SelectTrigger>
           <SelectContent>
@@ -313,7 +333,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         <SheetFooter>
           <Button
             onClick={taskType === "add" ? addTask : editTask}
-            className="bg-[#00A3A3] hover:bg-[#00A3A3]"
+            className="bg-[#5ce1e6] text-black hover:bg-[#5ce1e6]"
             disabled={!isTaskValid}
           >
             {taskType === "add" ? "Add Task" : "Save"}

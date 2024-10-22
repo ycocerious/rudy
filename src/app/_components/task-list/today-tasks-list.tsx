@@ -11,6 +11,14 @@ import { type Task } from "@/types/task";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
+import { cn } from "@/lib/utils";
+
+export const categoryMapping = {
+  monthly: "Monthly Tasks",
+  weekly: "Weekly Tasks",
+  xday: "X-day Tasks",
+  daily: "Daily Tasks",
+};
 
 export const TodayTasksList = () => {
   const [tasks, setTasks] = useState<Task[]>(exampleTasks);
@@ -24,7 +32,6 @@ export const TodayTasksList = () => {
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(sortedTasks[selectedCategory as keyof typeof sortedTasks]);
     if (
       sortedTasks[selectedCategory as keyof typeof sortedTasks] &&
       sortedTasks[selectedCategory as keyof typeof sortedTasks].length === 0
@@ -87,23 +94,30 @@ export const TodayTasksList = () => {
     setIsDialogOpen(true);
   };
 
-  const categoryMapping = {
-    monthly: "Monthly Tasks",
-    weekly: "Weekly Tasks",
-    xday: "X-day Tasks",
-    daily: "Daily Tasks",
+  const getGridPosition = (index: number) => {
+    const positions = {
+      0: "col-start-1 row-start-1", // top-left
+      1: "col-start-2 row-start-1", // top-right
+      2: "col-start-1 row-start-2", // bottom-left
+      3: "col-start-2 row-start-2", // bottom-right
+    };
+    return positions[index as keyof typeof positions] || "";
   };
 
   return (
     <>
-      <div className="w-full">
+      <div className="h-full w-full">
         {tasks.length !== 0 ? (
-          <div className="grid h-full grid-cols-2 gap-6 overflow-auto px-2 pb-12 pt-6">
-            {Object.entries(sortedTasks).map(([category, tasks]) =>
-              tasks.length > 0 ? (
+          <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-12 pt-6">
+            {Object.entries(sortedTasks)
+              .filter(([_, tasks]) => tasks.length > 0)
+              .map(([category, tasks], index) => (
                 <Card
                   key={category}
-                  className="flex max-h-[25vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white"
+                  className={cn(
+                    "flex max-h-[25vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white",
+                    getGridPosition(index),
+                  )}
                   onClick={() => handleCardClick(category)}
                 >
                   <CardContent className="p-6 text-center">
@@ -119,8 +133,7 @@ export const TodayTasksList = () => {
                     </p>
                   </CardContent>
                 </Card>
-              ) : null,
-            )}
+              ))}
           </div>
         ) : (
           <div className="mt-2 flex flex-grow items-center justify-center text-center text-white">
@@ -130,27 +143,25 @@ export const TodayTasksList = () => {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[85vw] max-w-none items-center justify-center overflow-y-auto rounded-md border-[#00A3A3] bg-gray-200 px-0 pb-6 pt-0 text-black">
-          <div className="p-2 pb-[1px] pt-10">
-            <p className="mb-1 px-2 pb-2 text-center text-sm">
-              <span className="text-black">Swipe to complete a task, </span>
-              <span className="text-[#00A3A3]">
-                {`Only ${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length || 0} task${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length > 1 ? "s" : ""} left!`}
-              </span>
-            </p>
-            <div className="px-1">
-              {sortedTasks[selectedCategory as keyof typeof sortedTasks]?.map(
-                (task) => (
-                  <SwipeableTodaysTask
-                    key={task.id}
-                    task={task}
-                    returnToPosition={returnToPosition}
-                    handleSwipe={() => completeTask(task.id)}
-                    handleReturnToPosition={() => setReturnToPosition(false)}
-                  />
-                ),
-              )}
-            </div>
+        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-gray-500 bg-gray-800 px-0 pb-10 pt-14 text-black">
+          <p className="text-md mb-1 px-2 pb-2 text-center">
+            <span className="text-white">Swipe to complete a task, </span>
+            <span className="text-[#5ce1e6]">
+              {`Only ${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length || 0} task${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length > 1 ? "s" : ""} left!`}
+            </span>
+          </p>
+          <div className="w-full px-6">
+            {sortedTasks[selectedCategory as keyof typeof sortedTasks]?.map(
+              (task) => (
+                <SwipeableTodaysTask
+                  key={task.id}
+                  task={task}
+                  returnToPosition={returnToPosition}
+                  handleSwipe={() => completeTask(task.id)}
+                  handleReturnToPosition={() => setReturnToPosition(false)}
+                />
+              ),
+            )}
           </div>
         </DialogContent>
       </Dialog>

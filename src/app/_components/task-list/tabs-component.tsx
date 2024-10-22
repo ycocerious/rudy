@@ -22,12 +22,14 @@ export function TabsComponent() {
           All Tasks
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="today" className="flex flex-grow">
-        <TodayTasksList />
-      </TabsContent>
-      <TabsContent value="all">
-        <AllTasksList />
-      </TabsContent>
+      <div className="flex flex-grow justify-center">
+        <TabsContent value="today">
+          <TodayTasksList />
+        </TabsContent>
+        <TabsContent value="all">
+          <AllTasksList />
+        </TabsContent>
+      </div>
     </Tabs>
   );
 }
