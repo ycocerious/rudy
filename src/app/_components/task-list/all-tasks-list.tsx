@@ -70,20 +70,20 @@ export const AllTasksList = () => {
                 <Card
                   key={category}
                   className={cn(
-                    "flex max-h-[27vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white",
+                    "flex max-h-[27vh] cursor-pointer items-center justify-center border-primary",
                     getGridPosition(index),
                   )}
                   onClick={() => handleCardClick(category)}
                 >
                   <CardContent className="p-6 text-center">
-                    <p className="text-lg text-[#5ce1e6]">
+                    <p className="text-lg text-primary">
                       {
                         categoryMapping[
                           category as keyof typeof categoryMapping
                         ]
                       }
                     </p>
-                    <p className="text-xs text-gray-300">
+                    <p className="text-xs text-muted-foreground">
                       ({tasks.length} task{tasks.length > 1 ? "s" : ""})
                     </p>
                   </CardContent>
@@ -91,17 +91,17 @@ export const AllTasksList = () => {
               ))}
           </div>
         ) : (
-          <div className="flex flex-grow items-center justify-center text-center text-white">
+          <div className="flex flex-grow items-center justify-center text-center text-foreground">
             Click the + icon to add your first task!
           </div>
         )}
       </div>
 
       <Button
-        className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-full bg-[#5ce1e6]"
+        className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-full bg-accent"
         onClick={() => setIsSheetOpen(true)}
       >
-        <Plus size={28} className="text-gray-950" />
+        <Plus size={28} className="text-accent-foreground" />
       </Button>
 
       <AddOrEditTaskSheet
@@ -112,7 +112,7 @@ export const AllTasksList = () => {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
-        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-gray-500 bg-gray-800 px-0 pb-10 pt-14 text-black">
+        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 text-accent-foreground">
           <DialogTitle className="sr-only">
             {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
             Tasks
@@ -123,7 +123,7 @@ export const AllTasksList = () => {
           </DialogDescription>
 
           <p className="text-md mb-1 px-2 pb-2 text-center">
-            <span className="text-white">
+            <span className="text-foreground">
               Swipe to delete a task, Tap to edit
             </span>
           </p>

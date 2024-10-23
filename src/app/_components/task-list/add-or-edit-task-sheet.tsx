@@ -1,4 +1,11 @@
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -7,13 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import {
   areArraysEqual,
@@ -38,10 +38,10 @@ import {
   type SetStateAction,
 } from "react";
 import toast from "react-hot-toast";
+import { DailySelectContent } from "./daily-select-content";
 import { MonthlySelectContent } from "./monthly-select-content";
 import { WeeklySelectContent } from "./weekly-select-content";
 import { XdaySelectContent } from "./xday-select-content";
-import { DailySelectContent } from "./daily-select-content";
 
 type BaseAddOrEditTaskSheetProps = {
   isSheetOpen: boolean;
@@ -238,7 +238,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   };
 
   return (
-    <Sheet
+    <Dialog
       open={isSheetOpen}
       onOpenChange={(open) => {
         if (!open) {
@@ -250,17 +250,14 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         }
       }}
     >
-      <SheetContent
-        side="bottom"
-        className="mx-auto space-y-4 rounded-t-xl border-none bg-gray-800 sm:max-w-md"
-      >
-        <SheetHeader>
-          <SheetTitle className="text-white">
+      <DialogContent className="mx-auto max-w-[90%] space-y-4 rounded-xl border-none bg-card px-4 sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-foreground">
             {taskType === "add"
               ? "Add New Task"
               : `Edit Task: ${originalTask?.name}`}
-          </SheetTitle>
-        </SheetHeader>
+          </DialogTitle>
+        </DialogHeader>
 
         <div>
           <Input
@@ -281,7 +278,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 e.target.value = value;
               }
             }}
-            className="h-12 text-white placeholder:text-gray-400"
+            className="h-12 text-foreground"
           />
         </div>
 
@@ -295,7 +292,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             setNewRepeatDays(null);
           }}
         >
-          <SelectTrigger className="h-12 w-full text-gray-200 placeholder:text-gray-400">
+          <SelectTrigger className="h-12 w-full text-foreground">
             <SelectValue placeholder="Select Repetition duration" />
           </SelectTrigger>
           <SelectContent>
@@ -342,16 +339,16 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           />
         ) : null}
 
-        <SheetFooter>
+        <DialogFooter>
           <Button
             onClick={taskType === "add" ? addTask : editTask}
-            className="bg-[#5ce1e6] text-black hover:bg-[#5ce1e6]"
+            className="bg-primary text-accent-foreground hover:bg-primary"
             disabled={!isTaskValid}
           >
             {taskType === "add" ? "Add Task" : "Save"}
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

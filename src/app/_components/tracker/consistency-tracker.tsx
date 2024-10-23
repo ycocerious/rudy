@@ -14,7 +14,7 @@ const ScrollRightWrapper = dynamic(() => import("./scroll-right-wrapper"), {
 
 export const ConsistencyTracker = () => {
   return (
-    <Card className="mb-4 flex w-full min-w-[240px] flex-col border-gray-700 bg-gray-800 md:max-w-[1106px]">
+    <Card className="mb-4 flex w-full min-w-[240px] flex-col border-border md:max-w-[1106px]">
       <CardHeader className="relative flex flex-row items-center py-4">
         <div className="absolute left-3">
           <SidebarLayout defaultOpen={false} className="z-50">
@@ -25,7 +25,7 @@ export const ConsistencyTracker = () => {
           </SidebarLayout>
         </div>
         <div className="flex flex-grow justify-center">
-          <CardTitle className="text-center text-lg font-semibold text-gray-100 sm:text-xl md:text-2xl">
+          <CardTitle className="text-center text-lg font-semibold text-foreground sm:text-xl md:text-2xl">
             Consistency Tracker
           </CardTitle>
         </div>

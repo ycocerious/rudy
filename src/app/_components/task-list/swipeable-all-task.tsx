@@ -11,6 +11,7 @@ import {
 import { Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
+import { getColorFromTailwindClass } from "@/lib/utils/get-tailwind-color";
 
 interface SwipeableTaskProps {
   task: Task;
@@ -30,15 +31,19 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   const x = useMotionValue(0);
   const controls = useAnimation();
 
-  const threshold = 200;
+  const threshold = 250;
 
   const borderColor = useTransform(
     x,
     [0, 50, 250],
-    ["rgb(127, 233, 238)", "rgba(255, 36, 0, 1)", "rgba(255, 36, 0, 1)"],
+    [
+      getColorFromTailwindClass("primary"),
+      getColorFromTailwindClass("destructive"),
+      getColorFromTailwindClass("destructive"),
+    ],
   );
 
-  const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
+  const iconOpacity = useTransform(x, [0, 50, 250], [0, 1, 1]);
 
   const handleDragEnd = (
     _: MouseEvent | TouchEvent | PointerEvent,
@@ -79,8 +84,8 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           animate={controls}
           className="flex h-full w-full items-center justify-between py-2 pl-4 pr-2"
         >
-          <span className="text-md z-10 text-white">{task.name}</span>
-          <div className="max-w-[40%] text-right text-xs text-gray-400">
+          <span className="text-md z-10 text-foreground">{task.name}</span>
+          <div className="max-w-[40%] text-right text-xs text-muted-foreground">
             {task.category === "daily" && (
               <span className="mr-1">
                 {"Everyday" +
@@ -103,7 +108,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           className="30 absolute right-4 top-4 ml-2"
           style={{ opacity: iconOpacity }}
         >
-          <Trash2 className="text-red-800" size={24} />
+          <Trash2 className="text-destructive" size={24} />
         </motion.div>
       </motion.button>
 

@@ -119,20 +119,20 @@ export const TodayTasksList = () => {
                 <Card
                   key={category}
                   className={cn(
-                    "flex max-h-[27vh] cursor-pointer items-center justify-center border-[#5ce1e6] bg-gray-800 text-white",
+                    "flex max-h-[27vh] cursor-pointer items-center justify-center border-primary",
                     getGridPosition(index),
                   )}
                   onClick={() => handleCardClick(category)}
                 >
                   <CardContent className="p-6 text-center">
-                    <p className="text-lg text-[#5ce1e6]">
+                    <p className="text-lg text-primary">
                       {
                         categoryMapping[
                           category as keyof typeof categoryMapping
                         ]
                       }
                     </p>
-                    <p className="text-xs text-gray-300">
+                    <p className="text-xs text-muted-foreground">
                       ({tasks.length} task{tasks.length > 1 ? "s" : ""} left)
                     </p>
                   </CardContent>
@@ -140,14 +140,14 @@ export const TodayTasksList = () => {
               ))}
           </div>
         ) : (
-          <div className="flex flex-grow items-center justify-center text-center text-white">
+          <div className="flex flex-grow items-center justify-center text-center text-foreground">
             No more tasks left for today! 🙆‍♀️
           </div>
         )}
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
-        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-gray-500 bg-gray-800 px-0 pb-10 pt-14 text-black">
+        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 text-accent-foreground">
           <DialogTitle className="sr-only">
             {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
             Tasks
@@ -159,8 +159,8 @@ export const TodayTasksList = () => {
           </DialogDescription>
 
           <p className="text-md mb-1 px-2 pb-2 text-center">
-            <span className="text-white">Swipe to complete a task, </span>
-            <span className="text-[#5ce1e6]">
+            <span className="text-foreground">Swipe to complete a task, </span>
+            <span className="text-primary">
               {`Only ${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length || 0} task${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length > 1 ? "s" : ""} left!`}
             </span>
           </p>

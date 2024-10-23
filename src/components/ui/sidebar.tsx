@@ -55,7 +55,7 @@ const SidebarLayout = React.forwardRef<
           } as React.CSSProperties
         }
         className={cn(
-          "flex bg-none pl-0 text-white transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 sm:pl-[--sidebar-width]",
+          "flex bg-none pl-0 text-foreground transition-all duration-300 ease-in-out data-[sidebar=closed]:pl-0 sm:pl-[--sidebar-width]",
           className,
         )}
         {...props}
@@ -95,10 +95,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
     const sidebar = (
       <div
         ref={ref}
-        className={cn(
-          "flex h-full flex-col border-none bg-gray-800",
-          className,
-        )}
+        className={cn("flex h-full flex-col border-none bg-card", className)}
       >
         {children}
       </div>
@@ -108,7 +105,7 @@ const Sidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
       return (
         <Sheet open={open} onOpenChange={onOpenChange}>
           <SheetContent
-            className="w-[260px] border-gray-700 p-0 md:w-[--sidebar-width] [&>button]:hidden"
+            className="w-[260px] border-border p-0 md:w-[--sidebar-width] [&>button]:hidden"
             side="left"
           >
             {sidebar}
@@ -148,7 +145,7 @@ const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex items-center border-t border-gray-700 px-2.5 py-2",
+        "flex items-center border-t border-gray-600 px-2.5 py-2",
         className,
       )}
       {...props}

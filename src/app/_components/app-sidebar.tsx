@@ -19,8 +19,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="border-gray-700">
-        <SidebarLabel className="mr-1 text-lg text-white">Rudy</SidebarLabel>
+      <SidebarHeader className="border-border">
+        <SidebarLabel className="mr-1 text-lg text-foreground">
+          Rudy
+        </SidebarLabel>
         <Image src="/logo.png" alt="logo" width={30} height={30} />
       </SidebarHeader>
       <SidebarContent></SidebarContent>
@@ -28,8 +30,8 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm transition-all">
           <UserButton />
           <div className="grid flex-1">
-            <div className="font-medium text-white">{user.fullName}</div>
-            <div className="overflow-hidden text-xs text-gray-400">
+            <div className="font-medium text-foreground">{user.fullName}</div>
+            <div className="overflow-hidden text-xs text-muted">
               <div className="line-clamp-1">
                 {user.primaryEmailAddress?.emailAddress}
               </div>

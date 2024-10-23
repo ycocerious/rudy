@@ -36,9 +36,9 @@ export default function ScrollRightWrapper({
       >
         <div className="pb-4">{children}</div>
       </div>
-      <div className="custom:opacity-0 absolute bottom-0 left-0 right-0 h-1 bg-white/10 transition-opacity duration-300">
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-foreground/10 transition-opacity duration-300 custom:opacity-0">
         <div
-          className="absolute h-full bg-white/30 transition-all duration-300 ease-out"
+          className="absolute h-full bg-foreground/30 transition-all duration-300 ease-out"
           style={{
             width: "20%",
             left: `${Math.min(Math.max(scrollPercentage, 0), 80)}%`,

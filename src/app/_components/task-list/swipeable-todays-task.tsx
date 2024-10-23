@@ -1,3 +1,4 @@
+import { getColorFromTailwindClass } from "@/lib/utils/get-tailwind-color";
 import { type Task } from "@/types/task";
 import {
   motion,
@@ -8,6 +9,8 @@ import {
 } from "framer-motion";
 import { Check, Flame, Trophy } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import tailwindConfig from "tailwind.config";
+import resolveConfig from "tailwindcss/resolveConfig";
 
 interface SwipeableTaskProps {
   task: Task;
@@ -27,7 +30,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   const controls = useAnimation();
   const [isSwiped, setIsSwiped] = useState(false);
 
-  const threshold = 200; // Full swipe threshold
+  const threshold = 250; // Full swipe threshold
 
   useEffect(() => {
     if (returnToPosition) {
@@ -40,10 +43,14 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
   const borderColor = useTransform(
     x,
     [0, 50, 250],
-    ["#5ce1e6", "#00A3A3", "#00A3A3"],
+    [
+      getColorFromTailwindClass("primary"),
+      getColorFromTailwindClass("success"),
+      getColorFromTailwindClass("success"),
+    ],
   );
 
-  const iconOpacity = useTransform(x, [0, 50, 300], [0, 1, 1]);
+  const iconOpacity = useTransform(x, [0, 50, 250], [0, 1, 1]);
 
   const handleDragEnd = (
     _: MouseEvent | TouchEvent | PointerEvent,
@@ -83,11 +90,11 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         className="flex h-full w-full cursor-grab items-center justify-between py-2 pl-4 pr-2"
       >
         <div>
-          <span className="text-md z-10 mr-2 max-w-[60%] break-words text-white">
+          <span className="text-md z-10 mr-2 max-w-[60%] break-words text-foreground">
             {task.name}
           </span>
           {task.category === "daily" && (
-            <span className="text-xs text-[#00A3A3]">
+            <span className="text-success text-xs">
               {"(" + task.dailyCountFinished + "/" + task.dailyCountTotal + ")"}
             </span>
           )}
@@ -120,7 +127,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
         className="absolute right-4 z-20 ml-2"
         style={{ opacity: iconOpacity }}
       >
-        <Check className="text-[#00A3A3]" size={24} />
+        <Check className="text-success" size={24} />
       </motion.div>
     </motion.div>
   );

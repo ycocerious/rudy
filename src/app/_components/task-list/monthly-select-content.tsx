@@ -65,7 +65,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
         onValueChange={(value) => setNewRepeatFrequency(Number(value))}
         value={newRepeatFrequency?.toString() ?? undefined}
       >
-        <SelectTrigger className="h-12 w-full text-white placeholder:text-gray-400">
+        <SelectTrigger className="h-12 w-full text-foreground">
           <SelectValue placeholder="Select repetition frequency" />
         </SelectTrigger>
         <SelectContent>
@@ -79,7 +79,7 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
 
       {newRepeatFrequency !== null && (
         <div className="mt-4">
-          <p className="ml-1 text-white">
+          <p className="ml-1 text-foreground">
             Select {newRepeatFrequency} option
             {newRepeatFrequency > 1 ? "s" : ""}:
           </p>
@@ -87,8 +87,8 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
             <button
               key={value}
               onClick={() => handleDaySelection(value)}
-              className={`m-1 rounded-lg border p-2 text-sm ${
-                newRepeatDays?.includes(value) ? "bg-[#5ce1e6]" : "bg-white"
+              className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
+                newRepeatDays?.includes(value) ? "bg-primary" : "bg-foreground"
               }`}
             >
               {label}
@@ -96,8 +96,8 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
           ))}
           <button
             onClick={() => setShowCustom(!showCustom)}
-            className={`m-1 rounded-lg border p-2 text-sm ${
-              showCustom ? "bg-[#5ce1e6]" : "bg-white"
+            className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
+              showCustom ? "bg-primary" : "bg-foreground"
             }`}
           >
             Custom Dates
@@ -110,10 +110,10 @@ export const MonthlySelectContent: React.FC<MonthlySelectContentProps> = ({
                   <button
                     key={day}
                     onClick={() => handleDaySelection(day as monthDaysType)}
-                    className={`m-1 h-9 w-9 rounded-lg border ${
+                    className={`m-1 h-9 w-9 rounded-lg border text-primary-foreground ${
                       newRepeatDays?.includes(day as monthDaysType)
-                        ? "bg-[#5ce1e6]"
-                        : "bg-white"
+                        ? "bg-primary"
+                        : "bg-foreground"
                     }`}
                   >
                     {dayNumber}
