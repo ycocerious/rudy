@@ -16,10 +16,6 @@ import {
 } from "@/components/ui/select";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import {
-  areArraysEqual,
-  areDatesEqual,
-} from "@/lib/utils/referential-equality-checks";
-import {
   type dailyCountTotalType,
   type monthDaysType,
   type repeatFrequencyType,
@@ -30,13 +26,13 @@ import {
 import { type Task } from "@/types/task";
 import { nanoid } from "nanoid";
 import {
-  useCallback,
   useEffect,
-  useMemo,
+  useRef,
   useState,
   type Dispatch,
   type SetStateAction,
 } from "react";
+import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { DailySelectContent } from "./daily-select-content";
 import { MonthlySelectContent } from "./monthly-select-content";
@@ -60,182 +56,133 @@ type EditTaskSheetProps = BaseAddOrEditTaskSheetProps & {
 
 type AddOrEditTaskSheetProps = AddTaskSheetProps | EditTaskSheetProps;
 
+type FormValues = {
+  name: string;
+  category: taskCategoryType | null;
+  dailyCountTotal: dailyCountTotalType | null;
+  xValue: xValueType | null;
+  startDate: Date | null;
+  repeatFrequency: repeatFrequencyType | null;
+  repeatDays: weekDaysType[] | monthDaysType[] | null;
+};
+
 export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const { isSheetOpen, setIsSheetOpen, setTasks, taskType } = props;
-
   const originalTask = taskType === "edit" ? props.task : null;
+  const isFirstRender = useRef(true);
+  const [isTaskOperationComplete, setIsTaskOperationComplete] = useState(false);
 
-  const [newName, setNewName] = useState(originalTask?.name ?? "");
-  const [newCategory, setNewCategory] = useState<taskCategoryType | null>(
-    originalTask?.category ?? null,
-  );
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { isDirty, isValid },
+  } = useForm<FormValues>({
+    defaultValues: {
+      name: originalTask?.name ?? "",
+      category: originalTask?.category ?? null,
+      dailyCountTotal: originalTask?.dailyCountTotal ?? null,
+      xValue: originalTask?.xValue ?? null,
+      startDate: originalTask?.startDate ?? null,
+      repeatFrequency: originalTask?.repeatFrequency ?? null,
+      repeatDays: originalTask?.repeatDays ?? null,
+    },
+  });
 
-  const [newDailyCountTotal, setNewDailyCountTotal] =
-    useState<dailyCountTotalType | null>(originalTask?.dailyCountTotal ?? null);
-
-  const [newXValue, setNewXValue] = useState<xValueType | null>(
-    originalTask?.xValue ?? null,
-  );
-  const [newStartDate, setNewStartDate] = useState<Date | null>(
-    originalTask?.startDate ?? null,
-  );
-
-  const [newRepeatFrequency, setNewRepeatFrequency] =
-    useState<repeatFrequencyType | null>(originalTask?.repeatFrequency ?? null);
-  const [newRepeatDays, setNewRepeatDays] = useState<
-    weekDaysType[] | monthDaysType[] | null
-  >(originalTask?.repeatDays ?? null);
-
-  const [isTaskUpdated, setIsTaskUpdated] = useState(false);
+  const category = watch("category");
 
   const handleAddSheetClose = () => {
     setIsSheetOpen(false);
-    setNewName("");
-    setNewCategory(null);
-    setNewXValue(null);
-    setNewStartDate(null);
-    setNewRepeatFrequency(null);
-    setNewRepeatDays(null);
+    reset();
   };
 
-  const handleEditSheetClose = useCallback(() => {
+  const handleEditSheetClose = () => {
     setIsSheetOpen(false);
-    setNewName(originalTask?.name ?? "");
-    setNewCategory(originalTask?.category ?? null);
-    setNewXValue(originalTask?.xValue ?? null);
-    setNewStartDate(originalTask?.startDate ?? null);
-    setNewRepeatFrequency(originalTask?.repeatFrequency ?? null);
-    setNewRepeatDays(originalTask?.repeatDays ?? null);
-    setIsTaskUpdated(false);
-  }, [
-    originalTask?.category,
-    originalTask?.name,
-    originalTask?.repeatDays,
-    originalTask?.repeatFrequency,
-    originalTask?.startDate,
-    originalTask?.xValue,
-    setIsSheetOpen,
-  ]);
-
-  useEffect(() => {
-    if (taskType === "edit" && isTaskUpdated) {
-      handleEditSheetClose();
-      toast.success("Edited Task Successfully", { id: theOnlyToastId });
-      setIsTaskUpdated(false);
-    }
-  }, [handleEditSheetClose, isTaskUpdated, taskType]);
-
-  const hasChanges = useMemo(() => {
-    if (taskType === "add") return true;
-    if (!originalTask) return false;
-
-    return (
-      newName !== originalTask.name ||
-      newCategory !== originalTask.category ||
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      (originalTask.dailyCountTotal &&
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        newDailyCountTotal !== originalTask.dailyCountTotal) ||
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      (originalTask.startDate && newXValue !== originalTask.xValue) ||
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      (originalTask.startDate &&
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        !areDatesEqual(newStartDate, originalTask.startDate)) ||
-      (originalTask.repeatFrequency &&
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        newRepeatFrequency !== originalTask.repeatFrequency) ||
-      (originalTask.repeatDays &&
-        !areArraysEqual(newRepeatDays, originalTask.repeatDays))
-    );
-  }, [
-    taskType,
-    originalTask,
-    newName,
-    newCategory,
-    newDailyCountTotal,
-    newXValue,
-    newStartDate,
-    newRepeatFrequency,
-    newRepeatDays,
-  ]);
-
-  const isTaskValid: boolean = useMemo<boolean>(() => {
-    const isValidBasicTask = newName.trim() && newCategory;
-    if (!isValidBasicTask) return false;
-    if (taskType === "edit" && !hasChanges) return false;
-
-    if (newCategory === "daily" && !newDailyCountTotal) {
-      return false;
-    }
-
-    if (newCategory === "xdays" && (!newXValue || !newStartDate)) {
-      return false;
-    }
-
-    if (
-      (newCategory === "weekly" || newCategory === "monthly") &&
-      (!newRepeatFrequency || newRepeatDays?.length !== newRepeatFrequency)
-    ) {
-      return false;
-    }
-
-    return true;
-  }, [
-    newName,
-    newCategory,
-    taskType,
-    hasChanges,
-    newDailyCountTotal,
-    newXValue,
-    newStartDate,
-    newRepeatFrequency,
-    newRepeatDays?.length,
-  ]);
-
-  const addTask = () => {
-    if (!isTaskValid) return;
-
-    const newTask: Task = {
-      id: nanoid(),
-      name: newName.trim(),
-      category: newCategory!,
-      dailyCountTotal: newDailyCountTotal ?? undefined,
-      xValue: newXValue ?? undefined,
-      startDate: newStartDate ?? undefined,
-      repeatFrequency: newRepeatFrequency ?? undefined,
-      repeatDays: newRepeatDays ?? undefined,
-      currentStreak: 0,
-      highestStreak: 0,
-    };
-
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-    handleAddSheetClose();
-    toast.success("Added Task Successfully", { id: theOnlyToastId });
-  };
-
-  const editTask = () => {
-    if (!isTaskValid || taskType !== "edit") return;
-
-    setTasks((prevTasks) => {
-      const updatedTasks = prevTasks.map((individualTask) =>
-        individualTask.id === originalTask?.id
-          ? {
-              ...individualTask,
-              name: newName,
-              category: newCategory!,
-              dailyCountTotal: newDailyCountTotal ?? undefined,
-              xValue: newXValue ?? undefined,
-              startDate: newStartDate ?? undefined,
-              repeatFrequency: newRepeatFrequency ?? undefined,
-              repeatDays: newRepeatDays ?? undefined,
-            }
-          : individualTask,
-      );
-      setIsTaskUpdated(true);
-      return updatedTasks;
+    reset({
+      name: originalTask?.name ?? "",
+      category: originalTask?.category ?? null,
+      dailyCountTotal: originalTask?.dailyCountTotal ?? null,
+      xValue: originalTask?.xValue ?? null,
+      startDate: originalTask?.startDate ?? null,
+      repeatFrequency: originalTask?.repeatFrequency ?? null,
+      repeatDays: originalTask?.repeatDays ?? null,
     });
   };
+
+  const onSubmit = (data: FormValues) => {
+    if (taskType === "add") {
+      const newTask: Task = {
+        id: nanoid(),
+        name: data.name.trim(),
+        category: data.category!,
+        dailyCountTotal: data.dailyCountTotal ?? undefined,
+        xValue: data.xValue ?? undefined,
+        startDate: data.startDate ?? undefined,
+        repeatFrequency: data.repeatFrequency ?? undefined,
+        repeatDays: data.repeatDays ?? undefined,
+        currentStreak: 0,
+        highestStreak: 0,
+      };
+
+      setTasks((prevTasks) => {
+        const updatedTasks = [...prevTasks, newTask];
+        setIsTaskOperationComplete(true);
+        return updatedTasks;
+      });
+    } else {
+      setTasks((prevTasks) => {
+        const updatedTasks = prevTasks.map((individualTask) =>
+          individualTask.id === originalTask?.id
+            ? {
+                ...individualTask,
+                name: data.name,
+                category: data.category!,
+                dailyCountTotal: data.dailyCountTotal ?? undefined,
+                xValue: data.xValue ?? undefined,
+                startDate: data.startDate ?? undefined,
+                repeatFrequency: data.repeatFrequency ?? undefined,
+                repeatDays: data.repeatDays ?? undefined,
+              }
+            : individualTask,
+        );
+        setIsTaskOperationComplete(true);
+        return updatedTasks;
+      });
+    }
+  };
+
+  const isTaskValid = isValid && (taskType === "add" || isDirty);
+
+  useEffect(() => {
+    if (isTaskOperationComplete) {
+      if (taskType === "add") {
+        handleAddSheetClose();
+        toast.success("Added Task Successfully", { id: theOnlyToastId });
+      } else {
+        handleEditSheetClose();
+        toast.success("Edited Task Successfully", { id: theOnlyToastId });
+      }
+      setIsTaskOperationComplete(false);
+    }
+  }, [isTaskOperationComplete, taskType]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Only reset when category actually changes, not just when form becomes dirty
+    if (category && category !== originalTask?.category) {
+      setValue("xValue", null);
+      setValue("startDate", null);
+      setValue("repeatFrequency", null);
+      setValue("repeatDays", null);
+      setValue("dailyCountTotal", null);
+    }
+  }, [category, setValue, originalTask?.category]);
 
   return (
     <Dialog
@@ -259,95 +206,80 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           </DialogTitle>
         </DialogHeader>
 
-        <div>
-          <Input
-            value={newName}
-            onChange={(e) => {
-              const input = e.target.value;
-              if (input.length <= 15) {
-                setNewName(input);
-              }
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Controller
+            name="name"
+            control={control}
+            rules={{
+              required: true,
+              maxLength: 15,
+              validate: (value) => value.trim().length > 0,
             }}
-            placeholder="Enter task name (max 15 chars)"
-            maxLength={15}
-            autoFocus={taskType === "edit"}
-            onFocus={(e) => {
-              if (taskType === "edit") {
-                const value = e.target.value;
-                e.target.value = "";
-                e.target.value = value;
-              }
-            }}
-            className="h-12"
+            render={({ field }) => (
+              <Input
+                {...field}
+                placeholder="Enter task name (max 15 chars)"
+                maxLength={15}
+                autoFocus={taskType === "edit"}
+                onFocus={(e) => {
+                  // Prevent the default focus behavior
+                  e.preventDefault();
+                  if (taskType === "edit") {
+                    const input = e.target;
+                    // Small delay to ensure DOM is ready
+                    setTimeout(() => {
+                      const length = input.value.length;
+                      input.setSelectionRange(length, length);
+                    }, 0);
+                  }
+                }}
+                className="h-12"
+              />
+            )}
           />
-        </div>
 
-        <Select
-          value={newCategory ?? undefined}
-          onValueChange={(value: taskCategoryType) => {
-            setNewCategory(value);
-            setNewXValue(null);
-            setNewStartDate(null);
-            setNewRepeatFrequency(null);
-            setNewRepeatDays(null);
-          }}
-        >
-          <SelectTrigger className="h-12 w-full">
-            <SelectValue placeholder="Select Repetition frequency" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="daily">Repeat daily</SelectItem>
-            <SelectItem value="weekly">Repeat weekly</SelectItem>
-            <SelectItem value="monthly">Repeat monthly</SelectItem>
-            <SelectItem value="xdays">Repeat x days once</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {newCategory && newCategory === "monthly" ? (
-          <MonthlySelectContent
-            newRepeatFrequency={newRepeatFrequency}
-            newRepeatDays={newRepeatDays as monthDaysType[]}
-            setNewRepeatFrequency={setNewRepeatFrequency}
-            setNewRepeatDays={
-              setNewRepeatDays as Dispatch<
-                SetStateAction<monthDaysType[] | null>
+          <Controller
+            name="category"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select
+                onValueChange={field.onChange}
+                value={field.value ?? undefined}
               >
-            }
+                <SelectTrigger className="h-12 w-full">
+                  <SelectValue placeholder="Select Repetition frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Repeat daily</SelectItem>
+                  <SelectItem value="weekly">Repeat weekly</SelectItem>
+                  <SelectItem value="monthly">Repeat monthly</SelectItem>
+                  <SelectItem value="xdays">Repeat x days once</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           />
-        ) : newCategory === "weekly" ? (
-          <WeeklySelectContent
-            newRepeatFrequency={newRepeatFrequency}
-            newRepeatDays={newRepeatDays as weekDaysType[]}
-            setNewRepeatFrequency={setNewRepeatFrequency}
-            setNewRepeatDays={
-              setNewRepeatDays as Dispatch<
-                SetStateAction<weekDaysType[] | null>
-              >
-            }
-          />
-        ) : newCategory === "xdays" ? (
-          <XdaySelectContent
-            newXValue={newXValue}
-            newStartDate={newStartDate}
-            setNewXValue={setNewXValue}
-            setNewStartDate={setNewStartDate}
-          />
-        ) : newCategory === "daily" ? (
-          <DailySelectContent
-            newDailyCountTotal={newDailyCountTotal}
-            setNewDailyCountTotal={setNewDailyCountTotal}
-          />
-        ) : null}
 
-        <DialogFooter>
-          <Button
-            onClick={taskType === "add" ? addTask : editTask}
-            className="bg-primary text-accent-foreground hover:bg-primary"
-            disabled={!isTaskValid}
-          >
-            {taskType === "add" ? "Add Task" : "Save"}
-          </Button>
-        </DialogFooter>
+          {category === "monthly" && <MonthlySelectContent control={control} />}
+          {category === "weekly" && <WeeklySelectContent control={control} />}
+          {category === "xdays" && (
+            <XdaySelectContent
+              control={control}
+              originalTask={originalTask ?? undefined}
+            />
+          )}
+          {category === "daily" && <DailySelectContent control={control} />}
+
+          <DialogFooter>
+            <Button
+              type="submit"
+              className="bg-primary text-accent-foreground hover:bg-primary"
+              disabled={!isTaskValid}
+            >
+              {taskType === "add" ? "Add Task" : "Save"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

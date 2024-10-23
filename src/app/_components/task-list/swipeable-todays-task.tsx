@@ -9,8 +9,6 @@ import {
 } from "framer-motion";
 import { Check, Flame, Trophy } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import tailwindConfig from "tailwind.config";
-import resolveConfig from "tailwindcss/resolveConfig";
 
 interface SwipeableTaskProps {
   task: Task;
@@ -100,7 +98,6 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
           )}
         </div>
 
-        {/* Updated this part */}
         <div className="max-w-[40%] text-right">
           <div className="flex flex-wrap justify-end gap-2">
             {(task.currentStreak ?? 0) > 0 && (

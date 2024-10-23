@@ -6,31 +6,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { xValueEnum, type xValueType } from "@/types/form-types";
+import { areDatesEqual } from "@/lib/utils/referential-equality-checks";
+import { xValueEnum } from "@/types/form-types";
+import { Task } from "@/types/task";
 import { addDays, format, startOfDay } from "date-fns";
-import React, { useMemo, type Dispatch, type SetStateAction } from "react";
+import { useMemo } from "react";
+import { Control, Controller, useWatch } from "react-hook-form";
 
 type XdaySelectContentProps = {
-  newXValue: xValueType | null;
-  setNewXValue: Dispatch<SetStateAction<xValueType | null>>;
-  newStartDate: Date | null;
-  setNewStartDate: Dispatch<SetStateAction<Date | null>>;
+  control: Control<any>;
+  originalTask?: Task;
 };
 
-export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
-  newXValue,
-  setNewXValue,
-  newStartDate,
-  setNewStartDate,
-}) => {
+export const XdaySelectContent = ({
+  control,
+  originalTask,
+}: XdaySelectContentProps) => {
+  const xValue = useWatch({
+    control,
+    name: "xValue",
+  });
+  const startDate = useWatch({
+    control,
+    name: "startDate",
+  });
+
   const today = useMemo(() => startOfDay(new Date()), []);
   const oneWeekFromToday = useMemo(() => addDays(today, 6), [today]);
-
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      setNewStartDate(date);
-    }
-  };
 
   const isDateDisabled = (date: Date) => {
     return date < today || date > oneWeekFromToday;
@@ -38,42 +40,64 @@ export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
 
   return (
     <div className="space-y-4">
-      <Select
-        onValueChange={(value) => {
-          setNewXValue(Number(value) as xValueType);
-          // setNewStartDate(null); // Reset start date when x-value changes
-        }}
-        value={newXValue?.toString() ?? undefined}
-      >
-        <SelectTrigger className="h-12 w-full">
-          <SelectValue placeholder="Select value of x" />
-        </SelectTrigger>
-        <SelectContent>
-          {xValueEnum.map((value) => (
-            <SelectItem key={value} value={value.toString()}>
-              Every {value} days
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Controller
+        name="xValue"
+        control={control}
+        rules={{ required: true }}
+        render={({ field }) => (
+          <Select
+            onValueChange={(value) => field.onChange(Number(value))}
+            value={field.value?.toString()}
+          >
+            <SelectTrigger className="h-12 w-full">
+              <SelectValue placeholder="Select value of x" />
+            </SelectTrigger>
+            <SelectContent>
+              {xValueEnum.map((value) => (
+                <SelectItem key={value} value={value.toString()}>
+                  Every {value} days
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      />
 
-      {newXValue !== null && (
+      {xValue && (
         <div className="w-[70%]">
           <p className="ml-1 text-sm">Select start date:</p>
-          <Calendar
-            mode="single"
-            selected={newStartDate ?? undefined}
-            onSelect={handleDateSelect}
-            disabled={isDateDisabled}
-            initialFocus
+          <Controller
+            name="startDate"
+            control={control}
+            rules={{
+              required: true,
+              validate: (value) => {
+                // If we're in edit mode and the dates are same, consider it not changed
+                if (originalTask?.startDate) {
+                  return !areDatesEqual(value, originalTask.startDate, {
+                    ignoreTime: true,
+                  });
+                }
+                return true;
+              },
+            }}
+            render={({ field }) => (
+              <Calendar
+                mode="single"
+                selected={field.value}
+                onSelect={field.onChange}
+                disabled={isDateDisabled}
+                initialFocus
+              />
+            )}
           />
         </div>
       )}
 
-      {newXValue && newStartDate && today <= newStartDate && (
+      {xValue && startDate && today <= startDate && (
         <p className="ml-1 text-sm">
-          Task will repeat every {newXValue} days, starting from{" "}
-          {format(newStartDate, "MMMM d, yyyy")}
+          Task will repeat every {xValue} days, starting from{" "}
+          {format(startDate, "MMMM d, yyyy")}
         </p>
       )}
     </div>

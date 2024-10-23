@@ -5,82 +5,91 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  type weekDaysType,
-  repeatFrequencyEnum,
-  type repeatFrequencyType,
-  weekDaysEnum,
-} from "@/types/form-types";
-import React, { type Dispatch, type SetStateAction, useEffect } from "react";
+import { repeatFrequencyEnum, weekDaysEnum } from "@/types/form-types";
+import { Control, Controller, useWatch } from "react-hook-form";
 
 type WeeklySelectContentProps = {
-  newRepeatFrequency: repeatFrequencyType | null;
-  newRepeatDays: weekDaysType[] | null;
-  setNewRepeatFrequency: Dispatch<SetStateAction<repeatFrequencyType | null>>;
-  setNewRepeatDays: Dispatch<SetStateAction<weekDaysType[] | null>>;
+  control: Control<any>;
 };
 
-export const WeeklySelectContent: React.FC<WeeklySelectContentProps> = ({
-  newRepeatFrequency,
-  newRepeatDays,
-  setNewRepeatFrequency,
-  setNewRepeatDays,
-}) => {
-  useEffect(() => {
-    if (newRepeatFrequency === null) {
-      setNewRepeatDays(null);
-    }
-  }, [newRepeatFrequency, setNewRepeatDays]);
-
-  const handleDaySelection = (day: weekDaysType) => {
-    if (newRepeatFrequency === null) return;
-
-    setNewRepeatDays((prev) => {
-      if (prev === null) return [day];
-      if (prev.includes(day)) return prev.filter((d) => d !== day);
-      if (prev.length < newRepeatFrequency) return [...prev, day];
-      return [...prev.slice(0, -1), day];
-    });
-  };
+export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
+  const repeatFrequency = useWatch({
+    control,
+    name: "repeatFrequency",
+  });
+  const repeatDays = useWatch({
+    control,
+    name: "repeatDays",
+  });
 
   return (
     <>
-      <Select
-        onValueChange={(value) => setNewRepeatFrequency(Number(value))}
-        value={newRepeatFrequency?.toString() ?? undefined}
-      >
-        <SelectTrigger className="h-12 w-full">
-          <SelectValue placeholder="Select repetition frequency" />
-        </SelectTrigger>
-        <SelectContent>
-          {repeatFrequencyEnum.map((freq) => (
-            <SelectItem key={freq} value={freq.toString()}>
-              {freq} time{freq > 1 ? "s" : ""} a week
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Controller
+        name="repeatFrequency"
+        control={control}
+        rules={{ required: true }}
+        render={({ field }) => (
+          <Select
+            onValueChange={(value) => field.onChange(Number(value))}
+            value={field.value?.toString()}
+          >
+            <SelectTrigger className="h-12 w-full">
+              <SelectValue placeholder="Select repetition frequency" />
+            </SelectTrigger>
+            <SelectContent>
+              {repeatFrequencyEnum.map((freq) => (
+                <SelectItem key={freq} value={freq.toString()}>
+                  {freq} time{freq > 1 ? "s" : ""} a week
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      />
 
-      {newRepeatFrequency !== null && (
-        <div className="mt-4">
-          <p className="ml-1">
-            Select {newRepeatFrequency} day
-            {newRepeatFrequency > 1 ? "s" : ""}:
-          </p>
-          <div className="flex flex-wrap">
-            {weekDaysEnum.map((day) => (
-              <button
-                key={day}
-                onClick={() => handleDaySelection(day)}
-                className={`m-1 h-10 w-24 rounded-lg border text-sm text-primary-foreground ${
-                  newRepeatDays?.includes(day) ? "bg-primary" : "bg-foreground"
-                }`}
-              >
-                {day}
-              </button>
-            ))}
-          </div>
-        </div>
+      {repeatFrequency && (
+        <Controller
+          name="repeatDays"
+          control={control}
+          rules={{
+            required: true,
+            validate: (value) =>
+              Array.isArray(value) && value.length === repeatFrequency,
+          }}
+          render={({ field }) => (
+            <div className="mt-4">
+              <p className="ml-1">
+                Select {repeatFrequency} day
+                {repeatFrequency > 1 ? "s" : ""}:
+              </p>
+              <div className="flex flex-wrap">
+                {weekDaysEnum.map((day) => (
+                  <button
+                    type="button"
+                    key={day}
+                    onClick={() => {
+                      const currentValue = field.value || [];
+                      if (currentValue.includes(day)) {
+                        field.onChange(
+                          currentValue.filter((d: string) => d !== day),
+                        );
+                      } else if (currentValue.length < repeatFrequency) {
+                        field.onChange([...currentValue, day]);
+                      } else {
+                        field.onChange([...currentValue.slice(0, -1), day]);
+                      }
+                    }}
+                    className={`m-1 h-10 w-24 rounded-lg border text-sm text-primary-foreground ${
+                      repeatDays?.includes(day) ? "bg-primary" : "bg-foreground"
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        />
       )}
     </>
   );
