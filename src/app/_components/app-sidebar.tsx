@@ -20,7 +20,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-gray-700">
-        <SidebarLabel className="text-lg text-white">Rudy</SidebarLabel>
+        <SidebarLabel className="mr-1 text-lg text-white">Rudy</SidebarLabel>
         <Image src="/logo.png" alt="logo" width={30} height={30} />
       </SidebarHeader>
       <SidebarContent></SidebarContent>

@@ -29,7 +29,7 @@ export const Grid = () => {
                 className={`h-[0.85rem] w-[0.85rem] rounded-[2px] sm:h-[0.9rem] sm:w-[0.9rem] sm:rounded-[2px] md:h-4 md:w-4 md:rounded-[3px]`}
                 style={{ backgroundColor: boxColour }}
                 title={`Week ${weekIndex + 1}, Day ${rowIndex + 1}: ${
-                  (row[weekIndex] ?? 0) * 20
+                  (row[weekIndex] ?? 0) * 25
                 }% completed`}
               />
             );

@@ -7,7 +7,7 @@ export const generateMockData = () => {
       if (week < 26) {
         rowData.push(0); // Indicate no data for first 6 months
       } else {
-        rowData.push(Math.floor(Math.random() * 6)); // 0-5 for variety
+        rowData.push(Math.floor(Math.random() * 5)); // 0-4 for variety
       }
     }
     data.push(rowData);
