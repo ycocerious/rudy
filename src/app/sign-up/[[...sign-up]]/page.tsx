@@ -11,10 +11,10 @@ export default function Page() {
         height={150}
         className="mb-6"
       />
-      <h1 className="mb-2 text-2xl text-foreground">
+      <h1 className="mb-2 text-2xl">
         Welcome to <span className="text-primary">Rudy!</span>
       </h1>
-      <p className="text-md mb-10 px-6 text-center text-foreground">
+      <p className="text-md mb-10 px-6 text-center">
         The simplest way to build habits and systems in your life
       </p>
       <SignUp />

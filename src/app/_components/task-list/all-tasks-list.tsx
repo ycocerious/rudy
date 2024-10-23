@@ -91,7 +91,7 @@ export const AllTasksList = () => {
               ))}
           </div>
         ) : (
-          <div className="flex flex-grow items-center justify-center text-center text-foreground">
+          <div className="flex flex-grow items-center justify-center text-center">
             Click the + icon to add your first task!
           </div>
         )}
@@ -112,7 +112,7 @@ export const AllTasksList = () => {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
-        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 text-accent-foreground sm:max-w-sm">
+        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 sm:max-w-sm">
           <DialogTitle className="sr-only">
             {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
             Tasks
@@ -123,8 +123,9 @@ export const AllTasksList = () => {
           </DialogDescription>
 
           <p className="text-md mb-1 px-2 pb-2 text-center">
-            <span className="text-foreground">
-              Swipe to delete a task, Tap to edit
+            <span>
+              Swipe to <span className="text-destructive">delete a task</span>,
+              Tap to edit
             </span>
           </p>
 

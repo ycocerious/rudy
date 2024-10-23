@@ -84,7 +84,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           animate={controls}
           className="flex h-full w-full items-center justify-between py-2 pl-4 pr-2"
         >
-          <span className="text-md z-10 text-foreground">{task.name}</span>
+          <span className="text-md z-10">{task.name}</span>
           <div className="max-w-[40%] text-right text-xs text-muted-foreground">
             {task.category === "daily" && (
               <span className="mr-1">

@@ -30,7 +30,7 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm transition-all">
           <UserButton />
           <div className="grid flex-1">
-            <div className="font-medium text-foreground">{user.fullName}</div>
+            <div className="font-medium">{user.fullName}</div>
             <div className="overflow-hidden text-xs text-muted">
               <div className="line-clamp-1">
                 {user.primaryEmailAddress?.emailAddress}

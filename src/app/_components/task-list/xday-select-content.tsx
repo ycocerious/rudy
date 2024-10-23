@@ -45,7 +45,7 @@ export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
         }}
         value={newXValue?.toString() ?? undefined}
       >
-        <SelectTrigger className="h-12 w-full text-foreground">
+        <SelectTrigger className="h-12 w-full">
           <SelectValue placeholder="Select value of x" />
         </SelectTrigger>
         <SelectContent>
@@ -59,7 +59,7 @@ export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
 
       {newXValue !== null && (
         <div className="w-[70%]">
-          <p className="ml-1 text-sm text-foreground">Select start date:</p>
+          <p className="ml-1 text-sm">Select start date:</p>
           <Calendar
             mode="single"
             selected={newStartDate ?? undefined}
@@ -71,7 +71,7 @@ export const XdaySelectContent: React.FC<XdaySelectContentProps> = ({
       )}
 
       {newXValue && newStartDate && today <= newStartDate && (
-        <p className="ml-1 text-sm text-foreground">
+        <p className="ml-1 text-sm">
           Task will repeat every {newXValue} days, starting from{" "}
           {format(newStartDate, "MMMM d, yyyy")}
         </p>

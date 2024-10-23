@@ -25,7 +25,7 @@ export const ConsistencyTracker = () => {
           </SidebarLayout>
         </div>
         <div className="flex flex-grow justify-center">
-          <CardTitle className="text-center text-lg font-semibold text-foreground">
+          <CardTitle className="text-center text-lg font-semibold">
             Consistency Tracker
           </CardTitle>
         </div>

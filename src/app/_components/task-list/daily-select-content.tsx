@@ -28,7 +28,7 @@ export const DailySelectContent = ({
         }}
         value={newDailyCountTotal?.toString() ?? undefined}
       >
-        <SelectTrigger className="h-12 w-full text-foreground">
+        <SelectTrigger className="h-12 w-full">
           <SelectValue placeholder="How many times a day?" />
         </SelectTrigger>
         <SelectContent>

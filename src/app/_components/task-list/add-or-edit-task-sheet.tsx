@@ -252,7 +252,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     >
       <DialogContent className="mx-auto max-w-[90%] space-y-4 rounded-xl border-none bg-card px-4 sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-foreground">
+          <DialogTitle>
             {taskType === "add"
               ? "Add New Task"
               : `Edit Task: ${originalTask?.name}`}
@@ -278,7 +278,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 e.target.value = value;
               }
             }}
-            className="h-12 text-foreground"
+            className="h-12"
           />
         </div>
 
@@ -292,8 +292,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             setNewRepeatDays(null);
           }}
         >
-          <SelectTrigger className="h-12 w-full text-foreground">
-            <SelectValue placeholder="Select Repetition duration" />
+          <SelectTrigger className="h-12 w-full">
+            <SelectValue placeholder="Select Repetition frequency" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="daily">Repeat daily</SelectItem>

@@ -140,14 +140,14 @@ export const TodayTasksList = () => {
               ))}
           </div>
         ) : (
-          <div className="flex flex-grow items-center justify-center text-center text-foreground">
+          <div className="flex flex-grow items-center justify-center text-center">
             No more tasks left for today! 🙆‍♀️
           </div>
         )}
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
-        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 text-accent-foreground sm:max-w-sm">
+        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 sm:max-w-sm">
           <DialogTitle className="sr-only">
             {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
             Tasks
@@ -159,10 +159,7 @@ export const TodayTasksList = () => {
           </DialogDescription>
 
           <p className="text-md mb-1 px-2 pb-2 text-center">
-            <span className="text-foreground">Swipe to complete a task, </span>
-            <span className="text-primary">
-              {`Only ${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length || 0} task${sortedTasks[selectedCategory as keyof typeof sortedTasks]?.length > 1 ? "s" : ""} left!`}
-            </span>
+            Swipe to complete a task!
           </p>
 
           <div className="w-full px-6">

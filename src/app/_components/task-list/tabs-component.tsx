@@ -11,13 +11,13 @@ export function TabsComponent() {
       <TabsList className="mb-6 grid h-11 w-full grid-cols-2 rounded-lg bg-card text-muted">
         <TabsTrigger
           value="today"
-          className="h-9 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground"
+          className="h-9 rounded-md data-[state=active]:bg-background"
         >
           Today&apos;s tasks
         </TabsTrigger>
         <TabsTrigger
           value="all"
-          className="h-9 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground"
+          className="h-9 rounded-md data-[state=active]:bg-background"
         >
           All Tasks
         </TabsTrigger>
