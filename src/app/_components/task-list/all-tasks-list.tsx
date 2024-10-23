@@ -112,7 +112,7 @@ export const AllTasksList = () => {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
-        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 text-accent-foreground">
+        <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 text-accent-foreground sm:max-w-sm">
           <DialogTitle className="sr-only">
             {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
             Tasks

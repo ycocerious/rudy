@@ -250,7 +250,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         }
       }}
     >
-      <DialogContent className="mx-auto max-w-[90%] space-y-4 rounded-xl border-none bg-card px-4 sm:max-w-md">
+      <DialogContent className="mx-auto max-w-[90%] space-y-4 rounded-xl border-none bg-card px-4 sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="text-foreground">
             {taskType === "add"

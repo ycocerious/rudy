@@ -6,7 +6,7 @@ export function TabsComponent() {
   return (
     <Tabs
       defaultValue="today"
-      className="flex w-full min-w-[240px] max-w-lg flex-grow flex-col"
+      className="flex w-full min-w-[240px] max-w-sm flex-grow flex-col"
     >
       <TabsList className="mb-6 grid h-11 w-full grid-cols-2 rounded-lg bg-card text-muted">
         <TabsTrigger
