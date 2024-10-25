@@ -11,7 +11,7 @@ import {
   type monthDaysType,
 } from "@/types/form-types";
 import { useEffect, useState } from "react";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { type Control, Controller, useWatch } from "react-hook-form";
 
 type MonthlySelectContentProps = {
   control: Control<any>;

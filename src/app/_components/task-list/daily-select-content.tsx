@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { dailyCountTotalEnum } from "@/types/form-types";
-import { Control, Controller } from "react-hook-form";
+import { type Control, Controller } from "react-hook-form";
 
 type DailySelectContentProps = {
   control: Control<any>;

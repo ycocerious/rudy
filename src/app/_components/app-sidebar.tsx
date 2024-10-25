@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Sidebar,
   SidebarContent,
@@ -7,13 +5,14 @@ import {
   SidebarHeader,
   SidebarLabel,
 } from "@/components/ui/sidebar";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 
-export function AppSidebar() {
-  const { isLoaded, isSignedIn, user } = useUser();
+export async function AppSidebar() {
+  const user = await currentUser();
 
-  if (!isLoaded || !isSignedIn) {
+  if (!user) {
     return null;
   }
 
@@ -33,7 +32,7 @@ export function AppSidebar() {
             <div className="font-medium">{user.fullName}</div>
             <div className="overflow-hidden text-xs text-muted">
               <div className="line-clamp-1">
-                {user.primaryEmailAddress?.emailAddress}
+                {user.primaryEmailAddress?.emailAddress ?? "No Email Id added"}
               </div>
             </div>
           </div>

@@ -1,5 +1,3 @@
-"use client";
-
 import "@/styles/globals.css";
 import { TabsComponent } from "./_components/task-list/tabs-component";
 import { ConsistencyTracker } from "./_components/tracker/consistency-tracker";

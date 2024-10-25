@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/select";
 import { areDatesEqual } from "@/lib/utils/referential-equality-checks";
 import { xValueEnum } from "@/types/form-types";
-import { Task } from "@/types/task";
+import { type Task } from "@/types/task";
 import { addDays, format, startOfDay } from "date-fns";
 import { useMemo } from "react";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { type Control, Controller, useWatch } from "react-hook-form";
 
 type XdaySelectContentProps = {
   control: Control<any>;

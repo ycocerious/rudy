@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { repeatFrequencyEnum, weekDaysEnum } from "@/types/form-types";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { type Control, Controller, useWatch } from "react-hook-form";
 
 type WeeklySelectContentProps = {
   control: Control<any>;
