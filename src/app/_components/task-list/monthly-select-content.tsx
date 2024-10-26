@@ -71,8 +71,10 @@ export const MonthlySelectContent = ({
         rules={{ required: true }}
         render={({ field }) => (
           <Select
-            onValueChange={(value) => field.onChange(Number(value))}
-            value={field.value?.toString()}
+            onValueChange={(value) =>
+              field.onChange(value ? Number(value) : null)
+            }
+            value={field.value?.toString() ?? ""}
           >
             <SelectTrigger className="h-12 w-full">
               <SelectValue placeholder="Select repetition frequency" />
