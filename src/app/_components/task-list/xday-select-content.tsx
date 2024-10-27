@@ -12,9 +12,10 @@ import { type Task } from "@/types/task";
 import { addDays, format, startOfDay } from "date-fns";
 import { useMemo } from "react";
 import { type Control, Controller, useWatch } from "react-hook-form";
+import { type FormValues } from "./add-or-edit-task-sheet";
 
 type XdaySelectContentProps = {
-  control: Control<any>;
+  control: Control<FormValues>;
   originalTask?: Task;
 };
 
@@ -84,7 +85,7 @@ export const XdaySelectContent = ({
             render={({ field }) => (
               <Calendar
                 mode="single"
-                selected={field.value}
+                selected={field.value ?? undefined}
                 onSelect={field.onChange}
                 disabled={isDateDisabled}
                 initialFocus

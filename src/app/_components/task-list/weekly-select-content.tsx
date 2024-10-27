@@ -5,11 +5,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { repeatFrequencyEnum, weekDaysEnum } from "@/types/form-types";
+import {
+  repeatFrequencyEnum,
+  weekDaysEnum,
+  type weekDaysType,
+} from "@/types/form-types";
 import { type Control, Controller, useWatch } from "react-hook-form";
+import { type FormValues } from "./add-or-edit-task-sheet";
 
 type WeeklySelectContentProps = {
-  control: Control<any>;
+  control: Control<FormValues>;
 };
 
 export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
@@ -20,7 +25,7 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
   const repeatDays = useWatch({
     control,
     name: "repeatDays",
-  });
+  }) as weekDaysType[] | null;
 
   return (
     <>
@@ -70,7 +75,8 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
                     type="button"
                     key={day}
                     onClick={() => {
-                      const currentValue = field.value || [];
+                      const currentValue =
+                        (field.value as weekDaysType[]) ?? [];
                       if (currentValue.includes(day)) {
                         field.onChange(
                           currentValue.filter((d: string) => d !== day),

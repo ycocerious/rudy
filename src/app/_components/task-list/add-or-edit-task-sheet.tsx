@@ -56,7 +56,7 @@ type EditTaskSheetProps = BaseAddOrEditTaskSheetProps & {
 
 type AddOrEditTaskSheetProps = AddTaskSheetProps | EditTaskSheetProps;
 
-type FormValues = {
+export type FormValues = {
   name: string;
   category: taskCategoryType | null;
   dailyCountTotal: dailyCountTotalType | null;

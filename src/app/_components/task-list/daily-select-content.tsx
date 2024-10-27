@@ -7,9 +7,10 @@ import {
 } from "@/components/ui/select";
 import { dailyCountTotalEnum } from "@/types/form-types";
 import { type Control, Controller } from "react-hook-form";
+import { type FormValues } from "./add-or-edit-task-sheet";
 
 type DailySelectContentProps = {
-  control: Control<any>;
+  control: Control<FormValues>;
 };
 
 export const DailySelectContent = ({ control }: DailySelectContentProps) => {

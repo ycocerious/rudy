@@ -7,14 +7,15 @@ import {
 } from "@/components/ui/select";
 import {
   customMonthDayEnum,
-  repeatFrequencyEnum,
   type monthDaysType,
+  repeatFrequencyEnum,
 } from "@/types/form-types";
 import { useEffect, useState } from "react";
 import { type Control, Controller, useWatch } from "react-hook-form";
+import { type FormValues } from "./add-or-edit-task-sheet";
 
 type MonthlySelectContentProps = {
-  control: Control<any>;
+  control: Control<FormValues>;
 };
 
 export const MonthlySelectContent = ({
@@ -27,7 +28,7 @@ export const MonthlySelectContent = ({
   const repeatDays = useWatch({
     control,
     name: "repeatDays",
-  });
+  }) as monthDaysType[] | null;
 
   const initialOptions: [monthDaysType, string][] = [
     ["1st", "First of every month"],
@@ -110,8 +111,8 @@ export const MonthlySelectContent = ({
                   type="button"
                   key={value}
                   onClick={() => {
-                    const currentValue = field.value || [];
-                    if (currentValue.includes(value)) {
+                    const currentValue = (field.value as monthDaysType[]) ?? [];
+                    if (value && currentValue.includes(value)) {
                       field.onChange(
                         currentValue.filter((d: string) => d !== value),
                       );
@@ -122,7 +123,9 @@ export const MonthlySelectContent = ({
                     }
                   }}
                   className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
-                    repeatDays?.includes(value) ? "bg-primary" : "bg-foreground"
+                    value && repeatDays?.includes(value)
+                      ? "bg-primary"
+                      : "bg-foreground"
                   }`}
                 >
                   {label}
@@ -146,7 +149,8 @@ export const MonthlySelectContent = ({
                         type="button"
                         key={day}
                         onClick={() => {
-                          const currentValue = field.value || [];
+                          const currentValue =
+                            (field.value as monthDaysType[]) ?? [];
                           if (currentValue.includes(day)) {
                             field.onChange(
                               currentValue.filter((d: string) => d !== day),
