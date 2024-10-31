@@ -3,11 +3,13 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarItem,
   SidebarLabel,
 } from "@/components/ui/sidebar";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
+import Link from "next/link";
 
 export async function AppSidebar() {
   const user = await currentUser();
@@ -24,7 +26,16 @@ export async function AppSidebar() {
         </SidebarLabel>
         <Image src="/logo.png" alt="logo" width={30} height={30} />
       </SidebarHeader>
-      <SidebarContent></SidebarContent>
+      <SidebarContent className="pt-0">
+        <SidebarItem className="border border-t-0 py-3">
+          <Link
+            href="/feedback"
+            className="text-primary transition-colors hover:text-accent"
+          >
+            Leave A Feedback!
+          </Link>
+        </SidebarItem>
+      </SidebarContent>
       <SidebarFooter>
         <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm transition-all">
           <UserButton />
