@@ -35,6 +35,9 @@ export function useSortedByCategoryTasks(tasks: Task[]): SortedTasks {
   });
 
   return useMemo(() => {
+    if (!tasks) {
+      return { monthly: [], weekly: [], xdays: [], daily: [] };
+    }
     if (!areTasksEqual(tasks, tasksRef.current)) {
       tasksRef.current = tasks;
       sortedTasksRef.current = sortTasksByCategory(tasks);

@@ -9,7 +9,7 @@ import {
 } from "./form-types";
 
 export type Task = {
-  id: string;
+  id: number;
   name: string;
   category: taskCategoryType;
   currentStreak: number;

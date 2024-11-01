@@ -114,7 +114,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const onSubmit = (data: FormValues) => {
     if (taskType === "add") {
       const newTask: Task = {
-        id: nanoid(),
+        id: Number(nanoid()),
         name: data.name.trim(),
         category: data.category!,
         dailyCountTotal: data.dailyCountTotal ?? undefined,

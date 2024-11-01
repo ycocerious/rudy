@@ -13,7 +13,9 @@ import {
 } from "drizzle-orm/pg-core";
 const commonIdSchema = (columnName: string) => serial(columnName).primaryKey();
 
-const taskCategoryPgEnum = pgEnum("task_category", taskCategoryEnum);
+export const taskCategoryPgEnum = pgEnum("task_category", [
+  ...taskCategoryEnum,
+]);
 
 export const users = pgTable(
   "users",
@@ -61,7 +63,7 @@ export const tasks = pgTable(
     weekDays: text("week_days").array(),
     monthDays: integer("month_days").array(), // [1-28, -1=first weekend, -2=last date, -3=last weekend ]
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
     isArchived: boolean("is_archived").default(false).notNull(),
   },
   (table) => ({

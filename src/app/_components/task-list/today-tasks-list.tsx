@@ -8,14 +8,14 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
+import { api } from "@/trpc/react";
 import {
-  type taskCategoryType,
   type dailyCountFinishedType,
+  type taskCategoryType,
 } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { useCallback, useEffect, useState } from "react";
@@ -30,7 +30,11 @@ export const categoryMapping = {
 } satisfies Record<taskCategoryType, string>;
 
 export const TodayTasksList = () => {
-  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
+  //trpc related
+  const { data: dbTasks, isLoading } = api.task.getAll.useQuery();
+
+  //client related
+  const [tasks, setTasks] = useState<Task[]>(dbTasks as Task[]);
   const sortedTasks = useSortedByCategoryTasks(tasks);
 
   const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
@@ -56,7 +60,7 @@ export const TodayTasksList = () => {
     }
   }, [dialogOpenChange, selectedCategory, sortedTasks]);
 
-  const completeTask = (id: string) => {
+  const completeTask = (id: number) => {
     const taskToComplete = tasks.find((task) => task.id === id);
     if (!taskToComplete) return;
 
@@ -108,10 +112,12 @@ export const TodayTasksList = () => {
     setIsDialogOpen(true);
   };
 
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <>
       <div className="z-10 h-full w-full">
-        {tasks.length !== 0 ? (
+        {tasks && tasks.length !== 0 ? (
           <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-4">
             {Object.entries(sortedTasks)
               .filter(([_, tasks]) => tasks.length > 0)
