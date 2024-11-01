@@ -64,7 +64,6 @@ export const customMonthDayEnum = [
   "26th",
   "27th",
   "28th",
-  "29th",
 ] as const;
 export const allMonthDaysEnum = [
   ...customMonthDayEnum,

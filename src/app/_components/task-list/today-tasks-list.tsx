@@ -31,10 +31,10 @@ export const categoryMapping = {
 
 export const TodayTasksList = () => {
   //trpc related
-  const { data: dbTasks, isLoading } = api.task.getAll.useQuery();
+  const { data: dbTasks, isLoading } = api.task.getTodaysTasks.useQuery();
 
   //client related
-  const [tasks, setTasks] = useState<Task[]>(dbTasks as Task[]);
+  const [tasks, setTasks] = useState<Task[]>(dbTasks!);
   const sortedTasks = useSortedByCategoryTasks(tasks);
 
   const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
