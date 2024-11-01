@@ -213,7 +213,10 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             rules={{
               required: true,
               maxLength: 15,
-              validate: (value) => value.trim().length > 0,
+              validate: (value) => {
+                if (value.trim().length === 0) return false;
+                return /^[\x00-\x7F]*$/.test(value);
+              },
             }}
             render={({ field }) => (
               <Input
