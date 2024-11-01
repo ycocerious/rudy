@@ -13,11 +13,7 @@ import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
 import { api } from "@/trpc/react";
-import {
-  type dailyCountFinishedType,
-  type taskCategoryType,
-} from "@/types/form-types";
-import { type Task } from "@/types/task";
+import { type taskCategoryType } from "@/types/form-types";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
@@ -31,11 +27,17 @@ export const categoryMapping = {
 
 export const TodayTasksList = () => {
   //trpc related
-  const { data: dbTasks, isLoading } = api.task.getTodaysTasks.useQuery();
+  const { data: tasks, isLoading } = api.task.getTodaysTasks.useQuery();
 
-  //client related
-  const [tasks, setTasks] = useState<Task[]>(dbTasks!);
-  const sortedTasks = useSortedByCategoryTasks(tasks);
+  const utils = api.useUtils();
+  const { mutateAsync: finishDbTask } = api.task.finishTask.useMutation({
+    onSuccess: async () => {
+      await utils.task.getTodaysTasks.invalidate();
+    },
+  });
+
+  //hooks
+  const sortedTasks = useSortedByCategoryTasks(tasks!);
 
   const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
 
@@ -60,46 +62,35 @@ export const TodayTasksList = () => {
     }
   }, [dialogOpenChange, selectedCategory, sortedTasks]);
 
-  const completeTask = (id: number) => {
+  //possible states handling
+  if (isLoading) return <div>Loading...</div>;
+  if (!tasks) return <div>No tasks left for today!</div>;
+
+  //callback functions
+  const completeTask = async (id: number) => {
     const taskToComplete = tasks.find((task) => task.id === id);
     if (!taskToComplete) return;
 
-    setTasks((prevTasks) => {
-      const isDaily = taskToComplete.category === "daily";
-      const canIncrementDaily =
-        isDaily &&
-        taskToComplete.dailyCountFinished !== undefined &&
-        taskToComplete.dailyCountFinished !== null &&
-        taskToComplete.dailyCountTotal !== undefined &&
-        taskToComplete.dailyCountTotal !== null &&
-        taskToComplete.dailyCountFinished < taskToComplete.dailyCountTotal;
+    const shouldIncrement =
+      taskToComplete.category === "daily" &&
+      taskToComplete.dailyCountFinished! < taskToComplete.dailyCountTotal!;
 
-      if (canIncrementDaily) {
-        const newDailyCountFinished =
-          (taskToComplete.dailyCountFinished as number) + 1;
-        const shouldRemove =
-          newDailyCountFinished === taskToComplete.dailyCountTotal;
+    if (shouldIncrement) {
+      const newDailyCountFinished =
+        (taskToComplete.dailyCountFinished as number) + 1;
+      const shouldRemove =
+        newDailyCountFinished === taskToComplete.dailyCountTotal;
 
-        if (shouldRemove) {
-          setReturnToPosition(false);
-          return prevTasks.filter((task) => task.id !== taskToComplete.id);
-        } else {
-          setReturnToPosition(true);
-          return prevTasks.map((task) =>
-            task.id === taskToComplete.id
-              ? {
-                  ...task,
-                  dailyCountFinished:
-                    newDailyCountFinished as dailyCountFinishedType,
-                }
-              : task,
-          );
-        }
-      } else {
+      if (shouldRemove) {
         setReturnToPosition(false);
-        return prevTasks.filter((task) => task.id !== taskToComplete.id);
+      } else {
+        setReturnToPosition(true);
       }
-    });
+    } else {
+      setReturnToPosition(false);
+    }
+
+    await finishDbTask(taskToComplete.id);
 
     toast("Hooray! Well done!", {
       id: theOnlyToastId,
@@ -112,44 +103,32 @@ export const TodayTasksList = () => {
     setIsDialogOpen(true);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-
   return (
     <>
       <div className="z-10 h-full w-full">
-        {tasks && tasks.length !== 0 ? (
-          <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-4">
-            {Object.entries(sortedTasks)
-              .filter(([_, tasks]) => tasks.length > 0)
-              .map(([category, tasks], index) => (
-                <Card
-                  key={category}
-                  className={cn(
-                    "flex max-h-[27vh] cursor-pointer items-center justify-center border-primary",
-                    getGridPosition(index),
-                  )}
-                  onClick={() => handleCardClick(category)}
-                >
-                  <CardContent className="p-6 text-center">
-                    <p className="text-lg text-primary">
-                      {
-                        categoryMapping[
-                          category as keyof typeof categoryMapping
-                        ]
-                      }
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      ({tasks.length} task{tasks.length > 1 ? "s" : ""} left)
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-        ) : (
-          <div className="flex flex-grow items-center justify-center text-center">
-            No more tasks left for today! 🙆‍♀️
-          </div>
-        )}
+        <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-4">
+          {Object.entries(sortedTasks)
+            .filter(([_, tasks]) => tasks.length > 0)
+            .map(([category, tasks], index) => (
+              <Card
+                key={category}
+                className={cn(
+                  "flex max-h-[27vh] cursor-pointer items-center justify-center border-primary",
+                  getGridPosition(index),
+                )}
+                onClick={() => handleCardClick(category)}
+              >
+                <CardContent className="p-6 text-center">
+                  <p className="text-lg text-primary">
+                    {categoryMapping[category as keyof typeof categoryMapping]}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ({tasks.length} task{tasks.length > 1 ? "s" : ""} left)
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+        </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>

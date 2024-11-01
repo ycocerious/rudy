@@ -82,7 +82,7 @@ export const taskCompletions = pgTable(
       .references(() => users.id)
       .notNull(),
     completedDate: date("completed_date").notNull(),
-    completedCount: integer("completed_count"),
+    completedCount: integer("completed_count").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
