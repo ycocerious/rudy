@@ -9,6 +9,7 @@ import { z } from "zod";
 
 export const taskRouter = createTRPCRouter({
   getTodaysTasks: publicProcedure.query(async ({ ctx }) => {
+    console.log("This is called");
     // Use userId from context instead of input
     const whereConditions = [
       eq(tasks.userId, ctx.userId),

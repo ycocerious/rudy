@@ -37,7 +37,7 @@ export const TodayTasksList = () => {
   });
 
   //hooks
-  const sortedTasks = useSortedByCategoryTasks(tasks!);
+  const sortedTasks = useSortedByCategoryTasks(tasks ?? []);
 
   const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
 
@@ -64,7 +64,7 @@ export const TodayTasksList = () => {
 
   //possible states handling
   if (isLoading) return <div>Loading...</div>;
-  if (!tasks) return <div>No tasks left for today!</div>;
+  if (!tasks || tasks.length === 0) return <div>No tasks left for today!</div>;
 
   //callback functions
   const completeTask = async (id: number) => {

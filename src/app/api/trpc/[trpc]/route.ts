@@ -15,8 +15,12 @@ const createContext = async (req: NextRequest) => {
   });
 };
 
-const handler = (req: NextRequest) =>
-  fetchRequestHandler({
+const handler = async (req: NextRequest) => {
+  // Get the pathname to check which procedure is being called
+  const pathname = new URL(req.url).pathname;
+  const procedurePath = pathname.replace("/api/trpc/", "");
+
+  const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
@@ -25,10 +29,29 @@ const handler = (req: NextRequest) =>
       env.NODE_ENV === "development"
         ? ({ path, error }) => {
             console.error(
-              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
+              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`,
             );
           }
         : undefined,
   });
+
+  // Add Cache-Control headers based on the procedure
+  if (procedurePath.startsWith("task.getTodaysTasks")) {
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=31536000, must-revalidate=true, stale-while-revalidate=3600",
+    );
+    response.headers.set("Surrogate-Control", "public, max-age=86400");
+    response.headers.set("Vary", "Accept-Encoding");
+  } else {
+    // Default caching for other routes
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=60, stale-while-revalidate=30",
+    );
+  }
+
+  return response;
+};
 
 export { handler as GET, handler as POST };
