@@ -5,11 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  repeatFrequencyEnum,
-  weekDaysEnum,
-  type weekDaysType,
-} from "@/types/form-types";
+import { repeatFrequencyEnum, weekDaysEnum } from "@/types/form-types";
 import { type Control, Controller, useWatch } from "react-hook-form";
 import { type FormValues } from "./add-or-edit-task-sheet";
 
@@ -22,10 +18,10 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
     control,
     name: "repeatFrequency",
   });
-  const repeatDays = useWatch({
+  const weekDays = useWatch({
     control,
-    name: "repeatDays",
-  }) as weekDaysType[] | null;
+    name: "weekDays",
+  });
 
   return (
     <>
@@ -56,7 +52,7 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
 
       {repeatFrequency && (
         <Controller
-          name="repeatDays"
+          name="weekDays"
           control={control}
           rules={{
             required: true,
@@ -75,8 +71,7 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
                     type="button"
                     key={day}
                     onClick={() => {
-                      const currentValue =
-                        (field.value as weekDaysType[]) ?? [];
+                      const currentValue = field.value! ?? [];
                       if (currentValue.includes(day)) {
                         field.onChange(
                           currentValue.filter((d: string) => d !== day),
@@ -88,7 +83,7 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
                       }
                     }}
                     className={`m-1 h-10 w-24 rounded-lg border text-sm text-primary-foreground ${
-                      repeatDays?.includes(day) ? "bg-primary" : "bg-foreground"
+                      weekDays?.includes(day) ? "bg-primary" : "bg-foreground"
                     }`}
                   >
                     {day}

@@ -1,11 +1,10 @@
 import {
-  type monthDaysType,
-  type weekDaysType,
-  type taskCategoryType,
-  type xValueType,
-  type repeatFrequencyType,
   type dailyCountTotalType,
-  type dailyCountFinishedType,
+  type monthDaysType,
+  type repeatFrequencyType,
+  type taskCategoryType,
+  type weekDaysType,
+  type xValueType,
 } from "./form-types";
 
 export type Task = {
@@ -15,12 +14,13 @@ export type Task = {
   currentStreak: number;
   highestStreak: number;
 
-  dailyCountTotal?: dailyCountTotalType;
-  dailyCountFinished?: dailyCountFinishedType;
+  dailyCountTotal: dailyCountTotalType;
 
   xValue?: xValueType;
   startDate?: Date;
 
   repeatFrequency?: repeatFrequencyType;
-  repeatDays?: weekDaysType[] | monthDaysType[];
+
+  weekDays?: weekDaysType[];
+  monthDays?: monthDaysType[];
 };

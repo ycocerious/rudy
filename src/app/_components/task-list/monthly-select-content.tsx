@@ -25,10 +25,10 @@ export const MonthlySelectContent = ({
     control,
     name: "repeatFrequency",
   });
-  const repeatDays = useWatch({
+  const monthDays = useWatch({
     control,
-    name: "repeatDays",
-  }) as monthDaysType[] | null;
+    name: "monthDays",
+  });
 
   const initialOptions: [monthDaysType, string][] = [
     ["1st", "First of every month"],
@@ -41,7 +41,7 @@ export const MonthlySelectContent = ({
   const initialOptionValues = new Set(initialOptions.map(([value]) => value));
 
   // Check if any selected day is a custom day (not in initialOptions)
-  const hasCustomDays = repeatDays?.some(
+  const hasCustomDays = monthDays?.some(
     (day: string) => !initialOptionValues.has(day as monthDaysType),
   );
 
@@ -53,127 +53,128 @@ export const MonthlySelectContent = ({
     }
   }, [repeatFrequency]);
 
-  // Update showCustom when repeatDays changes
+  // Update showCustom when monthDays changes
   useEffect(() => {
     if (
-      repeatDays?.some(
+      monthDays?.some(
         (day: string) => !initialOptionValues.has(day as monthDaysType),
       )
     ) {
       setShowCustom(true);
     }
-  }, [repeatDays]);
+  }, [monthDays]);
 
-  return (<>
-    <Controller
-      name="repeatFrequency"
-      control={control}
-      rules={{ required: true }}
-      render={({ field }) => (
-        <Select
-          onValueChange={(value) =>
-            field.onChange(value ? Number(value) : null)
-          }
-          value={field.value?.toString() ?? ""}
-        >
-          <SelectTrigger className="h-12 w-full">
-            <SelectValue placeholder="Select repetition frequency" />
-          </SelectTrigger>
-          <SelectContent>
-            {repeatFrequencyEnum.map((freq) => (
-              <SelectItem key={freq} value={freq.toString()}>
-                {freq} time{freq > 1 ? "s" : ""} a month
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
-    />
-    {repeatFrequency && (
+  return (
+    <>
       <Controller
-        name="repeatDays"
+        name="repeatFrequency"
         control={control}
-        rules={{
-          required: true,
-          validate: (value) =>
-            Array.isArray(value) && value.length === repeatFrequency,
-        }}
+        rules={{ required: true }}
         render={({ field }) => (
-          <div className="mt-4">
-            <p className="ml-1">
-              Select {repeatFrequency} option
-              {repeatFrequency > 1 ? "s" : ""}:
-            </p>
-            {initialOptions.map(([value, label]) => (
-              <button
-                type="button"
-                key={value}
-                onClick={() => {
-                  const currentValue = (field.value as monthDaysType[]) ?? [];
-                  if (value && currentValue.includes(value)) {
-                    field.onChange(
-                      currentValue.filter((d: string) => d !== value),
-                    );
-                  } else if (currentValue.length < repeatFrequency) {
-                    field.onChange([...currentValue, value]);
-                  } else {
-                    field.onChange([...currentValue.slice(0, -1), value]);
-                  }
-                }}
-                className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
-                  value && repeatDays?.includes(value)
-                    ? "bg-primary"
-                    : "bg-foreground"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-            <button
-              type="button"
-              onClick={() => setShowCustom(!showCustom)}
-              className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
-                showCustom ? "bg-primary" : "bg-foreground"
-              }`}
-            >
-              Custom Dates
-            </button>
-            {showCustom && (
-              <div className="mt-0 flex flex-wrap">
-                {customMonthDayEnum.map((day) => {
-                  const dayNumber = day.replace(/[^\d]/g, "");
-                  return (
-                    <button
-                      type="button"
-                      key={day}
-                      onClick={() => {
-                        const currentValue =
-                          (field.value as monthDaysType[]) ?? [];
-                        if (currentValue.includes(day)) {
-                          field.onChange(
-                            currentValue.filter((d: string) => d !== day),
-                          );
-                        } else if (currentValue.length < repeatFrequency) {
-                          field.onChange([...currentValue, day]);
-                        } else {
-                          field.onChange([...currentValue.slice(0, -1), day]);
-                        }
-                      }}
-                      className={`m-1 h-9 w-9 rounded-lg border text-primary-foreground ${
-                        repeatDays?.includes(day as monthDaysType)
-                          ? "bg-primary"
-                          : "bg-foreground"
-                      }`}
-                    >
-                      {dayNumber}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+          <Select
+            onValueChange={(value) =>
+              field.onChange(value ? Number(value) : null)
+            }
+            value={field.value?.toString() ?? ""}
+          >
+            <SelectTrigger className="h-12 w-full">
+              <SelectValue placeholder="Select repetition frequency" />
+            </SelectTrigger>
+            <SelectContent>
+              {repeatFrequencyEnum.map((freq) => (
+                <SelectItem key={freq} value={freq.toString()}>
+                  {freq} time{freq > 1 ? "s" : ""} a month
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       />
-    )}
-  </>);
+      {repeatFrequency && (
+        <Controller
+          name="monthDays"
+          control={control}
+          rules={{
+            required: true,
+            validate: (value) =>
+              Array.isArray(value) && value.length === repeatFrequency,
+          }}
+          render={({ field }) => (
+            <div className="mt-4">
+              <p className="ml-1">
+                Select {repeatFrequency} option
+                {repeatFrequency > 1 ? "s" : ""}:
+              </p>
+              {initialOptions.map(([value, label]) => (
+                <button
+                  type="button"
+                  key={value}
+                  onClick={() => {
+                    const currentValue = field.value ?? [];
+                    if (value && currentValue.includes(value)) {
+                      field.onChange(
+                        currentValue.filter((d: string) => d !== value),
+                      );
+                    } else if (currentValue.length < repeatFrequency) {
+                      field.onChange([...currentValue, value]);
+                    } else {
+                      field.onChange([...currentValue.slice(0, -1), value]);
+                    }
+                  }}
+                  className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
+                    value && monthDays?.includes(value)
+                      ? "bg-primary"
+                      : "bg-foreground"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setShowCustom(!showCustom)}
+                className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
+                  showCustom ? "bg-primary" : "bg-foreground"
+                }`}
+              >
+                Custom Dates
+              </button>
+              {showCustom && (
+                <div className="mt-0 flex flex-wrap">
+                  {customMonthDayEnum.map((day) => {
+                    const dayNumber = day.replace(/[^\d]/g, "");
+                    return (
+                      <button
+                        type="button"
+                        key={day}
+                        onClick={() => {
+                          const currentValue = field.value ?? [];
+                          if (currentValue.includes(day)) {
+                            field.onChange(
+                              currentValue.filter((d: string) => d !== day),
+                            );
+                          } else if (currentValue.length < repeatFrequency) {
+                            field.onChange([...currentValue, day]);
+                          } else {
+                            field.onChange([...currentValue.slice(0, -1), day]);
+                          }
+                        }}
+                        className={`m-1 h-9 w-9 rounded-lg border text-primary-foreground ${
+                          monthDays?.includes(day as monthDaysType)
+                            ? "bg-primary"
+                            : "bg-foreground"
+                        }`}
+                      >
+                        {dayNumber}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        />
+      )}
+    </>
+  );
 };
