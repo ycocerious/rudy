@@ -94,8 +94,6 @@ export async function POST(req: Request) {
 
       await db.delete(users).where(eq(users.clerkId, id));
     }
-
-    // console.log("Hi");
   } catch (err) {
     console.error("Error processing webhook event: ", err);
     return new Response(`Error processing webhook event: ${evt.type}`, {
