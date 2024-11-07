@@ -1,4 +1,4 @@
-import { taskCategoryEnum } from "@/types/form-types";
+import { taskCategoryEnum, weekDaysEnum } from "@/types/form-types";
 import {
   boolean,
   date,
@@ -16,6 +16,8 @@ const commonIdSchema = (columnName: string) => serial(columnName).primaryKey();
 export const taskCategoryPgEnum = pgEnum("task_category", [
   ...taskCategoryEnum,
 ]);
+
+export const weekDaysPgEnum = pgEnum("week_days", [...weekDaysEnum]);
 
 export const users = pgTable(
   "users",
@@ -56,11 +58,11 @@ export const tasks = pgTable(
     category: taskCategoryPgEnum("category").notNull(),
     currentStreak: integer("current_streak").default(0).notNull(),
     highestStreak: integer("highest_streak").default(0).notNull(),
-    dailyCountTotal: integer("daily_count_total").default(1),
+    dailyCountTotal: integer("daily_count_total").notNull(),
     xValue: integer("x_value"),
     startDate: date("start_date"),
     repeatFrequency: integer("repeat_frequency"),
-    weekDays: text("week_days").array(),
+    weekDays: weekDaysPgEnum("week_days").array(),
     monthDays: integer("month_days").array(), // [1-28, -1=first weekend, -2=last date, -3=last weekend ]
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -112,5 +114,8 @@ export const feedbacks = pgTable(
 );
 
 // Types for TypeScript
+export type DbTask = typeof tasks.$inferSelect;
+export type NewDbTask = typeof tasks.$inferInsert;
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
