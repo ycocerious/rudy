@@ -1,11 +1,11 @@
 /* eslint-disable prefer-const */
-import { weekDaysEnum } from "@/types/form-types";
-import { type Task } from "@/types/task";
+import { type DbTask } from "@/server/db/schema";
+import { monthNumberToDaysMapping, weekDaysEnum } from "@/types/form-types";
 
 export function getTasksForDate(
-  tasks: Task[],
+  tasks: DbTask[],
   date: Date = new Date(),
-): Task[] {
+): DbTask[] {
   // Normalize the input date to remove time components
   const targetDate = new Date(
     date.getFullYear(),
@@ -29,18 +29,18 @@ export function getTasksForDate(
         return diffDays % task.xValue === 0;
 
       case "weekly":
-        if (!task.repeatDays) return false;
+        if (!task.weekDays) return false;
 
         const weekDay =
           weekDaysEnum[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1];
-        return weekDay
-          ? (task.repeatDays as string[]).includes(weekDay)
-          : false;
+        return weekDay ? task.weekDays.includes(weekDay) : false;
 
       case "monthly":
-        if (!task.repeatDays) return false;
+        if (!task.monthDays) return false;
 
-        const monthDays = task.repeatDays as string[];
+        const monthDays = task.monthDays.map(
+          (d) => monthNumberToDaysMapping[d],
+        );
         const targetDay = targetDate.getDate();
         const lastDateOfMonth = new Date(
           targetDate.getFullYear(),
@@ -83,10 +83,10 @@ export function getTasksForDate(
         return monthDays.some((monthDay) => {
           // Handle numeric days (1st through 28th)
           if (
-            monthDay.endsWith("st") ||
-            monthDay.endsWith("nd") ||
-            monthDay.endsWith("rd") ||
-            monthDay.endsWith("th")
+            monthDay?.endsWith("st") ||
+            monthDay?.endsWith("nd") ||
+            monthDay?.endsWith("rd") ||
+            monthDay?.endsWith("th")
           ) {
             const dayNum = parseInt(monthDay);
             return targetDay === dayNum;

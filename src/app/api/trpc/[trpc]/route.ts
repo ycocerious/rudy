@@ -36,20 +36,21 @@ const handler = async (req: NextRequest) => {
   });
 
   // Add Cache-Control headers based on the procedure
-  if (procedurePath.startsWith("task.getTodaysTasks")) {
-    response.headers.set(
-      "Cache-Control",
-      "public, max-age=31536000, must-revalidate=true, stale-while-revalidate=3600",
-    );
-    response.headers.set("Surrogate-Control", "public, max-age=86400");
-    response.headers.set("Vary", "Accept-Encoding");
-  } else {
-    // Default caching for other routes
-    response.headers.set(
-      "Cache-Control",
-      "public, max-age=60, stale-while-revalidate=30",
-    );
-  }
+  // if (procedurePath.startsWith("task.getTodaysTasks")) {
+  //   response.headers.set(
+  //     "Cache-Control",
+  //     "public, max-age=31536000, must-revalidate=true, stale-while-revalidate=3600",
+  //   );
+  //   response.headers.set("Surrogate-Control", "public, max-age=86400");
+  //   response.headers.set("Vary", "Accept-Encoding");
+  // }
+  // else {
+  //   // Default caching for other routes
+  //   response.headers.set(
+  //     "Cache-Control",
+  //     "public, max-age=60, stale-while-revalidate=30",
+  //   );
+  // }
 
   return response;
 };

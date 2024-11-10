@@ -13,13 +13,11 @@ import { getColorFromTailwindClass } from "@/lib/utils/get-tailwind-color";
 
 interface SwipeableTaskProps {
   task: Task;
-  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
   handleSwipe: () => void;
 }
 
 export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
   task,
-  setTasks,
   handleSwipe,
 }) => {
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
@@ -33,7 +31,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
 
   const borderColor = useTransform(
     x,
-    [0, 50, 250],
+    [0, 50, threshold],
     [
       getColorFromTailwindClass("primary"),
       getColorFromTailwindClass("destructive"),
@@ -41,7 +39,7 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
     ],
   );
 
-  const iconOpacity = useTransform(x, [0, 50, 250], [0, 1, 1]);
+  const iconOpacity = useTransform(x, [0, 50, threshold], [0, 1, 1]);
 
   const handleDragEnd = (
     _: MouseEvent | TouchEvent | PointerEvent,
@@ -95,10 +93,10 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
               <span className="mr-1">{`Every ${task.xValue} days`}</span>
             )}
             {task.category === "weekly" && (
-              <span className="mr-1">{`Every ${task.repeatDays!.map((day) => day.slice(0, 3)).join(", ")}`}</span>
+              <span className="mr-1">{`Every ${task.weekDays!.map((day) => day.slice(0, 3)).join(", ")}`}</span>
             )}
             {task.category === "monthly" && (
-              <span className="mr-1">{`Every ${task.repeatDays!.map((day) => day.replace("-", " ")).join(", ")}`}</span>
+              <span className="mr-1">{`Every ${task.monthDays!.map((day) => day.replace("-", " ")).join(", ")}`}</span>
             )}
           </div>
         </motion.div>
@@ -113,7 +111,6 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
       <AddOrEditTaskSheet
         isSheetOpen={isSheetOpen}
         setIsSheetOpen={setIsSheetOpen}
-        setTasks={setTasks}
         taskType="edit"
         task={task}
       />
