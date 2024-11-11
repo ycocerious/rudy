@@ -8,7 +8,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { exampleTasks } from "@/constants/mockData";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
@@ -22,8 +21,8 @@ import { SwipeableAllTask } from "./swipeable-all-task";
 import { categoryMapping } from "./today-tasks-list";
 
 export const AllTasksList = () => {
-  const [tasks, setTasks] = useState<Task[]>(exampleTasks);
-  const sortedTasks = useSortedByCategoryTasks(tasks);
+  const [tasks, setTasks] = useState<Task[]>();
+  const sortedTasks = useSortedByCategoryTasks(tasks ?? []);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -44,11 +43,11 @@ export const AllTasksList = () => {
     }
   }, [dialogOpenChange, selectedCategory, sortedTasks]);
 
-  const deleteTask = (id: string) => {
-    const taskToDelete = tasks.find((task) => task.id === id);
+  const deleteTask = (id: number) => {
+    const taskToDelete = tasks?.find((task) => task.id === id);
 
     if (taskToDelete) {
-      const updatedTasks = tasks.filter((task) => task.id !== taskToDelete.id);
+      const updatedTasks = tasks?.filter((task) => task.id !== taskToDelete.id);
       setTasks(updatedTasks);
       toast.success("Task deleted successfully!", { id: theOnlyToastId });
     }
@@ -62,7 +61,7 @@ export const AllTasksList = () => {
   return (
     <>
       <div className="h-full w-full">
-        {tasks.length !== 0 ? (
+        {tasks?.length !== 0 ? (
           <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-8">
             {Object.entries(sortedTasks)
               .filter(([_, tasks]) => tasks.length > 0)
@@ -107,7 +106,6 @@ export const AllTasksList = () => {
       <AddOrEditTaskSheet
         isSheetOpen={isSheetOpen}
         setIsSheetOpen={setIsSheetOpen}
-        setTasks={setTasks}
         taskType="add"
       />
 
@@ -135,7 +133,6 @@ export const AllTasksList = () => {
                 <SwipeableAllTask
                   key={task.id}
                   task={task}
-                  setTasks={setTasks}
                   handleSwipe={() => deleteTask(task.id)}
                 />
               ),

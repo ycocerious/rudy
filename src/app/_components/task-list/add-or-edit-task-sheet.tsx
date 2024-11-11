@@ -42,7 +42,6 @@ import { XdaySelectContent } from "./xday-select-content";
 type BaseAddOrEditTaskSheetProps = {
   isSheetOpen: boolean;
   setIsSheetOpen: Dispatch<SetStateAction<boolean>>;
-  setTasks: Dispatch<SetStateAction<Task[]>>;
 };
 
 type AddTaskSheetProps = BaseAddOrEditTaskSheetProps & {
@@ -63,11 +62,12 @@ export type FormValues = {
   xValue: xValueType | null;
   startDate: Date | null;
   repeatFrequency: repeatFrequencyType | null;
-  repeatDays: weekDaysType[] | monthDaysType[] | null;
+  weekDays: weekDaysType[] | null;
+  monthDays: monthDaysType[] | null;
 };
 
 export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
-  const { isSheetOpen, setIsSheetOpen, setTasks, taskType } = props;
+  const { isSheetOpen, setIsSheetOpen, taskType } = props;
   const originalTask = taskType === "edit" ? props.task : null;
   const isFirstRender = useRef(true);
   const [isTaskOperationComplete, setIsTaskOperationComplete] = useState(false);
@@ -87,7 +87,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       xValue: originalTask?.xValue ?? null,
       startDate: originalTask?.startDate ?? null,
       repeatFrequency: originalTask?.repeatFrequency ?? null,
-      repeatDays: originalTask?.repeatDays ?? null,
+      monthDays: originalTask?.monthDays ?? null,
+      weekDays: originalTask?.weekDays ?? null,
     },
   });
 
@@ -107,7 +108,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       xValue: originalTask?.xValue ?? null,
       startDate: originalTask?.startDate ?? null,
       repeatFrequency: originalTask?.repeatFrequency ?? null,
-      repeatDays: originalTask?.repeatDays ?? null,
+      monthDays: originalTask?.monthDays ?? null,
+      weekDays: originalTask?.weekDays ?? null,
     });
   };
 
@@ -117,39 +119,17 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         id: Number(nanoid()),
         name: data.name.trim(),
         category: data.category!,
-        dailyCountTotal: data.dailyCountTotal ?? undefined,
+        dailyCountTotal: data.dailyCountTotal!,
         xValue: data.xValue ?? undefined,
         startDate: data.startDate ?? undefined,
         repeatFrequency: data.repeatFrequency ?? undefined,
-        repeatDays: data.repeatDays ?? undefined,
+        monthDays: data.monthDays ?? undefined,
+        weekDays: data.weekDays ?? undefined,
         currentStreak: 0,
         highestStreak: 0,
       };
-
-      setTasks((prevTasks) => {
-        const updatedTasks = [...prevTasks, newTask];
-        setIsTaskOperationComplete(true);
-        return updatedTasks;
-      });
     } else {
-      setTasks((prevTasks) => {
-        const updatedTasks = prevTasks.map((individualTask) =>
-          individualTask.id === originalTask?.id
-            ? {
-                ...individualTask,
-                name: data.name,
-                category: data.category!,
-                dailyCountTotal: data.dailyCountTotal ?? undefined,
-                xValue: data.xValue ?? undefined,
-                startDate: data.startDate ?? undefined,
-                repeatFrequency: data.repeatFrequency ?? undefined,
-                repeatDays: data.repeatDays ?? undefined,
-              }
-            : individualTask,
-        );
-        setIsTaskOperationComplete(true);
-        return updatedTasks;
-      });
+      setIsTaskOperationComplete(true);
     }
   };
 
@@ -179,7 +159,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       setValue("xValue", null);
       setValue("startDate", null);
       setValue("repeatFrequency", null);
-      setValue("repeatDays", null);
+      setValue("weekDays", null);
+      setValue("monthDays", null);
       setValue("dailyCountTotal", null);
     }
   }, [category, setValue, originalTask?.category]);
