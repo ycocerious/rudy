@@ -22,5 +22,5 @@ export type Task = {
   repeatFrequency?: repeatFrequencyType;
 
   weekDays?: weekDaysType[];
-  monthDays?: monthDaysType[];
+  monthDays?: number[];
 };

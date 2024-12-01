@@ -2,8 +2,7 @@
 import { getTasksForDate } from "@/lib/utils/get-tasks-for-date";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { taskCompletions, tasks } from "@/server/db/schema";
-import { dailyCountTotalType } from "@/types/form-types";
-import { type Task } from "@/types/task";
+import { type dailyCountTotalType } from "@/types/form-types";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -28,14 +27,13 @@ export const taskRouter = createTRPCRouter({
 
     const usableUserTasks = userTasks.map((task) => ({
       ...task,
-      startDate: task.startDate ? new Date(task.startDate) : null,
+      startDate: task.startDate ? task.startDate.toString() : null,
       dailyCountTotal: task.dailyCountTotal
         ? (task.dailyCountTotal as dailyCountTotalType)
-        : null,
-      // monthDays: monthDaysToNumberMapping[task.monthDays]
+        : 0,
     }));
 
-    const todaysTasks = getTasksForDate(usableUserTasks as Task[]);
+    const todaysTasks = getTasksForDate(usableUserTasks);
 
     const todaysCompletions = await ctx.db
       .select({
