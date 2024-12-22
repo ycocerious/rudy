@@ -23,8 +23,8 @@ import { frequencyMapping } from "./today-tasks-list";
 export const AllTasksList = () => {
   //trpc related
   const { data: tasks, isLoading } = api.task.getAllTasks.useQuery();
-  const apiUtils = api.useUtils();
 
+  //hooks
   const sortedTasks = useSortedByFrequencyTasks(tasks ?? []);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -46,6 +46,7 @@ export const AllTasksList = () => {
     }
   }, [dialogOpenChange, selectedFrequency, sortedTasks]);
 
+  //callbacks
   const deleteTask = (id: number) => {
     const taskToDelete = tasks?.find((task) => task.id === id);
 
@@ -93,7 +94,9 @@ export const AllTasksList = () => {
           </div>
         ) : (
           <div className="flex flex-grow items-center justify-center text-center">
-            Click the + icon to add your first task!
+            {isLoading
+              ? "Loading..."
+              : "Click the + icon to add your first task!"}
           </div>
         )}
       </div>
