@@ -12,7 +12,7 @@ import { theOnlyToastId } from "@/constants/uiConstants";
 import { useSortedByFrequencyTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
-import { type Task } from "@/types/task";
+import { api } from "@/trpc/react";
 import { Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -21,7 +21,10 @@ import { SwipeableAllTask } from "./swipeable-all-task";
 import { frequencyMapping } from "./today-tasks-list";
 
 export const AllTasksList = () => {
-  const [tasks, setTasks] = useState<Task[]>();
+  //trpc related
+  const { data: tasks, isLoading } = api.task.getAllTasks.useQuery();
+  const apiUtils = api.useUtils();
+
   const sortedTasks = useSortedByFrequencyTasks(tasks ?? []);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -48,7 +51,6 @@ export const AllTasksList = () => {
 
     if (taskToDelete) {
       const updatedTasks = tasks?.filter((task) => task.id !== taskToDelete.id);
-      setTasks(updatedTasks);
       toast.success("Task deleted successfully!", { id: theOnlyToastId });
     }
   };

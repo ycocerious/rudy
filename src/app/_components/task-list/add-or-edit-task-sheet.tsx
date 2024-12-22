@@ -15,9 +15,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { type taskFrequencyType, type weekDaysType } from "@/types/form-types";
+import { api } from "@/trpc/react";
+import {
+  type taskCategoryType,
+  type taskFrequencyType,
+  type weekDaysType,
+} from "@/types/form-types";
 import { type Task } from "@/types/task";
-import { nanoid } from "nanoid";
 import {
   useEffect,
   useRef,
@@ -51,6 +55,7 @@ type AddOrEditTaskSheetProps = AddTaskSheetProps | EditTaskSheetProps;
 export type FormValues = {
   name: string;
   frequency: taskFrequencyType | null;
+  category: taskCategoryType | null;
   dailyCountTotal: number | null;
   xValue: number | null;
   startDate: Date | null;
@@ -74,6 +79,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   } = useForm<FormValues>({
     defaultValues: {
       name: originalTask?.name ?? "",
+      category: originalTask?.category ?? null,
       frequency: originalTask?.frequency ?? null,
       dailyCountTotal: originalTask?.dailyCountTotal ?? null,
       xValue: originalTask?.xValue ?? null,
@@ -82,6 +88,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       weekDays: originalTask?.weekDays ?? null,
     },
   });
+
+  const category = watch("category");
 
   const frequency = watch("frequency");
 
@@ -94,6 +102,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     setIsSheetOpen(false);
     reset({
       name: originalTask?.name ?? "",
+      category: originalTask?.category ?? null,
       frequency: originalTask?.frequency ?? null,
       dailyCountTotal: originalTask?.dailyCountTotal ?? null,
       xValue: originalTask?.xValue ?? null,
@@ -103,19 +112,30 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     });
   };
 
-  const onSubmit = (data: FormValues) => {
+  const utils = api.useUtils();
+  const { mutateAsync: addTask } = api.task.addTask.useMutation({
+    onSuccess: async () => {
+      await utils.task.getTodaysTasks.invalidate();
+    },
+  });
+
+  const onSubmit = async (data: FormValues) => {
     if (taskType === "add") {
-      const newTask: Task = {
-        id: Number(nanoid()),
-        name: data.name.trim(),
-        frequency: data.frequency!,
-        dailyCountTotal: data.dailyCountTotal!,
-        dailyCountFinished: 0,
-        xValue: data.xValue ?? null,
-        startDate: data.startDate ?? null,
-        monthDays: data.monthDays ?? null,
-        weekDays: data.weekDays ?? null,
-      };
+      try {
+        await addTask({
+          name: data.name.trim(),
+          frequency: data.frequency!,
+          dailyCountTotal: data.dailyCountTotal,
+          xValue: data.xValue,
+          category: data.category!,
+          startDate: data.startDate,
+          monthDays: data.monthDays,
+          weekDays: data.weekDays,
+        });
+        setIsTaskOperationComplete(true);
+      } catch (error) {
+        toast.error("Failed to add task", { id: theOnlyToastId });
+      }
     } else {
       setIsTaskOperationComplete(true);
     }
@@ -189,7 +209,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             render={({ field }) => (
               <Input
                 {...field}
-                placeholder="Enter task name (max 15 chars)"
+                placeholder="Task name (max 15 chars)"
                 maxLength={15}
                 autoFocus={taskType === "edit"}
                 onFocus={(e) => {
@@ -208,9 +228,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
               />
             )}
           />
-
           <Controller
-            name="frequency"
+            name="category"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
@@ -219,17 +238,40 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 value={field.value ?? undefined}
               >
                 <SelectTrigger className="h-12 w-full">
-                  <SelectValue placeholder="Select Repetition frequency" />
+                  <SelectValue placeholder="Select Task Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="daily">Repeat daily</SelectItem>
-                  <SelectItem value="weekly">Repeat weekly</SelectItem>
-                  <SelectItem value="monthly">Repeat monthly</SelectItem>
-                  <SelectItem value="xdays">Repeat x days once</SelectItem>
+                  <SelectItem value="sleep">Sleep</SelectItem>
+                  <SelectItem value="nutrition">Nutrition</SelectItem>
+                  <SelectItem value="exercise">Exercise</SelectItem>
                 </SelectContent>
               </Select>
             )}
           />
+
+          {category && (
+            <Controller
+              name="frequency"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value ?? undefined}
+                >
+                  <SelectTrigger className="h-12 w-full">
+                    <SelectValue placeholder="Select Repetition frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">Repeat daily</SelectItem>
+                    <SelectItem value="weekly">Repeat weekly</SelectItem>
+                    <SelectItem value="monthly">Repeat monthly</SelectItem>
+                    <SelectItem value="xdays">Repeat x days once</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          )}
 
           {frequency === "monthly" && (
             <MonthlySelectContent control={control} />

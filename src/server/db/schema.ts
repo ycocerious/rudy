@@ -1,14 +1,12 @@
 import {
   type taskCategoryEnum,
   type taskFrequencyEnum,
-  weekDaysEnum,
 } from "@/types/form-types";
 import {
   boolean,
   date,
   index,
   integer,
-  pgEnum,
   pgTable,
   serial,
   text,
@@ -16,8 +14,6 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 const commonIdSchema = (columnName: string) => serial(columnName).primaryKey();
-
-export const weekDaysPgEnum = pgEnum("week_days", [...weekDaysEnum]);
 
 export const users = pgTable(
   "users",
@@ -65,7 +61,7 @@ export const tasks = pgTable(
     dailyCountFinished: integer("daily_count_finished").notNull(),
     xValue: integer("x_value"),
     startDate: date("start_date"),
-    weekDays: weekDaysPgEnum("week_days").array(),
+    weekDays: varchar("week_days").array(),
     monthDays: integer("month_days").array(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
