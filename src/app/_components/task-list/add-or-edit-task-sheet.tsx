@@ -123,7 +123,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const { mutateAsync: editTask } = api.task.editTask.useMutation({
     onSuccess: async () => {
       await utils.task.getTodaysTasks.invalidate();
-      toast.success("Edited Task Successfully", { id: theOnlyToastId });
+      await utils.task.getAllTasks.invalidate();
+      setIsSheetOpen(false);
+      setIsTaskOperationComplete(true);
     },
   });
 
@@ -158,11 +160,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           monthDays: data.monthDays,
           weekDays: data.weekDays,
         });
-        // Close dialog
-        setIsSheetOpen(false);
-        setIsTaskOperationComplete(true);
       } catch (error) {
         toast.error("Failed to edit task", { id: theOnlyToastId });
+        console.log(error);
         setIsTaskOperationComplete(true);
       }
     }
