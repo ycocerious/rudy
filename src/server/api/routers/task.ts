@@ -201,4 +201,32 @@ export const taskRouter = createTRPCRouter({
 
       return newTask;
     }),
+
+  deleteTask: publicProcedure
+    .input(z.number())
+    .mutation(async ({ ctx, input: taskId }) => {
+      const [deletedTask] = await ctx.db
+        .update(tasks)
+        .set({
+          isArchived: true,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(tasks.id, taskId),
+            eq(tasks.userId, ctx.userId),
+            eq(tasks.isArchived, false),
+          ),
+        )
+        .returning();
+
+      if (!deletedTask) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Task not found or already deleted",
+        });
+      }
+
+      return deletedTask;
+    }),
 });

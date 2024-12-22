@@ -24,6 +24,20 @@ export const AllTasksList = () => {
   //trpc related
   const { data: tasks, isLoading } = api.task.getAllTasks.useQuery();
 
+  const utils = api.useUtils();
+  const { mutateAsync: deleteDbTask } = api.task.deleteTask.useMutation({
+    onSuccess: async () => {
+      // Invalidate and refetch tasks query
+      await utils.task.getAllTasks.invalidate();
+      toast.success("Task deleted successfully!", { id: theOnlyToastId });
+    },
+    onError: (error) => {
+      toast.error(`Error deleting task: ${error.message}`, {
+        id: theOnlyToastId,
+      });
+    },
+  });
+
   //hooks
   const sortedTasks = useSortedByFrequencyTasks(tasks ?? []);
 
@@ -47,11 +61,11 @@ export const AllTasksList = () => {
   }, [dialogOpenChange, selectedFrequency, sortedTasks]);
 
   //callbacks
-  const deleteTask = (id: number) => {
+  const deleteTask = async (id: number) => {
     const taskToDelete = tasks?.find((task) => task.id === id);
 
     if (taskToDelete) {
-      const updatedTasks = tasks?.filter((task) => task.id !== taskToDelete.id);
+      await deleteDbTask(id);
       toast.success("Task deleted successfully!", { id: theOnlyToastId });
     }
   };
