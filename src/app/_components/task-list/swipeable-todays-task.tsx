@@ -7,7 +7,7 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { Check, Flame, Trophy } from "lucide-react";
+import { Check } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 interface SwipeableTaskProps {
@@ -91,32 +91,11 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
           <span className="text-md z-10 mr-2 max-w-[60%] break-words">
             {task.name}
           </span>
-          {task.category === "daily" && (
-            <span className="text-success text-xs">
+          {task.frequency === "daily" && (
+            <span className="text-xs text-success">
               {"(" + task.dailyCountFinished + "/" + task.dailyCountTotal + ")"}
             </span>
           )}
-        </div>
-
-        <div className="max-w-[40%] text-right">
-          <div className="flex flex-wrap justify-end gap-2">
-            {(task.currentStreak ?? 0) > 0 && (
-              <div className="flex items-center gap-1">
-                <Flame size={20} className="text-orange-500" />
-                <span className="text-sm text-orange-500">
-                  {task.currentStreak}
-                </span>
-              </div>
-            )}
-            {(task.highestStreak ?? 0) > 0 && (
-              <div className="flex items-center gap-1">
-                <Trophy size={20} className="text-yellow-500" />
-                <span className="text-sm text-yellow-500">
-                  {task.highestStreak}
-                </span>
-              </div>
-            )}
-          </div>
         </div>
       </motion.div>
 

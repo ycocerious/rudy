@@ -9,21 +9,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
+import { useSortedByFrequencyTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
 import { api } from "@/trpc/react";
-import { type taskCategoryType } from "@/types/form-types";
+import { type taskFrequencyType } from "@/types/form-types";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
 
-export const categoryMapping = {
+export const frequencyMapping = {
   monthly: "Monthly Tasks",
   weekly: "Weekly Tasks",
   xdays: "X-day Tasks",
   daily: "Daily Tasks",
-} satisfies Record<taskCategoryType, string>;
+} satisfies Record<taskFrequencyType, string>;
 
 export const TodayTasksList = () => {
   //trpc related
@@ -37,30 +37,30 @@ export const TodayTasksList = () => {
   });
 
   //hooks
-  const sortedTasks = useSortedByCategoryTasks(tasks ?? []);
+  const sortedTasks = useSortedByFrequencyTasks(tasks ?? []);
 
   const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
 
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   const dialogOpenChange = useCallback(() => {
     setIsDialogOpen(!isDialogOpen);
-    setSelectedCategory("");
+    setSelectedFrequency("");
   }, [isDialogOpen]);
 
   useEffect(() => {
     if (
-      sortedTasks[selectedCategory as keyof typeof sortedTasks] &&
-      sortedTasks[selectedCategory as keyof typeof sortedTasks].length === 0
+      sortedTasks[selectedFrequency as keyof typeof sortedTasks] &&
+      sortedTasks[selectedFrequency as keyof typeof sortedTasks].length === 0
     ) {
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 3000);
       dialogOpenChange();
     }
-  }, [dialogOpenChange, selectedCategory, sortedTasks]);
+  }, [dialogOpenChange, selectedFrequency, sortedTasks]);
 
   //possible states handling
   if (isLoading) return <div>Loading...</div>;
@@ -72,12 +72,11 @@ export const TodayTasksList = () => {
     if (!taskToComplete) return;
 
     const shouldIncrement =
-      taskToComplete.category === "daily" &&
-      taskToComplete.dailyCountFinished! < taskToComplete.dailyCountTotal!;
+      taskToComplete.frequency === "daily" &&
+      taskToComplete.dailyCountFinished < taskToComplete.dailyCountTotal;
 
     if (shouldIncrement) {
-      const newDailyCountFinished =
-        (taskToComplete.dailyCountFinished as number) + 1;
+      const newDailyCountFinished = taskToComplete.dailyCountFinished + 1;
       const shouldRemove =
         newDailyCountFinished === taskToComplete.dailyCountTotal;
 
@@ -98,8 +97,8 @@ export const TodayTasksList = () => {
     });
   };
 
-  const handleCardClick = (category: string) => {
-    setSelectedCategory(category);
+  const handleCardClick = (frequency: string) => {
+    setSelectedFrequency(frequency);
     setIsDialogOpen(true);
   };
 
@@ -109,18 +108,22 @@ export const TodayTasksList = () => {
         <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-4">
           {Object.entries(sortedTasks)
             .filter(([_, tasks]) => tasks.length > 0)
-            .map(([category, tasks], index) => (
+            .map(([frequency, tasks], index) => (
               <Card
-                key={category}
+                key={frequency}
                 className={cn(
                   "flex max-h-[27vh] cursor-pointer items-center justify-center border-primary",
                   getGridPosition(index),
                 )}
-                onClick={() => handleCardClick(category)}
+                onClick={() => handleCardClick(frequency)}
               >
                 <CardContent className="p-6 text-center">
                   <p className="text-lg text-primary">
-                    {categoryMapping[category as keyof typeof categoryMapping]}
+                    {
+                      frequencyMapping[
+                        frequency as keyof typeof frequencyMapping
+                      ]
+                    }
                   </p>
                   <p className="text-xs text-muted-foreground">
                     ({tasks.length} task{tasks.length > 1 ? "s" : ""} left)
@@ -134,13 +137,21 @@ export const TodayTasksList = () => {
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
         <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 sm:max-w-sm">
           <DialogTitle className="sr-only">
-            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
+            {
+              frequencyMapping[
+                selectedFrequency as keyof typeof frequencyMapping
+              ]
+            }{" "}
             Tasks
           </DialogTitle>
 
           <DialogDescription className="sr-only">
             List of tasks for{" "}
-            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}
+            {
+              frequencyMapping[
+                selectedFrequency as keyof typeof frequencyMapping
+              ]
+            }
           </DialogDescription>
 
           <p className="text-md mb-1 px-2 pb-2 text-center">
@@ -148,7 +159,7 @@ export const TodayTasksList = () => {
           </p>
 
           <div className="w-full px-6">
-            {sortedTasks[selectedCategory as keyof typeof sortedTasks]?.map(
+            {sortedTasks[selectedFrequency as keyof typeof sortedTasks]?.map(
               (task) => (
                 <SwipeableTodaysTask
                   key={task.id}

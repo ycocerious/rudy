@@ -7,7 +7,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { areDatesEqual } from "@/lib/utils/referential-equality-checks";
-import { xValueEnum } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { addDays, format, startOfDay } from "date-fns";
 import { useMemo } from "react";
@@ -19,14 +18,17 @@ type XdaySelectContentProps = {
   originalTask?: Task;
 };
 
+const X_VALUES = [2, 3, 4, 5, 6] as const;
+
 export const XdaySelectContent = ({
   control,
   originalTask,
 }: XdaySelectContentProps) => {
-  const xValue = useWatch({
+  const xValue = useWatch<FormValues, "xValue">({
     control,
     name: "xValue",
-  });
+    defaultValue: undefined,
+  }) as number | undefined;
   const startDate = useWatch({
     control,
     name: "startDate",
@@ -48,13 +50,13 @@ export const XdaySelectContent = ({
         render={({ field }) => (
           <Select
             onValueChange={(value) => field.onChange(Number(value))}
-            value={field.value?.toString()}
+            value={String(field.value ?? "")}
           >
             <SelectTrigger className="h-12 w-full">
               <SelectValue placeholder="Select value of x" />
             </SelectTrigger>
             <SelectContent>
-              {xValueEnum.map((value) => (
+              {X_VALUES.map((value) => (
                 <SelectItem key={value} value={value.toString()}>
                   Every {value} days
                 </SelectItem>

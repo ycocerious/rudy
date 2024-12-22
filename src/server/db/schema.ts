@@ -1,4 +1,8 @@
-import { taskCategoryEnum, weekDaysEnum } from "@/types/form-types";
+import {
+  type taskCategoryEnum,
+  type taskFrequencyEnum,
+  weekDaysEnum,
+} from "@/types/form-types";
 import {
   boolean,
   date,
@@ -12,10 +16,6 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 const commonIdSchema = (columnName: string) => serial(columnName).primaryKey();
-
-export const taskCategoryPgEnum = pgEnum("task_category", [
-  ...taskCategoryEnum,
-]);
 
 export const weekDaysPgEnum = pgEnum("week_days", [...weekDaysEnum]);
 
@@ -55,15 +55,18 @@ export const tasks = pgTable(
       .references(() => users.id)
       .notNull(),
     name: varchar("name", { length: 20 }).notNull(),
-    category: taskCategoryPgEnum("category").notNull(),
-    currentStreak: integer("current_streak").default(0).notNull(),
-    highestStreak: integer("highest_streak").default(0).notNull(),
+    frequency: varchar("frequency", { length: 20 })
+      .$type<(typeof taskFrequencyEnum)[number]>()
+      .notNull(),
+    category: varchar("category", { length: 20 })
+      .$type<(typeof taskCategoryEnum)[number]>()
+      .notNull(),
     dailyCountTotal: integer("daily_count_total").notNull(),
+    dailyCountFinished: integer("daily_count_finished").notNull(),
     xValue: integer("x_value"),
     startDate: date("start_date"),
-    repeatFrequency: integer("repeat_frequency"),
     weekDays: weekDaysPgEnum("week_days").array(),
-    monthDays: integer("month_days").array(), // [1-28, -1=first weekend, -2=last date, -3=last weekend ]
+    monthDays: integer("month_days").array(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
     isArchived: boolean("is_archived").default(false).notNull(),

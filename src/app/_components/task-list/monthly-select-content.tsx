@@ -1,16 +1,3 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  customMonthDayEnum,
-  type monthDaysType,
-  repeatFrequencyEnum,
-} from "@/types/form-types";
-import { useEffect, useState } from "react";
 import { type Control, Controller, useWatch } from "react-hook-form";
 import { type FormValues } from "./add-or-edit-task-sheet";
 
@@ -21,160 +8,42 @@ type MonthlySelectContentProps = {
 export const MonthlySelectContent = ({
   control,
 }: MonthlySelectContentProps) => {
-  const repeatFrequency = useWatch({
-    control,
-    name: "repeatFrequency",
-  });
   const monthDays = useWatch({
     control,
     name: "monthDays",
   });
 
-  const initialOptions: [monthDaysType, string][] = [
-    ["1st", "First of every month"],
-    ["last-date", "Last of every month"],
-    ["1st-wknd", "First weekend of the month"],
-    ["last-wknd", "Last weekend of the month"],
-  ];
-
-  // Create a Set of initial option values for easier checking
-  const initialOptionValues = new Set(initialOptions.map(([value]) => value));
-
-  // Check if any selected day is a custom day (not in initialOptions)
-  const hasCustomDays = monthDays?.some(
-    (day: string) => !initialOptionValues.has(day as monthDaysType),
-  );
-
-  const [showCustom, setShowCustom] = useState(!!hasCustomDays);
-
-  useEffect(() => {
-    if (repeatFrequency === null) {
-      setShowCustom(false);
-    }
-  }, [repeatFrequency]);
-
-  // Update showCustom when monthDays changes
-  useEffect(() => {
-    if (
-      monthDays?.some(
-        (day: string) => !initialOptionValues.has(day as monthDaysType),
-      )
-    ) {
-      setShowCustom(true);
-    }
-  }, [monthDays]);
-
   return (
-    <>
-      <Controller
-        name="repeatFrequency"
-        control={control}
-        rules={{ required: true }}
-        render={({ field }) => (
-          <Select
-            onValueChange={(value) =>
-              field.onChange(value ? Number(value) : null)
-            }
-            value={field.value?.toString() ?? ""}
-          >
-            <SelectTrigger className="h-12 w-full">
-              <SelectValue placeholder="Select repetition frequency" />
-            </SelectTrigger>
-            <SelectContent>
-              {repeatFrequencyEnum.map((freq) => (
-                <SelectItem key={freq} value={freq.toString()}>
-                  {freq} time{freq > 1 ? "s" : ""} a month
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      />
-      {repeatFrequency && (
-        <Controller
-          name="monthDays"
-          control={control}
-          rules={{
-            required: true,
-            validate: (value) =>
-              Array.isArray(value) && value.length === repeatFrequency,
-          }}
-          render={({ field }) => (
-            <div className="mt-4">
-              <p className="ml-1">
-                Select {repeatFrequency} option
-                {repeatFrequency > 1 ? "s" : ""}:
-              </p>
-              {initialOptions.map(([value, label]) => (
-                <button
-                  type="button"
-                  key={value}
-                  onClick={() => {
-                    const currentValue = field.value ?? [];
-                    if (value && currentValue.includes(value)) {
-                      field.onChange(
-                        currentValue.filter((d: string) => d !== value),
-                      );
-                    } else if (currentValue.length < repeatFrequency) {
-                      field.onChange([...currentValue, value]);
-                    } else {
-                      field.onChange([...currentValue.slice(0, -1), value]);
-                    }
-                  }}
-                  className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
-                    value && monthDays?.includes(value)
-                      ? "bg-primary"
-                      : "bg-foreground"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+    <Controller
+      name="monthDays"
+      control={control}
+      rules={{ required: true }}
+      render={({ field }) => (
+        <div>
+          <p className="mb-2 ml-1">Select dates for monthly repetition:</p>
+          <div className="flex flex-wrap gap-1">
+            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
               <button
                 type="button"
-                onClick={() => setShowCustom(!showCustom)}
-                className={`m-1 rounded-lg border p-2 text-sm text-primary-foreground ${
-                  showCustom ? "bg-primary" : "bg-foreground"
+                key={day}
+                onClick={() => {
+                  const currentValue = field.value ?? [];
+                  if (currentValue.includes(day)) {
+                    field.onChange(currentValue.filter((d) => d !== day));
+                  } else {
+                    field.onChange([...currentValue, day]);
+                  }
+                }}
+                className={`h-9 w-9 rounded-lg border text-primary-foreground ${
+                  monthDays?.includes(day) ? "bg-primary" : "bg-foreground"
                 }`}
               >
-                Custom Dates
+                {day}
               </button>
-              {showCustom && (
-                <div className="mt-0 flex flex-wrap">
-                  {customMonthDayEnum.map((day) => {
-                    const dayNumber = day.replace(/[^\d]/g, "");
-                    return (
-                      <button
-                        type="button"
-                        key={day}
-                        onClick={() => {
-                          const currentValue = field.value ?? [];
-                          if (currentValue.includes(day)) {
-                            field.onChange(
-                              currentValue.filter((d: string) => d !== day),
-                            );
-                          } else if (currentValue.length < repeatFrequency) {
-                            field.onChange([...currentValue, day]);
-                          } else {
-                            field.onChange([...currentValue.slice(0, -1), day]);
-                          }
-                        }}
-                        className={`m-1 h-9 w-9 rounded-lg border text-primary-foreground ${
-                          monthDays?.includes(day as monthDaysType)
-                            ? "bg-primary"
-                            : "bg-foreground"
-                        }`}
-                      >
-                        {dayNumber}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        />
+            ))}
+          </div>
+        </div>
       )}
-    </>
+    />
   );
 };

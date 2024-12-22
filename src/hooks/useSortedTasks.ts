@@ -1,5 +1,5 @@
 import { areArraysEqual } from "@/lib/utils/referential-equality-checks";
-import { type SortedTasks, sortTasksByCategory } from "@/lib/utils/sort-tasks";
+import { type SortedTasks, sortTasksByFrequency } from "@/lib/utils/sort-tasks";
 import { type Task } from "@/types/task";
 import { useMemo, useRef } from "react";
 
@@ -9,11 +9,10 @@ function areTasksEqual(prev: Task[], next: Task[]): boolean {
     if (
       prev[i]?.id !== next[i]?.id ||
       prev[i]?.name !== next[i]?.name ||
-      prev[i]?.category !== next[i]?.category ||
+      prev[i]?.frequency !== next[i]?.frequency ||
       prev[i]?.dailyCountTotal !== next[i]?.dailyCountTotal ||
       prev[i]?.xValue !== next[i]?.xValue ||
       prev[i]?.startDate !== next[i]?.startDate ||
-      prev[i]?.repeatFrequency !== next[i]?.repeatFrequency ||
       (prev[i]?.monthDays &&
         next[i]?.monthDays &&
         !areArraysEqual(prev[i]?.monthDays, next[i]?.monthDays)) ||
@@ -27,7 +26,7 @@ function areTasksEqual(prev: Task[], next: Task[]): boolean {
   return true;
 }
 
-export function useSortedByCategoryTasks(tasks: Task[]): SortedTasks {
+export function useSortedByFrequencyTasks(tasks: Task[]): SortedTasks {
   const tasksRef = useRef<Task[]>([]);
   const sortedTasksRef = useRef<SortedTasks>({
     monthly: [],
@@ -42,7 +41,7 @@ export function useSortedByCategoryTasks(tasks: Task[]): SortedTasks {
     }
     if (!areTasksEqual(tasks, tasksRef.current)) {
       tasksRef.current = tasks;
-      sortedTasksRef.current = sortTasksByCategory(tasks);
+      sortedTasksRef.current = sortTasksByFrequency(tasks);
     }
     return sortedTasksRef.current;
   }, [tasks]);

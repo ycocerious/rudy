@@ -1,3 +1,4 @@
+import { getColorFromTailwindClass } from "@/lib/utils/get-tailwind-color";
 import { type Task } from "@/types/task";
 import {
   motion,
@@ -9,7 +10,6 @@ import {
 import { Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
-import { getColorFromTailwindClass } from "@/lib/utils/get-tailwind-color";
 
 interface SwipeableTaskProps {
   task: Task;
@@ -82,21 +82,21 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
         >
           <span className="text-md z-10">{task.name}</span>
           <div className="max-w-[40%] text-right text-xs text-muted-foreground">
-            {task.category === "daily" && (
+            {task.frequency === "daily" && (
               <span className="mr-1">
                 {"Everyday" +
                   " " +
                   `${task.dailyCountTotal && task.dailyCountTotal === 1 ? "once" : `${task.dailyCountTotal} times`}`}
               </span>
             )}
-            {task.category === "xdays" && (
+            {task.frequency === "xdays" && (
               <span className="mr-1">{`Every ${task.xValue} days`}</span>
             )}
-            {task.category === "weekly" && (
+            {task.frequency === "weekly" && (
               <span className="mr-1">{`Every ${task.weekDays!.map((day) => day.slice(0, 3)).join(", ")}`}</span>
             )}
-            {task.category === "monthly" && (
-              <span className="mr-1">{`Every ${task.monthDays!.map((day) => day.replace("-", " ")).join(", ")}`}</span>
+            {task.frequency === "monthly" && (
+              <span className="mr-1">{`Every ${task.monthDays?.join(", ") ?? ""}`}</span>
             )}
           </div>
         </motion.div>

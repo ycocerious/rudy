@@ -2,7 +2,6 @@
 import { getTasksForDate } from "@/lib/utils/get-tasks-for-date";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { taskCompletions, tasks } from "@/server/db/schema";
-import { type dailyCountTotalType } from "@/types/form-types";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -27,13 +26,16 @@ export const taskRouter = createTRPCRouter({
 
     const usableUserTasks = userTasks.map((task) => ({
       ...task,
-      startDate: task.startDate ? task.startDate.toString() : null,
-      dailyCountTotal: task.dailyCountTotal
-        ? (task.dailyCountTotal as dailyCountTotalType)
-        : 0,
+      startDate: task.startDate ? new Date(task.startDate) : null,
     }));
 
-    const todaysTasks = getTasksForDate(usableUserTasks);
+    const todaysTasks = getTasksForDate(usableUserTasks).map((task) => {
+      const completedCount = completionsMap.get(task.id) ?? 0;
+      return {
+        ...task,
+        dailyCountFinished: completedCount,
+      };
+    });
 
     const todaysCompletions = await ctx.db
       .select({
@@ -56,7 +58,7 @@ export const taskRouter = createTRPCRouter({
     return todaysTasks.filter((task) => {
       const completedCount = completionsMap.get(task.id) ?? 0;
 
-      return task.category === "daily"
+      return task.frequency === "daily"
         ? completedCount < (task.dailyCountTotal ?? 1)
         : completedCount === 0;
     });
@@ -105,7 +107,7 @@ export const taskRouter = createTRPCRouter({
         if (existingCompletion) {
           // For daily tasks with count
           if (
-            task.category === "daily" &&
+            task.frequency === "daily" &&
             task.dailyCountTotal &&
             existingCompletion.completedCount &&
             existingCompletion.completedCount < task.dailyCountTotal
@@ -130,21 +132,6 @@ export const taskRouter = createTRPCRouter({
             userId: ctx.userId,
             completedDate: sql`CURRENT_DATE`,
           });
-
-          // TODO: Handle current streak logic
-          await tx
-            .update(tasks)
-            .set({
-              currentStreak: sql`${tasks.currentStreak} + 1`,
-              highestStreak: sql`GREATEST(${tasks.highestStreak}, ${tasks.currentStreak} + 1)`,
-              updatedAt: new Date(),
-            })
-            .where(eq(tasks.id, taskId));
-
-          return {
-            ...task,
-            dailyCountFinished: 1,
-          };
         }
 
         return task;

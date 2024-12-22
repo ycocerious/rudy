@@ -15,14 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import {
-  type dailyCountTotalType,
-  type monthDaysType,
-  type repeatFrequencyType,
-  type taskCategoryType,
-  type weekDaysType,
-  type xValueType,
-} from "@/types/form-types";
+import { type taskFrequencyType, type weekDaysType } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { nanoid } from "nanoid";
 import {
@@ -57,13 +50,12 @@ type AddOrEditTaskSheetProps = AddTaskSheetProps | EditTaskSheetProps;
 
 export type FormValues = {
   name: string;
-  category: taskCategoryType | null;
-  dailyCountTotal: dailyCountTotalType | null;
-  xValue: xValueType | null;
+  frequency: taskFrequencyType | null;
+  dailyCountTotal: number | null;
+  xValue: number | null;
   startDate: Date | null;
-  repeatFrequency: repeatFrequencyType | null;
   weekDays: weekDaysType[] | null;
-  monthDays: monthDaysType[] | null;
+  monthDays: number[] | null;
 };
 
 export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
@@ -82,17 +74,16 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   } = useForm<FormValues>({
     defaultValues: {
       name: originalTask?.name ?? "",
-      category: originalTask?.category ?? null,
+      frequency: originalTask?.frequency ?? null,
       dailyCountTotal: originalTask?.dailyCountTotal ?? null,
       xValue: originalTask?.xValue ?? null,
       startDate: originalTask?.startDate ?? null,
-      repeatFrequency: originalTask?.repeatFrequency ?? null,
       monthDays: originalTask?.monthDays ?? null,
       weekDays: originalTask?.weekDays ?? null,
     },
   });
 
-  const category = watch("category");
+  const frequency = watch("frequency");
 
   const handleAddSheetClose = () => {
     setIsSheetOpen(false);
@@ -103,11 +94,10 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     setIsSheetOpen(false);
     reset({
       name: originalTask?.name ?? "",
-      category: originalTask?.category ?? null,
+      frequency: originalTask?.frequency ?? null,
       dailyCountTotal: originalTask?.dailyCountTotal ?? null,
       xValue: originalTask?.xValue ?? null,
       startDate: originalTask?.startDate ?? null,
-      repeatFrequency: originalTask?.repeatFrequency ?? null,
       monthDays: originalTask?.monthDays ?? null,
       weekDays: originalTask?.weekDays ?? null,
     });
@@ -118,15 +108,13 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       const newTask: Task = {
         id: Number(nanoid()),
         name: data.name.trim(),
-        category: data.category!,
+        frequency: data.frequency!,
         dailyCountTotal: data.dailyCountTotal!,
-        xValue: data.xValue ?? undefined,
-        startDate: data.startDate ?? undefined,
-        repeatFrequency: data.repeatFrequency ?? undefined,
-        monthDays: data.monthDays ?? undefined,
-        weekDays: data.weekDays ?? undefined,
-        currentStreak: 0,
-        highestStreak: 0,
+        dailyCountFinished: 0,
+        xValue: data.xValue ?? null,
+        startDate: data.startDate ?? null,
+        monthDays: data.monthDays ?? null,
+        weekDays: data.weekDays ?? null,
       };
     } else {
       setIsTaskOperationComplete(true);
@@ -154,16 +142,15 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       return;
     }
 
-    // Only reset when category actually changes, not just when form becomes dirty
-    if (category && category !== originalTask?.category) {
+    // Only reset when frequency actually changes, not just when form becomes dirty
+    if (frequency && frequency !== originalTask?.frequency) {
       setValue("xValue", null);
       setValue("startDate", null);
-      setValue("repeatFrequency", null);
       setValue("weekDays", null);
       setValue("monthDays", null);
       setValue("dailyCountTotal", null);
     }
-  }, [category, setValue, originalTask?.category]);
+  }, [frequency, setValue, originalTask?.frequency]);
 
   return (
     <Dialog
@@ -223,7 +210,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           />
 
           <Controller
-            name="category"
+            name="frequency"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
@@ -244,15 +231,17 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             )}
           />
 
-          {category === "monthly" && <MonthlySelectContent control={control} />}
-          {category === "weekly" && <WeeklySelectContent control={control} />}
-          {category === "xdays" && (
+          {frequency === "monthly" && (
+            <MonthlySelectContent control={control} />
+          )}
+          {frequency === "weekly" && <WeeklySelectContent control={control} />}
+          {frequency === "xdays" && (
             <XdaySelectContent
               control={control}
               originalTask={originalTask ?? undefined}
             />
           )}
-          {category === "daily" && <DailySelectContent control={control} />}
+          {frequency === "daily" && <DailySelectContent control={control} />}
 
           <DialogFooter>
             <Button

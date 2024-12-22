@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { useSortedByCategoryTasks } from "@/hooks/useSortedTasks";
+import { useSortedByFrequencyTasks } from "@/hooks/useSortedTasks";
 import { cn } from "@/lib/utils";
 import { getGridPosition } from "@/lib/utils/get-grid-position";
 import { type Task } from "@/types/task";
@@ -18,30 +18,30 @@ import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { SwipeableAllTask } from "./swipeable-all-task";
-import { categoryMapping } from "./today-tasks-list";
+import { frequencyMapping } from "./today-tasks-list";
 
 export const AllTasksList = () => {
   const [tasks, setTasks] = useState<Task[]>();
-  const sortedTasks = useSortedByCategoryTasks(tasks ?? []);
+  const sortedTasks = useSortedByFrequencyTasks(tasks ?? []);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
 
   const dialogOpenChange = useCallback(() => {
     setIsDialogOpen(!isDialogOpen);
-    setSelectedCategory("");
+    setSelectedFrequency("");
   }, [isDialogOpen]);
 
   useEffect(() => {
     if (
-      sortedTasks[selectedCategory as keyof typeof sortedTasks] &&
-      sortedTasks[selectedCategory as keyof typeof sortedTasks].length === 0
+      sortedTasks[selectedFrequency as keyof typeof sortedTasks] &&
+      sortedTasks[selectedFrequency as keyof typeof sortedTasks].length === 0
     ) {
       dialogOpenChange();
     }
-  }, [dialogOpenChange, selectedCategory, sortedTasks]);
+  }, [dialogOpenChange, selectedFrequency, sortedTasks]);
 
   const deleteTask = (id: number) => {
     const taskToDelete = tasks?.find((task) => task.id === id);
@@ -53,8 +53,8 @@ export const AllTasksList = () => {
     }
   };
 
-  const handleCardClick = (category: string) => {
-    setSelectedCategory(category);
+  const handleCardClick = (frequency: string) => {
+    setSelectedFrequency(frequency);
     setIsDialogOpen(true);
   };
 
@@ -65,20 +65,20 @@ export const AllTasksList = () => {
           <div className="grid h-full grid-cols-2 grid-rows-2 gap-6 overflow-auto px-2 pb-8">
             {Object.entries(sortedTasks)
               .filter(([_, tasks]) => tasks.length > 0)
-              .map(([category, tasks], index) => (
+              .map(([frequency, tasks], index) => (
                 <Card
-                  key={category}
+                  key={frequency}
                   className={cn(
                     "flex max-h-[27vh] cursor-pointer items-center justify-center border-primary",
                     getGridPosition(index),
                   )}
-                  onClick={() => handleCardClick(category)}
+                  onClick={() => handleCardClick(frequency)}
                 >
                   <CardContent className="p-6 text-center">
                     <p className="text-lg text-primary">
                       {
-                        categoryMapping[
-                          category as keyof typeof categoryMapping
+                        frequencyMapping[
+                          frequency as keyof typeof frequencyMapping
                         ]
                       }
                     </p>
@@ -97,10 +97,10 @@ export const AllTasksList = () => {
       </div>
 
       <Button
-        className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-full bg-accent"
+        className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-xl bg-accent"
         onClick={() => setIsSheetOpen(true)}
       >
-        <Plus size={28} className="text-accent-foreground" />
+        <Plus size={38} className="text-accent-foreground" />
       </Button>
 
       <AddOrEditTaskSheet
@@ -112,12 +112,20 @@ export const AllTasksList = () => {
       <Dialog open={isDialogOpen} onOpenChange={dialogOpenChange}>
         <DialogContent className="flex h-auto max-h-[75vh] min-h-[25vh] w-[90vw] max-w-none flex-col items-center justify-center overflow-y-auto rounded-md border-border bg-card px-0 pb-10 pt-14 sm:max-w-sm">
           <DialogTitle className="sr-only">
-            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}{" "}
+            {
+              frequencyMapping[
+                selectedFrequency as keyof typeof frequencyMapping
+              ]
+            }{" "}
             Tasks
           </DialogTitle>
           <DialogDescription className="sr-only">
             List of tasks for{" "}
-            {categoryMapping[selectedCategory as keyof typeof categoryMapping]}
+            {
+              frequencyMapping[
+                selectedFrequency as keyof typeof frequencyMapping
+              ]
+            }
           </DialogDescription>
 
           <p className="text-md mb-1 px-2 pb-2 text-center">
@@ -128,7 +136,7 @@ export const AllTasksList = () => {
           </p>
 
           <div className="w-full px-6">
-            {sortedTasks[selectedCategory as keyof typeof sortedTasks]?.map(
+            {sortedTasks[selectedFrequency as keyof typeof sortedTasks]?.map(
               (task) => (
                 <SwipeableAllTask
                   key={task.id}

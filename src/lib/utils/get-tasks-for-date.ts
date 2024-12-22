@@ -1,11 +1,11 @@
 /* eslint-disable prefer-const */
-import { type DbTask } from "@/server/db/schema";
-import { monthNumberToDaysMapping, weekDaysEnum } from "@/types/form-types";
+import { weekDaysEnum } from "@/types/form-types";
+import { type Task } from "@/types/task";
 
 export function getTasksForDate(
-  tasks: DbTask[],
+  tasks: Task[],
   date: Date = new Date(),
-): DbTask[] {
+): Task[] {
   // Normalize the input date to remove time components
   const targetDate = new Date(
     date.getFullYear(),
@@ -14,7 +14,7 @@ export function getTasksForDate(
   );
 
   return tasks.filter((task) => {
-    switch (task.category) {
+    switch (task.frequency) {
       case "daily":
         return true; // Daily tasks are always active
 
@@ -38,9 +38,6 @@ export function getTasksForDate(
       case "monthly":
         if (!task.monthDays) return false;
 
-        const monthDays = task.monthDays.map(
-          (d) => monthNumberToDaysMapping[d],
-        );
         const targetDay = targetDate.getDate();
         const lastDateOfMonth = new Date(
           targetDate.getFullYear(),
@@ -80,28 +77,18 @@ export function getTasksForDate(
           return currentDate.getDate();
         };
 
-        return monthDays.some((monthDay) => {
-          // Handle numeric days (1st through 28th)
-          if (
-            monthDay?.endsWith("st") ||
-            monthDay?.endsWith("nd") ||
-            monthDay?.endsWith("rd") ||
-            monthDay?.endsWith("th")
-          ) {
-            const dayNum = parseInt(monthDay);
-            return targetDay === dayNum;
-          }
-
-          // Handle special cases
+        return task.monthDays.some((monthDay) => {
+          // Special cases for weekend dates
           switch (monthDay) {
-            case "last-date":
+            case -1: // last date of month
               return targetDay === lastDateOfMonth;
-            case "1st-wknd":
+            case -2: // first weekend
               return targetDay === getFirstWeekendDate();
-            case "last-wknd":
+            case -3: // last weekend
               return targetDay === getLastWeekendDate();
             default:
-              return false;
+              // Regular days 1-31
+              return targetDay === monthDay;
           }
         });
 

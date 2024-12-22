@@ -7,10 +7,10 @@ export type SortedTasks = {
   daily: Task[];
 };
 
-export function sortTasksByCategory(tasks: Task[]): SortedTasks {
+export function sortTasksByFrequency(tasks: Task[]): SortedTasks {
   return tasks.reduce<SortedTasks>(
     (acc, task) => {
-      switch (task.category) {
+      switch (task.frequency) {
         case "monthly":
           acc.monthly.push(task);
           break;
@@ -24,7 +24,7 @@ export function sortTasksByCategory(tasks: Task[]): SortedTasks {
           acc.daily.push(task);
           break;
         default:
-          console.warn(`Unknown task category`);
+          console.warn(`Unknown task frequency`);
       }
       return acc;
     },

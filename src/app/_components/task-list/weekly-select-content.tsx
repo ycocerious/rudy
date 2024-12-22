@@ -1,11 +1,4 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { repeatFrequencyEnum, weekDaysEnum } from "@/types/form-types";
+import { weekDaysEnum } from "@/types/form-types";
 import { type Control, Controller, useWatch } from "react-hook-form";
 import { type FormValues } from "./add-or-edit-task-sheet";
 
@@ -14,10 +7,6 @@ type WeeklySelectContentProps = {
 };
 
 export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
-  const repeatFrequency = useWatch({
-    control,
-    name: "repeatFrequency",
-  });
   const weekDays = useWatch({
     control,
     name: "weekDays",
@@ -26,74 +15,40 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
   return (
     <>
       <Controller
-        name="repeatFrequency"
+        name="weekDays"
         control={control}
-        rules={{ required: true }}
+        rules={{
+          required: true,
+        }}
         render={({ field }) => (
-          <Select
-            onValueChange={(value) =>
-              field.onChange(value ? Number(value) : null)
-            }
-            value={field.value?.toString() ?? ""}
-          >
-            <SelectTrigger className="h-12 w-full">
-              <SelectValue placeholder="Select repetition frequency" />
-            </SelectTrigger>
-            <SelectContent>
-              {repeatFrequencyEnum.map((freq) => (
-                <SelectItem key={freq} value={freq.toString()}>
-                  {freq} time{freq > 1 ? "s" : ""} a week
-                </SelectItem>
+          <div className="mt-4">
+            <p className="ml-1">Select days:</p>
+            <div className="flex flex-wrap">
+              {weekDaysEnum.map((day) => (
+                <button
+                  type="button"
+                  key={day}
+                  onClick={() => {
+                    const currentValue = field.value! ?? [];
+                    if (currentValue.includes(day)) {
+                      field.onChange(
+                        currentValue.filter((d: string) => d !== day),
+                      );
+                    } else {
+                      field.onChange([...currentValue, day]);
+                    }
+                  }}
+                  className={`m-1 h-10 w-24 rounded-lg border text-sm text-primary-foreground ${
+                    weekDays?.includes(day) ? "bg-primary" : "bg-foreground"
+                  }`}
+                >
+                  {day}
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          </div>
         )}
       />
-
-      {repeatFrequency && (
-        <Controller
-          name="weekDays"
-          control={control}
-          rules={{
-            required: true,
-            validate: (value) =>
-              Array.isArray(value) && value.length === repeatFrequency,
-          }}
-          render={({ field }) => (
-            <div className="mt-4">
-              <p className="ml-1">
-                Select {repeatFrequency} day
-                {repeatFrequency > 1 ? "s" : ""}:
-              </p>
-              <div className="flex flex-wrap">
-                {weekDaysEnum.map((day) => (
-                  <button
-                    type="button"
-                    key={day}
-                    onClick={() => {
-                      const currentValue = field.value! ?? [];
-                      if (currentValue.includes(day)) {
-                        field.onChange(
-                          currentValue.filter((d: string) => d !== day),
-                        );
-                      } else if (currentValue.length < repeatFrequency) {
-                        field.onChange([...currentValue, day]);
-                      } else {
-                        field.onChange([...currentValue.slice(0, -1), day]);
-                      }
-                    }}
-                    className={`m-1 h-10 w-24 rounded-lg border text-sm text-primary-foreground ${
-                      weekDays?.includes(day) ? "bg-primary" : "bg-foreground"
-                    }`}
-                  >
-                    {day}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        />
-      )}
     </>
   );
 };
