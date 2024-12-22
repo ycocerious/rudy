@@ -65,8 +65,12 @@ export const AllTasksList = () => {
     const taskToDelete = tasks?.find((task) => task.id === id);
 
     if (taskToDelete) {
-      await deleteDbTask(id);
-      toast.success("Task deleted successfully!", { id: theOnlyToastId });
+      try {
+        await deleteDbTask(id);
+        toast.success("Task deleted successfully!", { id: theOnlyToastId });
+      } catch (error) {
+        toast.error("Failed to add task", { id: theOnlyToastId });
+      }
     }
   };
 

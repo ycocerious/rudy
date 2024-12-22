@@ -229,4 +229,51 @@ export const taskRouter = createTRPCRouter({
 
       return deletedTask;
     }),
+
+  editTask: publicProcedure
+    .input(
+      z.object({
+        taskId: z.number(),
+        name: z.string(),
+        frequency: z.enum(taskFrequencyEnum),
+        category: z.enum(taskCategoryEnum),
+        dailyCountTotal: z.number().nullable(),
+        xValue: z.number().nullable(),
+        startDate: z.date().nullable(),
+        weekDays: z.array(z.string()).nullable(),
+        monthDays: z.array(z.number()).nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const [updatedTask] = await ctx.db
+        .update(tasks)
+        .set({
+          name: input.name,
+          frequency: input.frequency,
+          category: input.category,
+          dailyCountTotal: input.dailyCountTotal ?? 1,
+          xValue: input.xValue ?? null,
+          startDate: input.startDate?.toISOString() ?? null,
+          weekDays: input.weekDays ?? null,
+          monthDays: input.monthDays ?? null,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(tasks.id, input.taskId),
+            eq(tasks.userId, ctx.userId),
+            eq(tasks.isArchived, false),
+          ),
+        )
+        .returning();
+
+      if (!updatedTask) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Task not found or unauthorized",
+        });
+      }
+
+      return updatedTask;
+    }),
 });

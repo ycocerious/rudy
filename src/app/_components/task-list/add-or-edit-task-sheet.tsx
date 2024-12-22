@@ -116,6 +116,14 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const { mutateAsync: addTask } = api.task.addTask.useMutation({
     onSuccess: async () => {
       await utils.task.getTodaysTasks.invalidate();
+      toast.success("Added Task Successfully", { id: theOnlyToastId });
+    },
+  });
+
+  const { mutateAsync: editTask } = api.task.editTask.useMutation({
+    onSuccess: async () => {
+      await utils.task.getTodaysTasks.invalidate();
+      toast.success("Edited Task Successfully", { id: theOnlyToastId });
     },
   });
 
@@ -135,9 +143,28 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         setIsTaskOperationComplete(true);
       } catch (error) {
         toast.error("Failed to add task", { id: theOnlyToastId });
+        setIsTaskOperationComplete(true);
       }
     } else {
-      setIsTaskOperationComplete(true);
+      try {
+        await editTask({
+          taskId: originalTask!.id,
+          name: data.name.trim(),
+          frequency: data.frequency!,
+          dailyCountTotal: data.dailyCountTotal,
+          xValue: data.xValue,
+          category: data.category!,
+          startDate: data.startDate,
+          monthDays: data.monthDays,
+          weekDays: data.weekDays,
+        });
+        // Close dialog
+        setIsSheetOpen(false);
+        setIsTaskOperationComplete(true);
+      } catch (error) {
+        toast.error("Failed to edit task", { id: theOnlyToastId });
+        setIsTaskOperationComplete(true);
+      }
     }
   };
 
@@ -209,7 +236,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             render={({ field }) => (
               <Input
                 {...field}
-                placeholder="Task name (max 15 chars)"
+                placeholder="Name (max 15 chars)"
                 maxLength={15}
                 autoFocus={taskType === "edit"}
                 onFocus={(e) => {
@@ -238,7 +265,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 value={field.value ?? undefined}
               >
                 <SelectTrigger className="h-12 w-full">
-                  <SelectValue placeholder="Select Task Category" />
+                  <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="sleep">Sleep</SelectItem>
