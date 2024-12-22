@@ -5,7 +5,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { dailyCountEnum } from "@/types/form-types";
 import { type Control, Controller } from "react-hook-form";
 import { type FormValues } from "./add-or-edit-task-sheet";
 
@@ -29,7 +28,7 @@ export const DailySelectContent = ({ control }: DailySelectContentProps) => {
               <SelectValue placeholder="How many times a day?" />
             </SelectTrigger>
             <SelectContent>
-              {dailyCountEnum.map((value) => (
+              {[1, 2, 3, 4, 5].map((value) => (
                 <SelectItem key={value} value={value.toString()}>
                   {value === 1 ? "once" : `${value} times`}
                 </SelectItem>
