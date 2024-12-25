@@ -22,6 +22,7 @@ import {
   type weekDaysType,
 } from "@/types/form-types";
 import { type Task } from "@/types/task";
+import { Trash2 } from "lucide-react";
 import {
   useEffect,
   useRef,
@@ -68,6 +69,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const originalTask = taskType === "edit" ? props.task : null;
   const isFirstRender = useRef(true);
   const [isTaskOperationComplete, setIsTaskOperationComplete] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const {
     control,
@@ -129,6 +131,15 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     },
   });
 
+  const { mutateAsync: deleteTask } = api.task.deleteTask.useMutation({
+    onSuccess: async () => {
+      await utils.task.getTodaysTasks.invalidate();
+      await utils.task.getAllTasks.invalidate();
+      setIsSheetOpen(false);
+      toast.success("Task Deleted Successfully", { id: theOnlyToastId });
+    },
+  });
+
   const onSubmit = async (data: FormValues) => {
     if (taskType === "add") {
       try {
@@ -164,6 +175,16 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         toast.error("Failed to edit task", { id: theOnlyToastId });
         console.log(error);
         setIsTaskOperationComplete(true);
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    if (taskType === "edit" && originalTask) {
+      try {
+        await deleteTask(originalTask.id);
+      } catch (error) {
+        toast.error("Failed to delete task", { id: theOnlyToastId });
       }
     }
   };
@@ -315,14 +336,64 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           )}
           {frequency === "daily" && <DailySelectContent control={control} />}
 
-          <SheetFooter className="flex w-full items-end">
-            <Button
-              type="submit"
-              className="w-[35%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
-              disabled={!isTaskValid}
-            >
-              {taskType === "add" ? "Add Task" : "Save"}
-            </Button>
+          <SheetFooter className="flex w-full flex-col items-end justify-end gap-2">
+            {taskType === "edit" && (
+              <>
+                <div className="flex w-full flex-row items-center justify-end gap-2">
+                  {!showDeleteConfirm && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-[14%] border-destructive bg-destructive/10 text-destructive"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-[35%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
+                    disabled={!isTaskValid}
+                  >
+                    Save
+                  </Button>
+                </div>
+                {showDeleteConfirm && (
+                  <div className="flex w-full flex-col items-end">
+                    <p className="text-sm text-muted-foreground">
+                      Are you sure you want to delete this task?
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="text-md w-15 h-7 text-muted-foreground"
+                      >
+                        No
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={handleDelete}
+                        className="text-md w-15 h-7 text-destructive"
+                      >
+                        Yes
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+            {taskType === "add" && (
+              <Button
+                type="submit"
+                className="w-[35%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
+                disabled={!isTaskValid}
+              >
+                Add Task
+              </Button>
+            )}
           </SheetFooter>
         </form>
       </SheetContent>

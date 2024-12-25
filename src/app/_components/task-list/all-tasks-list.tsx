@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
-import { SwipeableAllTask } from "./swipeable-all-task";
+import { TaskItem } from "./swipeable-all-task";
 
 const CATEGORY_PRIORITY = {
   exercise: 0,
@@ -54,13 +54,7 @@ export const AllTasksList = () => {
       <div className="mx-auto h-full w-full max-w-2xl">
         {sortedTasks?.length !== 0 ? (
           <div className="space-y-3 px-4">
-            {sortedTasks?.map((task) => (
-              <SwipeableAllTask
-                key={task.id}
-                task={task}
-                handleSwipe={() => deleteTask(task.id)}
-              />
-            ))}
+            {sortedTasks?.map((task) => <TaskItem key={task.id} task={task} />)}
           </div>
         ) : (
           <div className="flex flex-grow items-center justify-center text-center">
