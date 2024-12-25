@@ -114,17 +114,15 @@ export const TodayTasksList = () => {
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <div className="space-y-2">
-        {sortedTasks.map((task) => (
-          <SwipeableTodaysTask
-            key={task.id}
-            task={task}
-            returnToPosition={returnToPosition}
-            handleSwipe={() => completeTask(task.id)}
-            handleReturnToPosition={() => setReturnToPosition(false)}
-          />
-        ))}
-      </div>
+      {sortedTasks.map((task) => (
+        <SwipeableTodaysTask
+          key={task.id}
+          task={task}
+          returnToPosition={returnToPosition}
+          handleSwipe={() => completeTask(task.id)}
+          handleReturnToPosition={() => setReturnToPosition(false)}
+        />
+      ))}
     </div>
   );
 };
