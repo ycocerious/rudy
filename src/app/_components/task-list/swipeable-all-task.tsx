@@ -1,3 +1,4 @@
+import { CATEGORY_COLORS } from "@/constants/categoryColors";
 import { getColorFromTailwindClass } from "@/lib/utils/get-tailwind-color";
 import { type Task } from "@/types/task";
 import {
@@ -33,7 +34,9 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
     x,
     [0, 50, threshold],
     [
-      getColorFromTailwindClass("primary"),
+      task.category
+        ? CATEGORY_COLORS[task.category]
+        : getColorFromTailwindClass("primary"),
       getColorFromTailwindClass("destructive"),
       getColorFromTailwindClass("destructive"),
     ],
@@ -81,24 +84,6 @@ export const SwipeableAllTask: React.FC<SwipeableTaskProps> = ({
           className="flex h-full w-full items-center justify-between py-2 pl-4 pr-2"
         >
           <span className="text-md z-10">{task.name}</span>
-          <div className="max-w-[40%] text-right text-xs text-muted-foreground">
-            {task.frequency === "daily" && (
-              <span className="mr-1">
-                {"Everyday" +
-                  " " +
-                  `${task.dailyCountTotal && task.dailyCountTotal === 1 ? "once" : `${task.dailyCountTotal} times`}`}
-              </span>
-            )}
-            {task.frequency === "xdays" && (
-              <span className="mr-1">{`Every ${task.xValue} days`}</span>
-            )}
-            {task.frequency === "weekly" && (
-              <span className="mr-1">{`Every ${task.weekDays!.map((day) => day.slice(0, 3)).join(", ")}`}</span>
-            )}
-            {task.frequency === "monthly" && (
-              <span className="mr-1">{`Every ${task.monthDays?.join(", ") ?? ""}`}</span>
-            )}
-          </div>
         </motion.div>
         <motion.div
           className="30 absolute right-4 top-4 ml-2"

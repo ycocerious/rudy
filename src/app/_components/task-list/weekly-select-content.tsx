@@ -22,7 +22,7 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
         }}
         render={({ field }) => (
           <div className="mt-4">
-            <p className="ml-1">Select days:</p>
+            <p className="ml-1 text-popover-foreground">Select days:</p>
             <div className="flex flex-wrap">
               {weekDaysEnum.map((day) => (
                 <button

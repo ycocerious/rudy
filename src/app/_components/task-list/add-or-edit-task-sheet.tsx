@@ -1,11 +1,4 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -14,6 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { api } from "@/trpc/react";
 import {
@@ -200,7 +200,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   }, [frequency, setValue, originalTask?.frequency]);
 
   return (
-    <Dialog
+    <Sheet
       open={isSheetOpen}
       onOpenChange={(open) => {
         if (!open) {
@@ -212,14 +212,17 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         }
       }}
     >
-      <DialogContent className="mx-auto max-w-[90%] space-y-4 rounded-xl border-none bg-card px-4 sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>
+      <SheetContent
+        side="bottom"
+        className="mx-auto h-auto w-full max-w-[500px] space-y-4 rounded-t-2xl border-none bg-gray-200 px-4 [&>button]:absolute [&>button]:right-3 [&>button]:top-3 [&>button]:scale-150 [&>button]:text-gray-950 [&>button_svg]:font-bold"
+      >
+        <SheetHeader>
+          <SheetTitle className="text-popover-foreground">
             {taskType === "add"
               ? "Add New Task"
               : `Edit Task: ${originalTask?.name}`}
-          </DialogTitle>
-        </DialogHeader>
+          </SheetTitle>
+        </SheetHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Controller
@@ -236,8 +239,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             render={({ field }) => (
               <Input
                 {...field}
-                placeholder="Name (max 15 chars)"
-                maxLength={15}
+                placeholder="Name (max 25 chars)"
+                maxLength={25}
                 autoFocus={taskType === "edit"}
                 onFocus={(e) => {
                   // Prevent the default focus behavior
@@ -251,7 +254,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                     }, 0);
                   }
                 }}
-                className="h-12"
+                className="h-12 border-popover-foreground text-popover-foreground placeholder:text-gray-950"
               />
             )}
           />
@@ -264,7 +267,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 onValueChange={field.onChange}
                 value={field.value ?? undefined}
               >
-                <SelectTrigger className="h-12 w-full">
+                <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -286,7 +289,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                   onValueChange={field.onChange}
                   value={field.value ?? undefined}
                 >
-                  <SelectTrigger className="h-12 w-full">
+                  <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
                     <SelectValue placeholder="Select Repetition frequency" />
                   </SelectTrigger>
                   <SelectContent>
@@ -312,17 +315,17 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           )}
           {frequency === "daily" && <DailySelectContent control={control} />}
 
-          <DialogFooter>
+          <SheetFooter className="flex w-full items-end">
             <Button
               type="submit"
-              className="bg-primary text-accent-foreground hover:bg-primary"
+              className="w-[35%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
               disabled={!isTaskValid}
             >
               {taskType === "add" ? "Add Task" : "Save"}
             </Button>
-          </DialogFooter>
+          </SheetFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };

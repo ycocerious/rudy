@@ -34,7 +34,7 @@ body {
     --secondary: 215 28% 17%; /* gray-800 */
     --secondary-foreground: 182 73% 63%; /* #5ce1e6 */
     --muted: 240 5% 65%; /* #a1a1aa */
-    --muted-foreground: 216 12% 84%; /* gray-300 */
+    --muted-foreground: 215 20% 45%; /* reduced lightness from 65% to 45% for darker appearance */
     --accent: 182 99% 49%; /* 01f0f8 */
     --accent-foreground: 224 71% 4%; /* gray-950 */
     --border: 215 14% 34%; /* #gray-600 */

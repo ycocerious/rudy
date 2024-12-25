@@ -2,18 +2,10 @@
 
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { api } from "@/trpc/react";
-import { type taskFrequencyType } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
-
-export const frequencyMapping = {
-  monthly: "Monthly Tasks",
-  weekly: "Weekly Tasks",
-  xdays: "X-day Tasks",
-  daily: "Daily Tasks",
-} satisfies Record<taskFrequencyType, string>;
 
 const CATEGORY_PRIORITY = {
   exercise: 0,

@@ -2,14 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { useSortedByFrequencyTasks } from "@/hooks/useSortedTasks";
 import { api } from "@/trpc/react";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { SwipeableAllTask } from "./swipeable-all-task";
-import { frequencyMapping } from "./today-tasks-list";
+
+const CATEGORY_PRIORITY = {
+  exercise: 0,
+  nutrition: 1,
+  sleep: 2,
+} as const;
 
 export const AllTasksList = () => {
   const { data: tasks, isLoading } = api.task.getAllTasks.useQuery();
@@ -28,8 +32,6 @@ export const AllTasksList = () => {
     },
   });
 
-  const sortedTasks = useSortedByFrequencyTasks(tasks ?? []);
-
   const deleteTask = async (id: number) => {
     const taskToDelete = tasks?.find((task) => task.id === id);
     if (taskToDelete) {
@@ -41,36 +43,24 @@ export const AllTasksList = () => {
     }
   };
 
+  const sortedTasks = tasks?.sort((a, b) => {
+    const priorityA = CATEGORY_PRIORITY[a.category] ?? Number.MAX_SAFE_INTEGER;
+    const priorityB = CATEGORY_PRIORITY[b.category] ?? Number.MAX_SAFE_INTEGER;
+    return priorityA - priorityB;
+  });
+
   return (
     <>
       <div className="mx-auto h-full w-full max-w-2xl">
-        {tasks?.length !== 0 ? (
-          <div className="space-y-6 px-4">
-            {Object.entries(sortedTasks)
-              .filter(([_, tasks]) => tasks.length > 0)
-              .map(([frequency, tasks]) => (
-                <div key={frequency} className="space-y-2">
-                  <h2 className="text-lg font-semibold text-primary">
-                    {
-                      frequencyMapping[
-                        frequency as keyof typeof frequencyMapping
-                      ]
-                    }
-                    <span className="ml-2 text-sm text-muted-foreground">
-                      ({tasks.length} task{tasks.length > 1 ? "s" : ""})
-                    </span>
-                  </h2>
-                  <div className="space-y-2">
-                    {tasks.map((task) => (
-                      <SwipeableAllTask
-                        key={task.id}
-                        task={task}
-                        handleSwipe={() => deleteTask(task.id)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
+        {sortedTasks?.length !== 0 ? (
+          <div className="space-y-3 px-4">
+            {sortedTasks?.map((task) => (
+              <SwipeableAllTask
+                key={task.id}
+                task={task}
+                handleSwipe={() => deleteTask(task.id)}
+              />
+            ))}
           </div>
         ) : (
           <div className="flex flex-grow items-center justify-center text-center">

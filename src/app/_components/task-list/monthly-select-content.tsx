@@ -20,7 +20,9 @@ export const MonthlySelectContent = ({
       rules={{ required: true }}
       render={({ field }) => (
         <div>
-          <p className="mb-2 ml-1">Select dates for monthly repetition:</p>
+          <p className="mb-2 ml-1 text-popover-foreground">
+            Select dates for monthly repetition:
+          </p>
           <div className="flex flex-wrap gap-1">
             {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
               <button

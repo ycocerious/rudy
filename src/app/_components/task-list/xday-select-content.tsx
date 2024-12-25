@@ -52,7 +52,7 @@ export const XdaySelectContent = ({
             onValueChange={(value) => field.onChange(Number(value))}
             value={String(field.value ?? "")}
           >
-            <SelectTrigger className="h-12 w-full">
+            <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
               <SelectValue placeholder="Select value of x" />
             </SelectTrigger>
             <SelectContent>
@@ -68,7 +68,9 @@ export const XdaySelectContent = ({
 
       {xValue && (
         <div className="w-[70%]">
-          <p className="ml-1 text-sm">Select start date:</p>
+          <p className="ml-1 text-sm text-popover-foreground">
+            Select start date:
+          </p>
           <Controller
             name="startDate"
             control={control}
@@ -98,7 +100,7 @@ export const XdaySelectContent = ({
       )}
 
       {xValue && startDate && today <= startDate && (
-        <p className="ml-1 text-sm">
+        <p className="ml-1 text-sm text-popover-foreground">
           Task will repeat every {xValue} days, starting from{" "}
           {format(startDate, "MMMM d, yyyy")}
         </p>

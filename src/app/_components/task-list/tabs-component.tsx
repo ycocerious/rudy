@@ -13,13 +13,13 @@ export function TabsComponent() {
           value="today"
           className="h-9 rounded-md data-[state=active]:bg-background"
         >
-          Today&apos;s tasks
+          Today
         </TabsTrigger>
         <TabsTrigger
           value="all"
           className="h-9 rounded-md data-[state=active]:bg-background"
         >
-          All Tasks
+          All Habits
         </TabsTrigger>
       </TabsList>
       <div className="flex flex-grow justify-center">
