@@ -1,4 +1,4 @@
-import { Bed, Dumbbell, UtensilsCrossed } from "lucide-react";
+import { Apple, Bed, Dumbbell } from "lucide-react";
 
 export const TASK_CATEGORIES = {
   sleep: {
@@ -11,7 +11,7 @@ export const TASK_CATEGORIES = {
   },
   nutrition: {
     label: "Nutrition",
-    icon: UtensilsCrossed,
+    icon: Apple,
   },
 } as const;
 

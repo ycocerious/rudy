@@ -1,10 +1,13 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { api } from "@/trpc/react";
 import { type Task } from "@/types/task";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
 
 const CATEGORY_PRIORITY = {
@@ -16,6 +19,7 @@ const CATEGORY_PRIORITY = {
 export const TodayTasksList = () => {
   //trpc related
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const { data: tasks, isLoading } = api.task.getTodaysTasks.useQuery();
 
@@ -105,16 +109,31 @@ export const TodayTasksList = () => {
   });
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      {sortedTasks.map((task) => (
-        <SwipeableTodaysTask
-          key={task.id}
-          task={task}
-          returnToPosition={returnToPosition}
-          handleSwipe={() => completeTask(task.id)}
-          handleReturnToPosition={() => setReturnToPosition(false)}
-        />
-      ))}
-    </div>
+    <>
+      <div className="mx-auto w-full max-w-2xl">
+        {sortedTasks.map((task) => (
+          <SwipeableTodaysTask
+            key={task.id}
+            task={task}
+            returnToPosition={returnToPosition}
+            handleSwipe={() => completeTask(task.id)}
+            handleReturnToPosition={() => setReturnToPosition(false)}
+          />
+        ))}
+      </div>
+
+      <Button
+        className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-xl bg-accent"
+        onClick={() => setIsSheetOpen(true)}
+      >
+        <Plus size={38} className="text-accent-foreground" />
+      </Button>
+
+      <AddOrEditTaskSheet
+        isSheetOpen={isSheetOpen}
+        setIsSheetOpen={setIsSheetOpen}
+        taskType="add"
+      />
+    </>
   );
 };

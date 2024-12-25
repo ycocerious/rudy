@@ -135,7 +135,7 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
               })}
           </div>
           <div className="flex w-full flex-col">
-            <div className="text-md z-10 max-w-[60%] break-words">
+            <div className="text-md z-10 ml-[2px] max-w-[60%] break-words">
               {task.name}
             </div>
             {task.category && (

@@ -1,11 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { theOnlyToastId } from "@/constants/uiConstants";
 import { api } from "@/trpc/react";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 import { TaskItem } from "./swipeable-all-task";
 
@@ -17,31 +15,7 @@ const CATEGORY_PRIORITY = {
 
 export const AllTasksList = () => {
   const { data: tasks, isLoading } = api.task.getAllTasks.useQuery();
-  const utils = api.useUtils();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  const { mutateAsync: deleteDbTask } = api.task.deleteTask.useMutation({
-    onSuccess: async () => {
-      await utils.task.getAllTasks.invalidate();
-      toast.success("Task deleted successfully!", { id: theOnlyToastId });
-    },
-    onError: (error) => {
-      toast.error(`Error deleting task: ${error.message}`, {
-        id: theOnlyToastId,
-      });
-    },
-  });
-
-  const deleteTask = async (id: number) => {
-    const taskToDelete = tasks?.find((task) => task.id === id);
-    if (taskToDelete) {
-      try {
-        await deleteDbTask(id);
-      } catch (error) {
-        toast.error("Failed to delete task", { id: theOnlyToastId });
-      }
-    }
-  };
 
   const sortedTasks = tasks?.sort((a, b) => {
     const priorityA = CATEGORY_PRIORITY[a.category] ?? Number.MAX_SAFE_INTEGER;
