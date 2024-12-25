@@ -109,6 +109,12 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
           <div className="text-md z-10 max-w-[60%] break-words">
             {task.name}
           </div>
+
+          {task.frequency === "daily" && (
+            <div className="mr-2 text-xs text-gray-300">
+              {"(" + task.dailyCountFinished + "/" + task.dailyCountTotal + ")"}
+            </div>
+          )}
         </div>
 
         <ArrowRight

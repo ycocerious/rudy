@@ -95,11 +95,8 @@ export const taskRouter = createTRPCRouter({
   finishTask: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input: taskId }) => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
       return await ctx.db.transaction(async (tx) => {
-        // Get the task
+        // Get the task with a FOR UPDATE lock to prevent concurrent modifications
         const [task] = await tx
           .select()
           .from(tasks)
@@ -110,7 +107,8 @@ export const taskRouter = createTRPCRouter({
               eq(tasks.isArchived, false),
             ),
           )
-          .limit(1);
+          .limit(1)
+          .for("update"); // Add row-level lock
 
         if (!task) {
           throw new TRPCError({
@@ -119,7 +117,7 @@ export const taskRouter = createTRPCRouter({
           });
         }
 
-        // Get or create today's completion record
+        // Get today's completion with a FOR UPDATE lock
         const [existingCompletion] = await tx
           .select()
           .from(taskCompletions)
@@ -130,7 +128,8 @@ export const taskRouter = createTRPCRouter({
               sql`DATE(${taskCompletions.completedDate}) = CURRENT_DATE`,
             ),
           )
-          .limit(1);
+          .limit(1)
+          .for("update"); // Add row-level lock
 
         if (existingCompletion) {
           // For daily tasks with count
@@ -140,26 +139,45 @@ export const taskRouter = createTRPCRouter({
             existingCompletion.completedCount &&
             existingCompletion.completedCount < task.dailyCountTotal
           ) {
-            // Increment completion count
-            await tx
+            // Use RETURNING to get the updated record
+            const [updated] = await tx
               .update(taskCompletions)
               .set({
                 completedCount: sql`${taskCompletions.completedCount} + 1`,
               })
-              .where(eq(taskCompletions.id, existingCompletion.id));
+              .where(eq(taskCompletions.id, existingCompletion.id))
+              .returning();
+
+            if (!updated) {
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Failed to update completion count",
+              });
+            }
 
             return {
               ...task,
-              dailyCountFinished: existingCompletion.completedCount + 1,
+              dailyCountFinished: updated.completedCount,
             };
           }
         } else {
-          // Create new completion record
-          await tx.insert(taskCompletions).values({
-            taskId,
-            userId: ctx.userId,
-            completedDate: sql`CURRENT_DATE`,
-          });
+          // Create new completion record with RETURNING
+          const [newCompletion] = await tx
+            .insert(taskCompletions)
+            .values({
+              taskId,
+              userId: ctx.userId,
+              completedDate: sql`CURRENT_DATE`,
+              completedCount: 1,
+            })
+            .returning();
+
+          if (!newCompletion) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Failed to create completion record",
+            });
+          }
         }
 
         return task;
