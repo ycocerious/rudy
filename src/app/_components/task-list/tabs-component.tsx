@@ -23,10 +23,10 @@ export function TabsComponent() {
         </TabsTrigger>
       </TabsList>
       <div className="flex flex-grow justify-center">
-        <TabsContent value="today" className="mt-0">
+        <TabsContent value="today" className="mt-0 w-full">
           <TodayTasksList />
         </TabsContent>
-        <TabsContent value="all" className="mt-0">
+        <TabsContent value="all" className="mt-0 w-full">
           <AllTasksList />
         </TabsContent>
       </div>
