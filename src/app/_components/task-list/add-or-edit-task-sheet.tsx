@@ -118,6 +118,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const { mutateAsync: addTask } = api.task.addTask.useMutation({
     onSuccess: async () => {
       await utils.task.getTodaysTasks.invalidate();
+      await utils.task.getAllTasks.invalidate();
       toast.success("Added Task Successfully", { id: theOnlyToastId });
     },
   });
