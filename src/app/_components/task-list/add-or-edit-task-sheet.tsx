@@ -15,6 +15,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
+import { handleTaskStateChange } from "@/lib/utils/task-mutations";
 import { api } from "@/trpc/react";
 import {
   type taskCategoryType,
@@ -115,18 +116,22 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   };
 
   const utils = api.useUtils();
+
+  const { mutateAsync: calculateCompletion } =
+    api.consistency.calculateTodayCompletion.useMutation();
+
   const { mutateAsync: addTask } = api.task.addTask.useMutation({
     onSuccess: async () => {
-      await utils.task.getTodaysTasks.invalidate();
-      await utils.task.getAllTasks.invalidate();
+      await calculateCompletion();
+      await handleTaskStateChange(utils);
       toast.success("Added Task Successfully", { id: theOnlyToastId });
     },
   });
 
   const { mutateAsync: editTask } = api.task.editTask.useMutation({
     onSuccess: async () => {
-      await utils.task.getTodaysTasks.invalidate();
-      await utils.task.getAllTasks.invalidate();
+      await calculateCompletion();
+      await handleTaskStateChange(utils);
       setIsSheetOpen(false);
       setIsTaskOperationComplete(true);
     },
@@ -134,8 +139,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const { mutateAsync: deleteTask } = api.task.deleteTask.useMutation({
     onSuccess: async () => {
-      await utils.task.getTodaysTasks.invalidate();
-      await utils.task.getAllTasks.invalidate();
+      await calculateCompletion();
+      await handleTaskStateChange(utils);
       setIsSheetOpen(false);
       toast.success("Task Deleted Successfully", { id: theOnlyToastId });
     },

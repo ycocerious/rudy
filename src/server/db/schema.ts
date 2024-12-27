@@ -11,6 +11,7 @@ import {
   serial,
   text,
   timestamp,
+  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 const commonIdSchema = (columnName: string) => serial(columnName).primaryKey();
@@ -109,6 +110,30 @@ export const feedbacks = pgTable(
   },
   (table) => ({
     userIdIdx: index("feedback_user_id_idx").on(table.userId),
+  }),
+);
+
+export const dailyCompletions = pgTable(
+  "daily_completions",
+  {
+    id: commonIdSchema("daily_completion_id"),
+    userId: integer("user_id")
+      .references(() => users.id)
+      .notNull(),
+    completionDate: date("completion_date").notNull(),
+    completionPercentage: integer("completion_percentage").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    dailyCompletionsUserDateIdx: index("daily_completions_user_date_idx").on(
+      table.userId,
+      table.completionDate,
+    ),
+    unq: unique("daily_completions_user_date_unique").on(
+      table.userId,
+      table.completionDate,
+    ),
   }),
 );
 

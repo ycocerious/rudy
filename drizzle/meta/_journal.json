@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1735204659816,
+      "tag": "0000_sloppy_baron_strucker",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1735205382647,
+      "tag": "0001_loud_havok",
+      "breakpoints": true
+    }
+  ]
+}

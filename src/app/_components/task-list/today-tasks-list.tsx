@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { theOnlyToastId } from "@/constants/uiConstants";
+import { handleTaskStateChange } from "@/lib/utils/task-mutations";
 import { api } from "@/trpc/react";
 import { type Task } from "@/types/task";
 import { Plus } from "lucide-react";
@@ -17,10 +18,12 @@ const CATEGORY_PRIORITY = {
 } as const;
 
 export const TodayTasksList = () => {
-  //trpc related
+  //hooks
   const [localTasks, setLocalTasks] = useState<Task[]>([]);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
 
+  //trpc related
   const { data: tasks, isLoading } = api.task.getTodaysTasks.useQuery();
 
   useEffect(() => {
@@ -28,13 +31,21 @@ export const TodayTasksList = () => {
   }, [tasks]);
 
   const utils = api.useUtils();
+
+  const { mutateAsync: calculateCompletion } =
+    api.consistency.calculateTodayCompletion.useMutation({
+      onSuccess: () => {
+        toast("Hooray! Well done!", {
+          id: theOnlyToastId,
+          icon: "🎉👏",
+        });
+      },
+    });
+
   const { mutateAsync: finishDbTask } = api.task.finishTask.useMutation({
     onSuccess: async () => {
-      await utils.task.getTodaysTasks.invalidate();
-      toast("Hooray! Well done!", {
-        id: theOnlyToastId,
-        icon: "🎉👏",
-      });
+      await calculateCompletion();
+      await handleTaskStateChange(utils);
     },
     onError: (_, taskId) => {
       toast.error("Failed to complete task. Please try again.", {
@@ -56,19 +67,30 @@ export const TodayTasksList = () => {
     },
   });
 
-  //hooks
-
-  const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
-
   //possible states handling
-  if (isLoading) return <div className="text-center">Loading...</div>;
+  if (isLoading)
+    return (
+      <>
+        <div className="text-center">Loading...</div>
+        <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
+      </>
+    );
+
   if (!tasks || tasks.length === 0)
-    return <div className="text-center">No tasks left for today!</div>;
+    return (
+      <>
+        <div className="text-center">No tasks left for today!</div>
+        <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
+      </>
+    );
 
   //callback functions
   const completeTask = async (id: number) => {
+    console.log("😂completeTask called with id:", id);
     const taskToComplete = localTasks.find((task) => task.id === id);
     if (!taskToComplete) return;
+
+    console.log("😂taskToComplete:", taskToComplete);
 
     const shouldIncrement =
       taskToComplete.frequency === "daily" &&
@@ -98,8 +120,10 @@ export const TodayTasksList = () => {
       setReturnToPosition(false);
     }
 
+    console.log("😂Calling finishDbTask with id:", taskToComplete.id);
     // Update database in background
     await finishDbTask(taskToComplete.id);
+    console.log("😂finishDbTask finished");
   };
 
   const sortedTasks = localTasks.sort((a, b) => {
@@ -122,12 +146,7 @@ export const TodayTasksList = () => {
         ))}
       </div>
 
-      <Button
-        className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-xl bg-accent"
-        onClick={() => setIsSheetOpen(true)}
-      >
-        <Plus size={38} className="text-accent-foreground" />
-      </Button>
+      <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
 
       <AddOrEditTaskSheet
         isSheetOpen={isSheetOpen}
@@ -135,5 +154,20 @@ export const TodayTasksList = () => {
         taskType="add"
       />
     </>
+  );
+};
+
+const AddTaskButton = ({
+  setIsSheetOpen,
+}: {
+  setIsSheetOpen: (open: boolean) => void;
+}) => {
+  return (
+    <Button
+      className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-xl bg-accent"
+      onClick={() => setIsSheetOpen(true)}
+    >
+      <Plus size={38} className="text-accent-foreground" />
+    </Button>
   );
 };
