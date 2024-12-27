@@ -14,9 +14,8 @@ export const consistencyRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      console.log("🔥 Get completion data was called");
       const { startDate, endDate } = input;
-
-      console.log("⭐️ Get completion data was called");
 
       const dailyStats = await ctx.db
         .select({
@@ -36,13 +35,12 @@ export const consistencyRouter = createTRPCRouter({
     }),
 
   calculateTodayCompletion: publicProcedure.mutation(async ({ ctx }) => {
+    console.log("🔥 Calculate today completion was called");
     return await ctx.db.transaction(async (tx) => {
       // Get all tasks
       const allTasks = await tx.query.tasks.findMany({
         where: and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)),
       });
-
-      console.log("Calculating completion for tasks:", allTasks.length);
 
       // Convert tasks to the format expected by getTasksForDate
       const usableTasks = allTasks.map((task) => ({
@@ -53,7 +51,6 @@ export const consistencyRouter = createTRPCRouter({
 
       // Filter for today's tasks
       const todaysTasks = getTasksForDate(usableTasks);
-      console.log("Today's tasks for completion calc:", todaysTasks.length);
 
       // Get all completions for today
       const todaysCompletions = await tx
@@ -65,8 +62,6 @@ export const consistencyRouter = createTRPCRouter({
             sql`DATE(${taskCompletions.completedDate}) = CURRENT_DATE`,
           ),
         );
-
-      console.log("Today's completions:", todaysCompletions.length);
 
       // Create a map of task completions
       const completionsMap = new Map(
@@ -93,12 +88,6 @@ export const consistencyRouter = createTRPCRouter({
         totalTasksCount === 0
           ? 0
           : Math.round((completedTasksCount / totalTasksCount) * 100);
-
-      console.log("Final calculation:", {
-        completedTasksCount,
-        totalTasksCount,
-        completionPercentage,
-      });
 
       // Update or insert the daily completion record
       await tx

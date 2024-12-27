@@ -1,26 +1,39 @@
 "use client";
 
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { api } from "@/trpc/react";
 import { StarIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import toast from "react-hot-toast";
 
 export default function LeaveFeedback() {
+  const router = useRouter();
   const [rating, setRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>("");
+
+  const { mutateAsync: submitFeedback, isPending } =
+    api.feedback.submitFeedback.useMutation({
+      onSuccess: () => {
+        toast.success("Thank you for your feedback!");
+        router.push("/");
+      },
+      onError: () => {
+        toast.error("Failed to submit feedback. Please try again.");
+      },
+    });
 
   const handleFeedbackChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setFeedback(e.target.value);
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would typically send the feedback to your server
-    console.log({ rating, feedback });
-    // Reset form after submission
-    setRating(0);
-    setFeedback("");
-    alert("Thank you for your feedback!");
+    await submitFeedback({
+      rating,
+      feedback: feedback.trim() || undefined,
+    });
   };
 
   return (
@@ -62,9 +75,9 @@ export default function LeaveFeedback() {
           <Button
             type="submit"
             className="w-[50%] bg-primary text-primary-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={rating === 0}
+            disabled={rating === 0 || isPending}
           >
-            Submit
+            {isPending ? "Submitting..." : "Submit"}
           </Button>
         </div>
       </form>

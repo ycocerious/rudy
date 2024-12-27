@@ -86,11 +86,8 @@ export const TodayTasksList = () => {
 
   //callback functions
   const completeTask = async (id: number) => {
-    console.log("😂completeTask called with id:", id);
     const taskToComplete = localTasks.find((task) => task.id === id);
     if (!taskToComplete) return;
-
-    console.log("😂taskToComplete:", taskToComplete);
 
     const shouldIncrement =
       taskToComplete.frequency === "daily" &&
@@ -119,11 +116,8 @@ export const TodayTasksList = () => {
       setLocalTasks((prev) => prev.filter((task) => task.id !== id));
       setReturnToPosition(false);
     }
-
-    console.log("😂Calling finishDbTask with id:", taskToComplete.id);
     // Update database in background
     await finishDbTask(taskToComplete.id);
-    console.log("😂finishDbTask finished");
   };
 
   const sortedTasks = localTasks.sort((a, b) => {

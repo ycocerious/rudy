@@ -13,7 +13,7 @@ import { z } from "zod";
 
 export const taskRouter = createTRPCRouter({
   getTodaysTasks: publicProcedure.query(async ({ ctx }) => {
-    console.log("Getting today's tasks");
+    console.log("🔥 Get todays tasks was called");
     const whereConditions = [
       eq(tasks.userId, ctx.userId),
       eq(tasks.isArchived, false),
@@ -67,6 +67,7 @@ export const taskRouter = createTRPCRouter({
   }),
 
   getAllTasks: publicProcedure.query(async ({ ctx }) => {
+    console.log("🔥 Get all tasks was called");
     const whereConditions = [
       eq(tasks.userId, ctx.userId),
       eq(tasks.isArchived, false),
@@ -93,6 +94,7 @@ export const taskRouter = createTRPCRouter({
   finishTask: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input: taskId }) => {
+      console.log("🔥 Finish task was called");
       // Get the task
       const [task] = await ctx.db
         .select()
@@ -193,6 +195,7 @@ export const taskRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("🔥 Add task was called");
       const [newTask] = await ctx.db
         .insert(tasks)
         .values({
@@ -218,6 +221,7 @@ export const taskRouter = createTRPCRouter({
   deleteTask: publicProcedure
     .input(z.number())
     .mutation(async ({ ctx, input: taskId }) => {
+      console.log("🔥 Delete task was called");
       const [deletedTask] = await ctx.db
         .update(tasks)
         .set({
@@ -258,6 +262,7 @@ export const taskRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("🔥 Edit task was called");
       const [updatedTask] = await ctx.db
         .update(tasks)
         .set({

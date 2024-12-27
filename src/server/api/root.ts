@@ -1,5 +1,6 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { consistencyRouter } from "./routers/consistency";
+import { feedbackRouter } from "./routers/feedback";
 import { taskRouter } from "./routers/task";
 import { userRouter } from "./routers/user";
 
@@ -12,6 +13,7 @@ export const appRouter = createTRPCRouter({
   task: taskRouter,
   user: userRouter,
   consistency: consistencyRouter,
+  feedback: feedbackRouter,
 });
 
 // export type definition of API
