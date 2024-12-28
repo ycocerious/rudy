@@ -12,8 +12,23 @@ import { neobrutalism } from "@clerk/themes";
 
 export const metadata: Metadata = {
   title: "Rudy",
-  description: "The github-like way to build your habits.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  description:
+    "A minimalist habit tracker designed to help you build a healthier lifestyle",
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      {
+        url: "/logo-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+      {
+        url: "/logo-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
