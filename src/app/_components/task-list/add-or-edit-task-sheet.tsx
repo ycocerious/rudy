@@ -69,7 +69,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const { isSheetOpen, setIsSheetOpen, taskType } = props;
   const originalTask = taskType === "edit" ? props.task : null;
   const isFirstRender = useRef(true);
-  const [isTaskOperationComplete, setIsTaskOperationComplete] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const {
@@ -127,6 +126,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
       await utils.task.getAllTasks.invalidate();
+      handleAddSheetClose();
       toast.success("Added Task Successfully", { id: theOnlyToastId });
     },
   });
@@ -138,8 +138,8 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
       await utils.task.getAllTasks.invalidate();
-      setIsSheetOpen(false);
-      setIsTaskOperationComplete(true);
+      handleEditSheetClose();
+      toast.success("Edited Task Successfully", { id: theOnlyToastId });
     },
   });
 
@@ -157,6 +157,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const onSubmit = async (data: FormValues) => {
     if (taskType === "add") {
+      toast.loading("Adding task...", { id: theOnlyToastId });
       try {
         await addTask({
           name: data.name.trim(),
@@ -168,13 +169,12 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           monthDays: data.monthDays,
           weekDays: data.weekDays,
         });
-        setIsTaskOperationComplete(true);
       } catch (error) {
         console.error(error);
         toast.error("Failed to add task", { id: theOnlyToastId });
-        setIsTaskOperationComplete(true);
       }
     } else {
+      toast.loading("Saving changes...", { id: theOnlyToastId });
       try {
         await editTask({
           taskId: originalTask!.id,
@@ -190,13 +190,13 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       } catch (error) {
         toast.error("Failed to edit task", { id: theOnlyToastId });
         console.error(error);
-        setIsTaskOperationComplete(true);
       }
     }
   };
 
   const handleDelete = async () => {
     if (taskType === "edit" && originalTask) {
+      toast.loading("Deleting task...", { id: theOnlyToastId });
       try {
         await deleteTask(originalTask.id);
       } catch (error) {
@@ -207,19 +207,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   };
 
   const isTaskValid = isValid && (taskType === "add" || isDirty);
-
-  useEffect(() => {
-    if (isTaskOperationComplete) {
-      if (taskType === "add") {
-        handleAddSheetClose();
-        toast.success("Added Task Successfully", { id: theOnlyToastId });
-      } else {
-        handleEditSheetClose();
-        toast.success("Edited Task Successfully", { id: theOnlyToastId });
-      }
-      setIsTaskOperationComplete(false);
-    }
-  }, [isTaskOperationComplete, taskType]);
 
   useEffect(() => {
     if (isFirstRender.current) {
