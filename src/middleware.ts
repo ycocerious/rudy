@@ -14,9 +14,7 @@ export default clerkMiddleware((auth, request) => {
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
+    "/((?!_next|manifest\\.json|sw\\.js|workbox-.*\\.js|icon-.*|favicon\\.ico|[^?]*\\.(?:jpg|jpeg|gif|png|svg|ico|css|js|woff|woff2)).*)",
     "/(api|trpc)(.*)",
   ],
 };
