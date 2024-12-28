@@ -1,16 +1,14 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { theOnlyToastId } from "@/constants/uiConstants";
 import { handleTaskStateChange } from "@/lib/utils/task-mutations";
 import { api } from "@/trpc/react";
 import { type Task } from "@/types/task";
-import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
+import { AddTaskButton } from "./add-task-button";
 import { SwipeableTodaysTask } from "./swipeable-todays-task";
-
 const CATEGORY_PRIORITY = {
   exercise: 0,
   nutrition: 1,
@@ -154,20 +152,5 @@ export const TodayTasksList = () => {
         taskType="add"
       />
     </>
-  );
-};
-
-const AddTaskButton = ({
-  setIsSheetOpen,
-}: {
-  setIsSheetOpen: (open: boolean) => void;
-}) => {
-  return (
-    <Button
-      className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-xl bg-accent"
-      onClick={() => setIsSheetOpen(true)}
-    >
-      <Plus size={38} className="text-accent-foreground" />
-    </Button>
   );
 };

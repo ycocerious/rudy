@@ -266,7 +266,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 {...field}
                 placeholder="Name (max 25 chars)"
                 maxLength={25}
-                autoFocus={taskType === "edit"}
                 onChange={(e) => {
                   const value = e.target.value;
                   const capitalizedValue =

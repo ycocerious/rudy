@@ -1,10 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
+import { AddTaskButton } from "./add-task-button";
 import { TaskItem } from "./swipeable-all-task";
 
 const CATEGORY_PRIORITY = {
@@ -14,18 +13,27 @@ const CATEGORY_PRIORITY = {
 } as const;
 
 export const AllTasksList = () => {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { data: tasks, isLoading } = api.task.getAllTasks.useQuery(undefined, {
     gcTime: 1000 * 60 * 60 * 24, // 24 hours
     staleTime: 1000 * 60 * 60, // 1 hour
     refetchOnWindowFocus: false,
   });
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const sortedTasks = tasks?.sort((a, b) => {
     const priorityA = CATEGORY_PRIORITY[a.category] ?? Number.MAX_SAFE_INTEGER;
     const priorityB = CATEGORY_PRIORITY[b.category] ?? Number.MAX_SAFE_INTEGER;
     return priorityA - priorityB;
   });
+
+  if (isLoading) {
+    return (
+      <>
+        <div className="text-center">Loading...</div>
+        <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
+      </>
+    );
+  }
 
   return (
     <>
@@ -36,19 +44,12 @@ export const AllTasksList = () => {
           </div>
         ) : (
           <div className="flex flex-grow items-center justify-center text-center">
-            {isLoading
-              ? "Loading..."
-              : "Click the + icon to add your first task!"}
+            Click the + icon to add your first task!
           </div>
         )}
       </div>
 
-      <Button
-        className="fixed bottom-6 right-4 z-50 h-[3.5rem] w-[3.5rem] rounded-xl bg-accent"
-        onClick={() => setIsSheetOpen(true)}
-      >
-        <Plus size={38} className="text-accent-foreground" />
-      </Button>
+      <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
 
       <AddOrEditTaskSheet
         isSheetOpen={isSheetOpen}
