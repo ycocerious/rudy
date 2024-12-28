@@ -1,5 +1,7 @@
 import "@/styles/globals.css";
 
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "@/trpc/react";
@@ -44,6 +46,8 @@ export default function RootLayout({
         <body>
           <TRPCReactProvider>
             <HydrateClient>
+              <Analytics />
+              <SpeedInsights />
               {children}
               <Toaster
                 position="top-center"
