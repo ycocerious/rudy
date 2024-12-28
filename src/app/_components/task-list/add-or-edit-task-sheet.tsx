@@ -124,6 +124,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     onSuccess: async () => {
       await calculateCompletion();
       await handleTaskStateChange(utils);
+      await utils.task.getTodaysTasks.invalidate();
+      await utils.consistency.getCompletionData.invalidate();
+      await utils.task.getAllTasks.invalidate();
       toast.success("Added Task Successfully", { id: theOnlyToastId });
     },
   });
@@ -132,6 +135,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     onSuccess: async () => {
       await calculateCompletion();
       await handleTaskStateChange(utils);
+      await utils.task.getTodaysTasks.invalidate();
+      await utils.consistency.getCompletionData.invalidate();
+      await utils.task.getAllTasks.invalidate();
       setIsSheetOpen(false);
       setIsTaskOperationComplete(true);
     },
@@ -141,6 +147,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     onSuccess: async () => {
       await calculateCompletion();
       await handleTaskStateChange(utils);
+      await utils.task.getTodaysTasks.invalidate();
+      await utils.consistency.getCompletionData.invalidate();
+      await utils.task.getAllTasks.invalidate();
       setIsSheetOpen(false);
       toast.success("Task Deleted Successfully", { id: theOnlyToastId });
     },

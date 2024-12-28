@@ -19,10 +19,17 @@ export const Grid = () => {
     return { startDate, endDate };
   }, []);
 
-  const { data: completionData } = api.consistency.getCompletionData.useQuery({
-    startDate: dates.startDate,
-    endDate: dates.endDate,
-  });
+  const { data: completionData } = api.consistency.getCompletionData.useQuery(
+    {
+      startDate: dates.startDate,
+      endDate: dates.endDate,
+    },
+    {
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      staleTime: 1000 * 60 * 60, // 1 hour
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const contributionData = useMemo(() => {
     const data = Array.from({ length: 7 }, () =>

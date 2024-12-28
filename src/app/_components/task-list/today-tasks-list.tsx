@@ -24,7 +24,14 @@ export const TodayTasksList = () => {
   const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
 
   //trpc related
-  const { data: tasks, isLoading } = api.task.getTodaysTasks.useQuery();
+  const { data: tasks, isLoading } = api.task.getTodaysTasks.useQuery(
+    undefined,
+    {
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      staleTime: 1000 * 60 * 60, // 1 hour
+      refetchOnWindowFocus: false,
+    },
+  );
 
   useEffect(() => {
     if (tasks) setLocalTasks(tasks);
@@ -33,19 +40,18 @@ export const TodayTasksList = () => {
   const utils = api.useUtils();
 
   const { mutateAsync: calculateCompletion } =
-    api.consistency.calculateTodayCompletion.useMutation({
-      onSuccess: () => {
-        toast("Hooray! Well done!", {
-          id: theOnlyToastId,
-          icon: "🎉👏",
-        });
-      },
-    });
+    api.consistency.calculateTodayCompletion.useMutation();
 
   const { mutateAsync: finishDbTask } = api.task.finishTask.useMutation({
     onSuccess: async () => {
       await calculateCompletion();
+      await utils.task.getTodaysTasks.invalidate();
+      await utils.consistency.getCompletionData.invalidate();
       await handleTaskStateChange(utils);
+      toast("Hooray! Well done!", {
+        id: theOnlyToastId,
+        icon: "🎉👏",
+      });
     },
     onError: (_, taskId) => {
       toast.error("Failed to complete task. Please try again.", {

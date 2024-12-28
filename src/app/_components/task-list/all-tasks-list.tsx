@@ -14,7 +14,11 @@ const CATEGORY_PRIORITY = {
 } as const;
 
 export const AllTasksList = () => {
-  const { data: tasks, isLoading } = api.task.getAllTasks.useQuery();
+  const { data: tasks, isLoading } = api.task.getAllTasks.useQuery(undefined, {
+    gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    staleTime: 1000 * 60 * 60, // 1 hour
+    refetchOnWindowFocus: false,
+  });
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const sortedTasks = tasks?.sort((a, b) => {
