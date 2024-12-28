@@ -17,8 +17,8 @@ const createContext = async (req: NextRequest) => {
 
 const handler = async (req: NextRequest) => {
   // Get the pathname to check which procedure is being called
-  const pathname = new URL(req.url).pathname;
-  const procedurePath = pathname.replace("/api/trpc/", "");
+  // const pathname = new URL(req.url).pathname;
+  // const procedurePath = pathname.replace("/api/trpc/", "");
 
   const response = await fetchRequestHandler({
     endpoint: "/api/trpc",

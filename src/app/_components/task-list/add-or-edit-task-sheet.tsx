@@ -170,6 +170,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         });
         setIsTaskOperationComplete(true);
       } catch (error) {
+        console.error(error);
         toast.error("Failed to add task", { id: theOnlyToastId });
         setIsTaskOperationComplete(true);
       }
@@ -188,7 +189,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         });
       } catch (error) {
         toast.error("Failed to edit task", { id: theOnlyToastId });
-        console.log(error);
+        console.error(error);
         setIsTaskOperationComplete(true);
       }
     }
@@ -199,6 +200,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       try {
         await deleteTask(originalTask.id);
       } catch (error) {
+        console.error(error);
         toast.error("Failed to delete task", { id: theOnlyToastId });
       }
     }
