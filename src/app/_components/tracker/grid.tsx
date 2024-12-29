@@ -3,21 +3,36 @@
 import { blueShades } from "@/constants/uiConstants";
 import { api } from "@/trpc/react";
 import { eachDayOfInterval, format, getDay, startOfDay } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { useEffect, useMemo } from "react";
 
 export const Grid = () => {
   const dates = useMemo(() => {
-    const now = new Date();
+    const timeZone = "Asia/Kolkata";
+    const now = toZonedTime(new Date(), timeZone);
     const today = startOfDay(now);
     const endDate = today;
-    const currentWeekSunday = startOfDay(new Date(today));
+
+    const currentWeekSunday = startOfDay(
+      toZonedTime(new Date(today), timeZone),
+    );
     while (getDay(currentWeekSunday) !== 0) {
       currentWeekSunday.setDate(currentWeekSunday.getDate() - 1);
     }
+
     const startDate = new Date(currentWeekSunday);
     startDate.setDate(currentWeekSunday.getDate() - 53 * 7);
-    console.log("🎯 Grid Dates:", { startDate, endDate });
-    return { startDate, endDate };
+
+    // Convert dates back to UTC for API calls
+    const utcStartDate = new Date(startDate.toUTCString());
+    const utcEndDate = new Date(endDate.toUTCString());
+
+    console.log("🎯 Grid Dates (IST):", {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    });
+
+    return { startDate: utcStartDate, endDate: utcEndDate };
   }, []);
 
   const { data: completionData } = api.consistency.getCompletionData.useQuery(
