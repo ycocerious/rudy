@@ -35,8 +35,7 @@ export const Grid = () => {
   useEffect(() => {
     console.log("🎯 Grid Query Success:", {
       dataLength: completionData?.length,
-      firstItem: completionData?.[0],
-      lastItem: completionData?.[completionData?.length - 1],
+      data: completionData,
     });
   }, [completionData]);
 

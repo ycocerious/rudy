@@ -37,8 +37,7 @@ export const consistencyRouter = createTRPCRouter({
 
       console.log("🔥 getCompletionData results:", {
         resultsCount: dailyStats.length,
-        firstResult: dailyStats[0],
-        lastResult: dailyStats[dailyStats.length - 1],
+        results: dailyStats,
       });
 
       return dailyStats;
