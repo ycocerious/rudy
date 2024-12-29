@@ -14,8 +14,12 @@ export const consistencyRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      console.log("🔥 Get completion data was called");
       const { startDate, endDate } = input;
+      console.log("🔥 getCompletionData called with:", {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        userId: ctx.userId,
+      });
 
       const dailyStats = await ctx.db
         .select({
@@ -30,6 +34,12 @@ export const consistencyRouter = createTRPCRouter({
             sql`${dailyCompletions.completionDate} <= ${endDate.toDateString()}::date`,
           ),
         );
+
+      console.log("🔥 getCompletionData results:", {
+        resultsCount: dailyStats.length,
+        firstResult: dailyStats[0],
+        lastResult: dailyStats[dailyStats.length - 1],
+      });
 
       return dailyStats;
     }),

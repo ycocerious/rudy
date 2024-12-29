@@ -3,7 +3,7 @@
 import { blueShades } from "@/constants/uiConstants";
 import { api } from "@/trpc/react";
 import { eachDayOfInterval, format, getDay, startOfDay } from "date-fns";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 export const Grid = () => {
   const dates = useMemo(() => {
@@ -16,6 +16,7 @@ export const Grid = () => {
     }
     const startDate = new Date(currentWeekSunday);
     startDate.setDate(currentWeekSunday.getDate() - 53 * 7);
+    console.log("🎯 Grid Dates:", { startDate, endDate });
     return { startDate, endDate };
   }, []);
 
@@ -25,11 +26,19 @@ export const Grid = () => {
       endDate: dates.endDate,
     },
     {
-      gcTime: 1000 * 60 * 60 * 24, // 24 hours
-      staleTime: 1000 * 60 * 60, // 1 hour
+      gcTime: 1000 * 60 * 60 * 24,
+      staleTime: 1000 * 60 * 60,
       refetchOnWindowFocus: false,
     },
   );
+
+  useEffect(() => {
+    console.log("🎯 Grid Query Success:", {
+      dataLength: completionData?.length,
+      firstItem: completionData?.[0],
+      lastItem: completionData?.[completionData?.length - 1],
+    });
+  }, [completionData]);
 
   const contributionData = useMemo(() => {
     const data = Array.from({ length: 7 }, () =>
