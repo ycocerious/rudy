@@ -10,11 +10,8 @@ export const Grid = () => {
   const dates = useMemo(() => {
     const timeZone = "Asia/Kolkata";
     const now = new Date();
-    console.log("1. Raw IST now:", now.toString());
     const today = toZonedTime(startOfDay(now), timeZone);
-    console.log("2. IST today:", today.toString());
     const endDate = today;
-    console.log("3. IST endDate:", endDate.toString());
 
     const currentWeekSunday = startOfDay(
       toZonedTime(new Date(today), timeZone),
@@ -26,16 +23,10 @@ export const Grid = () => {
     const startDate = new Date(currentWeekSunday);
     startDate.setDate(currentWeekSunday.getDate() - 53 * 7);
 
-    // Convert dates back to UTC for API calls
-    const utcStartDate = new Date(startDate.toUTCString());
-    const utcEndDate = new Date(endDate.toUTCString());
+    console.log("🎯 Grid Dates:", { startDate, endDate });
 
-    console.log("🎯 Grid Dates (IST):", {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-    });
-
-    return { startDate: utcStartDate, endDate: utcEndDate };
+    // Instead of converting to UTC string and back, just return the dates directly
+    return { startDate, endDate };
   }, []);
 
   const { data: completionData } = api.consistency.getCompletionData.useQuery(
