@@ -83,8 +83,19 @@ export const TodayTasksList = () => {
   if (!tasks || tasks.length === 0)
     return (
       <>
-        <div className="text-center">No tasks left for today!</div>
+        <div className="mx-auto h-full w-full max-w-2xl">
+          <div className="flex flex-grow items-center justify-center text-center">
+            No tasks left for today!
+          </div>
+        </div>
+
         <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
+
+        <AddOrEditTaskSheet
+          isSheetOpen={isSheetOpen}
+          setIsSheetOpen={setIsSheetOpen}
+          taskType="add"
+        />
       </>
     );
 
