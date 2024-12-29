@@ -9,9 +9,12 @@ import { useEffect, useMemo } from "react";
 export const Grid = () => {
   const dates = useMemo(() => {
     const timeZone = "Asia/Kolkata";
-    const now = toZonedTime(new Date(), timeZone);
-    const today = startOfDay(now);
+    const now = new Date();
+    console.log("1. Raw IST now:", now.toString());
+    const today = toZonedTime(startOfDay(now), timeZone);
+    console.log("2. IST today:", today.toString());
     const endDate = today;
+    console.log("3. IST endDate:", endDate.toString());
 
     const currentWeekSunday = startOfDay(
       toZonedTime(new Date(today), timeZone),
