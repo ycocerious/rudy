@@ -31,8 +31,12 @@ export const Grid = () => {
 
   const { data: completionData } = api.consistency.getCompletionData.useQuery(
     {
-      startDate: dates.startDate,
-      endDate: dates.endDate,
+      startDate: new Date(
+        dates.startDate.getTime() - dates.startDate.getTimezoneOffset() * 60000,
+      ),
+      endDate: new Date(
+        dates.endDate.getTime() - dates.endDate.getTimezoneOffset() * 60000,
+      ),
     },
     {
       gcTime: 1000 * 60 * 60 * 24,
