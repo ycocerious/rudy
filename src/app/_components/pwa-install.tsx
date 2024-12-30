@@ -27,7 +27,7 @@ const PWAInstallPrompt = ({ onDismiss }: PWAInstallPromptProps) => {
           <div className="space-y-3 text-gray-950">
             <p>To install this app on iOS:</p>
             <ol className="list-decimal pl-5 text-sm">
-              <li>Tap the Share button in Safari</li>
+              <li>Tap the Share button in your Search Bar</li>
               <li>Scroll down and tap &quot;Add to Home Screen&quot;</li>
               <li>Tap &quot;Add&quot; to confirm</li>
             </ol>
