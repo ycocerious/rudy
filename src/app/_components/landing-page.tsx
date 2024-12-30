@@ -56,6 +56,15 @@ export default function Home() {
     setDeferredPrompt(null);
   };
 
+  const handleButtonClick = async () => {
+    if (isIOS) {
+      setShowInstallPrompt(true);
+    } else {
+      // Direct install for Android
+      await handleInstall();
+    }
+  };
+
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden p-4 pt-0">
       <CursorGlow />
@@ -112,22 +121,18 @@ export default function Home() {
             }}
           >
             <Button
-              onClick={() => setShowInstallPrompt(true)}
-              className="h-14 w-[80%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
+              onClick={handleButtonClick}
+              className="h-12 w-[70%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
             >
               <Download className="mr-2 h-6 w-6" />
-              <p className="text-lg font-semibold">
+              <p className="text-md font-semibold">
                 {isIOS ? "Install on iOS" : "Install on Android"}
               </p>
             </Button>
           </motion.div>
 
-          {showInstallPrompt && (
-            <PWAInstallPrompt
-              platform={isIOS ? "ios" : "android"}
-              onDismiss={() => setShowInstallPrompt(false)}
-              onInstall={handleInstall}
-            />
+          {showInstallPrompt && isIOS && (
+            <PWAInstallPrompt onDismiss={() => setShowInstallPrompt(false)} />
           )}
         </motion.div>
       </div>
