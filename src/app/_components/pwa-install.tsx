@@ -21,8 +21,19 @@ const PWAInstallPrompt = () => {
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [showPrompt, setShowPrompt] = useState(true);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
+    // Check if device is iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    setIsIOS(isIOSDevice);
+
+    // If it's iOS, we want to show the manual instructions
+    if (isIOSDevice) {
+      setIsInstallable(true);
+      return;
+    }
+
     console.log("PWA Install Status:", {
       isInstallable: false,
       showPrompt: showPrompt,
@@ -98,23 +109,36 @@ const PWAInstallPrompt = () => {
         </div>
 
         <AlertDescription className="mt-2">
-          <p className="mb-4 text-gray-950">
-            Install our app for a better experience!
-          </p>
+          {isIOS ? (
+            <div className="space-y-3 text-gray-950">
+              <p>To install this app on iOS:</p>
+              <ol className="list-decimal pl-5 text-sm">
+                <li>Tap the Share button in Safari</li>
+                <li>Scroll down and tap &quot;Add to Home Screen&quot;</li>
+                <li>Tap &quot;Add&quot; to confirm</li>
+              </ol>
+            </div>
+          ) : (
+            <p className="mb-4 text-gray-950">
+              Install our app for a better experience!
+            </p>
+          )}
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
               onClick={handleDismiss}
               className="border-popover-foreground text-sm text-popover-foreground text-white"
             >
-              I like pain
+              {isIOS ? "Close" : "I like pain"}
             </Button>
-            <Button
-              onClick={handleInstallClick}
-              className="bg-[#09c3d2] text-sm text-accent-foreground hover:bg-primary"
-            >
-              Install Now!
-            </Button>
+            {!isIOS && (
+              <Button
+                onClick={handleInstallClick}
+                className="bg-[#09c3d2] text-sm text-accent-foreground hover:bg-primary"
+              >
+                Install Now!
+              </Button>
+            )}
           </div>
         </AlertDescription>
       </Alert>
