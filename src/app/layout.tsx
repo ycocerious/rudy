@@ -11,7 +11,6 @@ import { poppins } from "../styles/fonts";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { neobrutalism } from "@clerk/themes";
-import PWAInstallPrompt from "./_components/pwa-install";
 
 export const metadata: Metadata = {
   title: "Rudy",
@@ -55,7 +54,6 @@ export default function RootLayout({
               <Analytics />
               <SpeedInsights />
               {children}
-              <PWAInstallPrompt />
               <Toaster
                 position="top-center"
                 gutter={10}
