@@ -128,7 +128,7 @@ export const TodayTasksList = () => {
       setReturnToPosition(false);
     }
     // Update database in background
-    toast("Hooray! Well done!", {
+    toast.success("Hooray! Well done!", {
       id: theOnlyToastId,
       icon: "🎉👏",
     });
