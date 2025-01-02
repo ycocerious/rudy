@@ -46,7 +46,9 @@ export const XdaySelectContent = ({
       <Controller
         name="xValue"
         control={control}
-        rules={{ required: true }}
+        rules={{
+          required: true,
+        }}
         render={({ field }) => (
           <Select
             onValueChange={(value) => field.onChange(Number(value))}
@@ -77,12 +79,23 @@ export const XdaySelectContent = ({
             rules={{
               required: true,
               validate: (value) => {
-                // If we're in edit mode and the dates are same, consider it not changed
-                if (originalTask?.startDate) {
-                  return !areDatesEqual(value, originalTask.startDate, {
-                    ignoreTime: true,
-                  });
+                // If we're in edit mode and this field is being changed
+                if (originalTask?.startDate && value) {
+                  // Only validate if the startDate field is actually being modified
+                  if (value !== startDate) {
+                    const areDatesTheSame = areDatesEqual(
+                      value,
+                      originalTask.startDate,
+                      {
+                        ignoreTime: true,
+                      },
+                    );
+                    // const isXValueSame = xValue === originalTask.xValue;
+
+                    return !areDatesTheSame;
+                  }
                 }
+                // If we're not changing this field, always return true
                 return true;
               },
             }}

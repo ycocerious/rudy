@@ -92,6 +92,22 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     },
   });
 
+  // Reset form when originalTask changes
+  useEffect(() => {
+    if (taskType === "edit" && originalTask) {
+      reset({
+        name: originalTask.name,
+        category: originalTask.category,
+        frequency: originalTask.frequency,
+        dailyCountTotal: originalTask.dailyCountTotal,
+        xValue: originalTask.xValue,
+        startDate: originalTask.startDate,
+        monthDays: originalTask.monthDays,
+        weekDays: originalTask.weekDays,
+      });
+    }
+  }, [originalTask, reset, taskType]);
+
   const category = watch("category");
 
   const frequency = watch("frequency");
