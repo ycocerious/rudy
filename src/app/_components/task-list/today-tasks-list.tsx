@@ -144,8 +144,8 @@ export const TodayTasksList = () => {
   return (
     <>
       <div className="mx-auto mt-2 w-full max-w-2xl">
-        <div className="text-center text-sm text-muted-foreground">
-          Swipe to mark a habit as finished
+        <div className="text-center text-xs text-muted-foreground">
+          (Swipe to mark a habit as finished)
         </div>
         {sortedTasks.map((task) => (
           <SwipeableTodaysTask
