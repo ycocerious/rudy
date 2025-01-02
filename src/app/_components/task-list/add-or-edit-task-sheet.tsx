@@ -252,22 +252,17 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         side="bottom"
         className="mx-auto flex max-h-[85vh] w-full max-w-[500px] flex-col rounded-t-2xl border-none bg-gray-200 px-4 [&>button]:absolute [&>button]:right-3 [&>button]:top-3 [&>button]:scale-150 [&>button]:text-gray-950 [&>button_svg]:font-bold"
       >
+        <SheetHeader className="flex-shrink-0">
+          <SheetTitle className="text-popover-foreground">
+            {taskType === "add" ? "Add New Task" : `Edit Task`}
+          </SheetTitle>
+        </SheetHeader>
+
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex h-full flex-col"
+          className="flex min-h-0 flex-1 flex-col"
         >
-          <SheetHeader className="flex-shrink-0">
-            <SheetTitle className="text-popover-foreground">
-              {taskType === "add"
-                ? "Add New Task"
-                : `Edit Task: ${originalTask?.name}`}
-            </SheetTitle>
-          </SheetHeader>
-
-          <div
-            ref={scrollContainerRef}
-            className="min-h-0 flex-1 overflow-y-auto py-4"
-          >
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto">
             <div className="space-y-4">
               <div className="space-y-1">
                 <Controller

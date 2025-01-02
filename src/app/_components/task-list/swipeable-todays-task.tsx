@@ -7,7 +7,7 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion";
-import { Apple, ArrowRight, Bed, Check, Dumbbell } from "lucide-react";
+import { Apple, Bed, Check, Dumbbell } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 interface SwipeableTaskProps {
@@ -134,10 +134,8 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
                 strokeWidth: 2.5,
               })}
           </div>
-          <div className="flex w-full flex-col">
-            <div className="text-md z-10 ml-[2px] max-w-[90%] truncate">
-              {task.name}
-            </div>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="text-md z-10 ml-[2px] truncate">{task.name}</div>
             {task.category && (
               <div
                 className="inline-flex w-fit rounded px-1 py-0.5 text-[10px]"
@@ -157,12 +155,6 @@ export const SwipeableTodaysTask: React.FC<SwipeableTaskProps> = ({
             </div>
           )}
         </div>
-
-        <ArrowRight
-          className="mr-2 text-muted-foreground"
-          size={24}
-          strokeWidth={1.5}
-        />
       </motion.div>
 
       <motion.div

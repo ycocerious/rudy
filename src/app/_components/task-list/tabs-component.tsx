@@ -8,7 +8,7 @@ export function TabsComponent() {
       defaultValue="today"
       className="flex w-full min-w-[240px] max-w-sm flex-grow flex-col"
     >
-      <TabsList className="mb-6 grid h-11 w-full grid-cols-2 rounded-lg bg-card text-muted">
+      <TabsList className="grid h-11 w-full grid-cols-2 rounded-lg bg-card text-muted">
         <TabsTrigger
           value="today"
           className="h-9 rounded-md data-[state=active]:bg-background"

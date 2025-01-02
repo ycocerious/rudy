@@ -62,7 +62,9 @@ export const TaskItem: React.FC<TaskProps> = ({ task }) => {
             })}
           </div>
         )}
-        <span className="text-md ml-[2px] mr-10">{task.name}</span>
+        <span className="text-md ml-[2px] mr-10 max-w-[85%] truncate">
+          {task.name}
+        </span>
         <div
           className="inline-flex w-fit rounded px-1 py-0.5 text-[10px] font-medium"
           style={{

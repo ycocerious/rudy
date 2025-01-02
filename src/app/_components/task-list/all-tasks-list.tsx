@@ -29,7 +29,7 @@ export const AllTasksList = () => {
   if (isLoading) {
     return (
       <>
-        <div className="text-center">Loading...</div>
+        <div className="mt-4 text-center">Loading...</div>
         <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
       </>
     );
@@ -37,13 +37,13 @@ export const AllTasksList = () => {
 
   return (
     <>
-      <div className="mx-auto h-full w-full max-w-2xl">
+      <div className="mx-auto mt-4 h-full w-full max-w-2xl">
         {sortedTasks?.length !== 0 ? (
           <div className="space-y-3 px-4">
             {sortedTasks?.map((task) => <TaskItem key={task.id} task={task} />)}
           </div>
         ) : (
-          <div className="flex flex-grow items-center justify-center text-center">
+          <div className="mt-4 flex flex-grow items-center justify-center text-center">
             Click the + icon to add your first task!
           </div>
         )}

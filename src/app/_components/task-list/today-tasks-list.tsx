@@ -71,7 +71,7 @@ export const TodayTasksList = () => {
   if (isLoading)
     return (
       <>
-        <div className="text-center">Loading...</div>
+        <div className="mt-2 text-center">Loading...</div>
         <AddTaskButton setIsSheetOpen={setIsSheetOpen} />
       </>
     );
@@ -79,7 +79,7 @@ export const TodayTasksList = () => {
   if (!tasks || tasks.length === 0)
     return (
       <>
-        <div className="mx-auto h-full w-full max-w-2xl">
+        <div className="mx-auto mt-2 h-full w-full max-w-2xl">
           <div className="flex flex-grow items-center justify-center text-center">
             No tasks left for today!
           </div>
@@ -143,7 +143,7 @@ export const TodayTasksList = () => {
 
   return (
     <>
-      <div className="mx-auto w-full max-w-2xl">
+      <div className="mx-auto mt-2 w-full max-w-2xl">
         {sortedTasks.map((task) => (
           <SwipeableTodaysTask
             key={task.id}
