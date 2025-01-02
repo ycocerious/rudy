@@ -157,6 +157,12 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   });
 
   const onSubmit = async (data: FormValues) => {
+    const adjustedDate = data.startDate
+      ? new Date(
+          data.startDate.getTime() - data.startDate.getTimezoneOffset() * 60000,
+        )
+      : null;
+
     if (taskType === "add") {
       toast.loading("Adding task...", { id: theOnlyToastId });
       try {
@@ -166,7 +172,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           dailyCountTotal: data.dailyCountTotal,
           xValue: data.xValue,
           category: data.category!,
-          startDate: data.startDate,
+          startDate: adjustedDate,
           monthDays: data.monthDays,
           weekDays: data.weekDays,
         });
@@ -184,7 +190,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           dailyCountTotal: data.dailyCountTotal,
           xValue: data.xValue,
           category: data.category!,
-          startDate: data.startDate,
+          startDate: adjustedDate,
           monthDays: data.monthDays,
           weekDays: data.weekDays,
         });
