@@ -46,10 +46,6 @@ export const TodayTasksList = () => {
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
       await handleTaskStateChange(utils);
-      toast("Hooray! Well done!", {
-        id: theOnlyToastId,
-        icon: "🎉👏",
-      });
     },
     onError: (_, taskId) => {
       toast.error("Failed to complete task. Please try again.", {
@@ -132,6 +128,10 @@ export const TodayTasksList = () => {
       setReturnToPosition(false);
     }
     // Update database in background
+    toast("Hooray! Well done!", {
+      id: theOnlyToastId,
+      icon: "🎉👏",
+    });
     await finishDbTask(taskToComplete.id);
   };
 

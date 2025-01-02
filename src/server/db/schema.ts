@@ -51,7 +51,7 @@ export const tasks = pgTable(
     userId: integer("user_id")
       .references(() => users.id)
       .notNull(),
-    name: varchar("name", { length: 20 }).notNull(),
+    name: varchar("name", { length: 100 }).notNull(),
     frequency: varchar("frequency", { length: 20 })
       .$type<(typeof taskFrequencyEnum)[number]>()
       .notNull(),

@@ -70,6 +70,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const originalTask = taskType === "edit" ? props.task : null;
   const isFirstRender = useRef(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     control,
@@ -224,6 +225,16 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     }
   }, [frequency, setValue, originalTask?.frequency]);
 
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const isScrollable = container.scrollHeight > container.clientHeight;
+    if (isScrollable) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [watch]);
+
   return (
     <Sheet
       open={isSheetOpen}
@@ -239,113 +250,142 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     >
       <SheetContent
         side="bottom"
-        className="mx-auto h-auto w-full max-w-[500px] space-y-4 rounded-t-2xl border-none bg-gray-200 px-4 [&>button]:absolute [&>button]:right-3 [&>button]:top-3 [&>button]:scale-150 [&>button]:text-gray-950 [&>button_svg]:font-bold"
+        className="mx-auto flex max-h-[85vh] w-full max-w-[500px] flex-col rounded-t-2xl border-none bg-gray-200 px-4 [&>button]:absolute [&>button]:right-3 [&>button]:top-3 [&>button]:scale-150 [&>button]:text-gray-950 [&>button_svg]:font-bold"
       >
-        <SheetHeader>
-          <SheetTitle className="text-popover-foreground">
-            {taskType === "add"
-              ? "Add New Task"
-              : `Edit Task: ${originalTask?.name}`}
-          </SheetTitle>
-        </SheetHeader>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex h-full flex-col"
+        >
+          <SheetHeader className="flex-shrink-0">
+            <SheetTitle className="text-popover-foreground">
+              {taskType === "add"
+                ? "Add New Task"
+                : `Edit Task: ${originalTask?.name}`}
+            </SheetTitle>
+          </SheetHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Controller
-            name="name"
-            control={control}
-            rules={{
-              required: true,
-              maxLength: 15,
-              validate: (value) => {
-                if (value.trim().length === 0) return false;
-                return /^[\x00-\x7F]*$/.test(value);
-              },
-            }}
-            render={({ field }) => (
-              <Input
-                {...field}
-                placeholder="Name (max 25 chars)"
-                maxLength={25}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const capitalizedValue =
-                    value.charAt(0).toUpperCase() + value.slice(1);
-                  field.onChange(capitalizedValue);
-                }}
-                onFocus={(e) => {
-                  // Prevent the default focus behavior
-                  e.preventDefault();
-                  if (taskType === "edit") {
-                    const input = e.target;
-                    // Small delay to ensure DOM is ready
-                    setTimeout(() => {
-                      const length = input.value.length;
-                      input.setSelectionRange(length, length);
-                    }, 0);
-                  }
-                }}
-                className="h-12 border-popover-foreground text-popover-foreground placeholder:text-gray-950"
+          <div
+            ref={scrollContainerRef}
+            className="min-h-0 flex-1 overflow-y-auto py-4"
+          >
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <Controller
+                  name="name"
+                  control={control}
+                  rules={{
+                    required: "Name is required",
+                    maxLength: {
+                      value: 100,
+                      message: "Name must be less than 100 characters",
+                    },
+                    validate: (value) => {
+                      if (value.trim().length === 0)
+                        return "Name cannot be empty";
+                      if (!/^[\x00-\x7F]*$/.test(value))
+                        return "Only ASCII characters are allowed";
+                      return true;
+                    },
+                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <>
+                      <Input
+                        {...field}
+                        placeholder="Habit Name"
+                        maxLength={100}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const capitalizedValue =
+                            value.charAt(0).toUpperCase() + value.slice(1);
+                          field.onChange(capitalizedValue);
+                        }}
+                        onFocus={(e) => {
+                          e.preventDefault();
+                          if (taskType === "edit") {
+                            const input = e.target;
+                            setTimeout(() => {
+                              const length = input.value.length;
+                              input.setSelectionRange(length, length);
+                            }, 0);
+                          }
+                        }}
+                        className="h-12 border-popover-foreground text-popover-foreground placeholder:text-gray-950"
+                      />
+                      {error && (
+                        <p className="text-sm text-destructive">
+                          {error.message}
+                        </p>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+              <Controller
+                name="category"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value ?? undefined}
+                  >
+                    <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sleep">Sleep</SelectItem>
+                      <SelectItem value="nutrition">Nutrition</SelectItem>
+                      <SelectItem value="exercise">Exercise</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               />
-            )}
-          />
-          <Controller
-            name="category"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Select
-                onValueChange={field.onChange}
-                value={field.value ?? undefined}
-              >
-                <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sleep">Sleep</SelectItem>
-                  <SelectItem value="nutrition">Nutrition</SelectItem>
-                  <SelectItem value="exercise">Exercise</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
 
-          {category && (
-            <Controller
-              name="frequency"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value ?? undefined}
-                >
-                  <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
-                    <SelectValue placeholder="Select Repetition frequency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Repeat daily</SelectItem>
-                    <SelectItem value="weekly">Repeat weekly</SelectItem>
-                    <SelectItem value="monthly">Repeat monthly</SelectItem>
-                    <SelectItem value="xdays">Repeat x days once</SelectItem>
-                  </SelectContent>
-                </Select>
+              {category && (
+                <Controller
+                  name="frequency"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value ?? undefined}
+                    >
+                      <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
+                        <SelectValue placeholder="Select Repetition frequency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Repeat daily</SelectItem>
+                        <SelectItem value="weekly">Repeat weekly</SelectItem>
+                        <SelectItem value="monthly">Repeat monthly</SelectItem>
+                        <SelectItem value="xdays">
+                          Repeat x days once
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               )}
-            />
-          )}
 
-          {frequency === "monthly" && (
-            <MonthlySelectContent control={control} />
-          )}
-          {frequency === "weekly" && <WeeklySelectContent control={control} />}
-          {frequency === "xdays" && (
-            <XdaySelectContent
-              control={control}
-              originalTask={originalTask ?? undefined}
-            />
-          )}
-          {frequency === "daily" && <DailySelectContent control={control} />}
+              {frequency === "monthly" && (
+                <MonthlySelectContent control={control} />
+              )}
+              {frequency === "weekly" && (
+                <WeeklySelectContent control={control} />
+              )}
+              {frequency === "xdays" && (
+                <XdaySelectContent
+                  control={control}
+                  originalTask={originalTask ?? undefined}
+                />
+              )}
+              {frequency === "daily" && (
+                <DailySelectContent control={control} />
+              )}
+            </div>
+          </div>
 
-          <SheetFooter className="flex w-full flex-col items-end justify-end gap-2">
+          <SheetFooter className="flex w-full flex-shrink-0 flex-col items-end justify-end gap-2 py-4">
             {taskType === "edit" && (
               <>
                 <div className="flex w-full flex-row items-center justify-end gap-2">

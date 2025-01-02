@@ -22,7 +22,7 @@ export const DailySelectContent = ({ control }: DailySelectContentProps) => {
         render={({ field }) => (
           <Select
             onValueChange={(value) => field.onChange(Number(value))}
-            value={field.value?.toString()}
+            value={String(field.value ?? "")}
           >
             <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
               <SelectValue placeholder="How many times a day?" />
