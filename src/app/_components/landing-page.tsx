@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useWindowSize } from "@/hooks/useWindowSize";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Apple, Download, Dumbbell, Moon } from "lucide-react";
 import Image from "next/image";
@@ -24,10 +25,20 @@ export default function Home() {
 
   const logoSize = isMobile ? 130 : isTablet ? 170 : 200;
 
+  const [isDesktop, setIsDesktop] = useState(false);
+
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const isDesktopDevice =
+      !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+    setIsDesktop(width >= 640 && isDesktopDevice);
+  }, [width]);
 
   useEffect(() => {
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -97,45 +108,81 @@ export default function Home() {
               alt="Rudy Logo"
               width={logoSize}
               height={logoSize}
+              priority
             />
           </motion.div>
 
           <h1 className="gradient-text mb-4 text-3xl font-bold sm:text-4xl md:text-5xl lg:text-6xl">
-            Track Sleep, Exercise & Nutrition
+            Welcome to Rudy
           </h1>
 
-          <p className="mx-auto mb-8 max-w-2xl px-4 text-base text-muted-foreground sm:text-lg">
-            A minimalist habit tracker designed to help you build a healthier
-            lifestyle
+          <p className="mx-auto mb-8 max-w-3xl px-4 text-base text-muted-foreground sm:text-lg">
+            A minimalist habit tracker - track only your sleep, exercise, and
+            nutrition
           </p>
 
+          {isDesktop ? (
+            <div className="flex flex-col items-center gap-4">
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, type: "spring" }}
+                className="group relative"
+              >
+                <div
+                  className={cn(
+                    "absolute inset-0 rounded-xl bg-primary/20 blur-xl",
+                    "transition-all group-hover:bg-primary/30",
+                  )}
+                />
+                <div
+                  className={cn(
+                    "relative aspect-square w-56 rounded-xl border border-border bg-card",
+                    "transition-colors group-hover:border-primary",
+                  )}
+                >
+                  <Image
+                    src="/qr_code.png"
+                    alt="QR Code to install Rudy"
+                    fill
+                    className="rounded-xl"
+                    priority
+                  />
+                </div>
+              </motion.div>
+              <p className="mt-3 text-2xl text-primary">
+                Scan with your phone to install!
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ y: 0 }}
+              animate={{ y: [-8, 0] }}
+              transition={{
+                repeat: Infinity,
+                repeatType: "reverse",
+                duration: 0.6,
+                ease: "easeInOut",
+              }}
+            >
+              <Button
+                onClick={handleButtonClick}
+                className="h-12 w-[70%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
+              >
+                <Download className="mr-2 h-6 w-6" />
+                <p className="text-md font-semibold">
+                  {isIOS ? "Install on iOS" : "Install on Android"}
+                </p>
+              </Button>
+            </motion.div>
+          )}
+
           {/* Core Features */}
-          <div className="mb-12 mt-4 flex justify-center sm:mb-24 sm:mt-16 md:mb-32 md:mt-24">
+          <div className="mt-12 flex justify-center sm:mt-14 md:mt-14">
             <FeatureIcon icon={Moon} label="Sleep Better" delay={0.2} />
             <FeatureIcon icon={Dumbbell} label="Move More" delay={0.4} />
             <FeatureIcon icon={Apple} label="Eat Well" delay={0.6} />
           </div>
-
-          <motion.div
-            initial={{ y: 0 }}
-            animate={{ y: [-8, 0] }}
-            transition={{
-              repeat: Infinity,
-              repeatType: "reverse",
-              duration: 0.6,
-              ease: "easeInOut",
-            }}
-          >
-            <Button
-              onClick={handleButtonClick}
-              className="h-12 w-[70%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
-            >
-              <Download className="mr-2 h-6 w-6" />
-              <p className="text-md font-semibold">
-                {isIOS ? "Install on iOS" : "Install on Android"}
-              </p>
-            </Button>
-          </motion.div>
 
           {showInstallPrompt && isIOS && (
             <PWAInstallPrompt onDismiss={() => setShowInstallPrompt(false)} />

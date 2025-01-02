@@ -22,11 +22,7 @@ export function FeatureIcon({
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay, duration: 0.5, type: "spring" }}
-      className={cn(
-        "group relative cursor-pointer",
-        "mx-auto mb-12 sm:mb-0",
-        className,
-      )}
+      className={cn("group relative", "mx-auto mb-12 sm:mb-0", className)}
     >
       <div
         className={cn(
