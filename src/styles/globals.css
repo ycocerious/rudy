@@ -54,3 +54,40 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide scrollbar for all elements by default */
+* {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+/* Hide scrollbar for WebKit browsers */
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Show scrollbar for the task sheet dialog */
+[role="dialog"] *::-webkit-scrollbar {
+  display: block !important;
+  width: 8px !important;
+}
+
+[role="dialog"] * {
+  scrollbar-width: thin !important;
+  -ms-overflow-style: auto !important;
+}
+
+/* Style the scrollbar for WebKit browsers */
+[role="dialog"] *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[role="dialog"] *::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted));
+  border-radius: 20px;
+}
+
+/* Ensure scrolling behavior is maintained */
+* {
+  -webkit-overflow-scrolling: touch;
+}

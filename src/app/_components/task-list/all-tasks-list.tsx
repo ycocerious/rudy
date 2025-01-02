@@ -39,7 +39,7 @@ export const AllTasksList = () => {
     <>
       <div className="mx-auto mt-4 h-full w-full max-w-2xl">
         {sortedTasks?.length !== 0 ? (
-          <div className="space-y-3 px-4">
+          <div className="space-y-3 px-2">
             {sortedTasks?.map((task) => <TaskItem key={task.id} task={task} />)}
           </div>
         ) : (
