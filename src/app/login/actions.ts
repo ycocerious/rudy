@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { env } from "@/env";
 import { createClient } from "@/utils/supabase/server";
 
 export async function loginWithGoogle() {
@@ -10,7 +11,7 @@ export async function loginWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/home`,
+      redirectTo: `${env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/home`,
     },
   });
 
