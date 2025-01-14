@@ -3,22 +3,16 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/utils/supabase/server";
 
 //create context -  great place to put things like db and auth info
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const { userId: clerkId } = auth(); // Get authenticated user ID
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Throw error if no user (this is a backup since middleware should prevent this)
-  if (!clerkId) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  // Get the numeric user ID from your users table
-  const user = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.clerkId, clerkId),
-  });
-
   if (!user) {
     throw new TRPCError({
       code: "NOT_FOUND",

@@ -1,1 +1,0 @@
-ALTER TABLE "daily_completions" ADD CONSTRAINT "daily_completions_user_date_unique" UNIQUE("user_id","completion_date");

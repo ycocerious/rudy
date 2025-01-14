@@ -1,33 +1,12 @@
 {
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
       "version": "7",
-      "when": 1735204659816,
-      "tag": "0000_sloppy_baron_strucker",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1735205382647,
-      "tag": "0001_loud_havok",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1735799147695,
-      "tag": "0002_eminent_ben_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1735800495171,
-      "tag": "0003_tranquil_argent",
+      "when": 1736878788359,
+      "tag": "0000_grey_vermin",
       "breakpoints": true
     }
   ]

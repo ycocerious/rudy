@@ -9,9 +9,6 @@ import { HydrateClient } from "@/trpc/server";
 import { Toaster } from "react-hot-toast";
 import { poppins } from "../styles/fonts";
 
-import { ClerkProvider } from "@clerk/nextjs";
-import { neobrutalism } from "@clerk/themes";
-
 export const metadata: Metadata = {
   title: "Rudy",
   description:
@@ -42,29 +39,23 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: [neobrutalism],
-      }}
-    >
-      <html lang="en" className={`${poppins.variable}`}>
-        <body>
-          <TRPCReactProvider>
-            <HydrateClient>
-              <Analytics />
-              <SpeedInsights />
-              {children}
-              <Toaster
-                position="top-center"
-                gutter={10}
-                toastOptions={{
-                  duration: 2000,
-                }}
-              />
-            </HydrateClient>
-          </TRPCReactProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className={`${poppins.variable}`}>
+      <body>
+        <TRPCReactProvider>
+          <HydrateClient>
+            <Analytics />
+            <SpeedInsights />
+            {children}
+            <Toaster
+              position="top-center"
+              gutter={10}
+              toastOptions={{
+                duration: 2000,
+              }}
+            />
+          </HydrateClient>
+        </TRPCReactProvider>
+      </body>
+    </html>
   );
 }
