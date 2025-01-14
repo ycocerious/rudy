@@ -6,7 +6,7 @@
   "start_url": "/",
   "name": "Rudy",
   "short_name": "Rudy",
-  "description": "A minimalist habit tracker designed to help you build a healthier lifestyle",
+  "description": "A minimalist habit tracker that helps you track sleep, nutrition and exercise",
   "icons": [
     {
       "src": "/logo-maskable-512x512.png",
