@@ -19,9 +19,15 @@ export function PwaWrapper({ children }: PwaWrapperProps) {
     }
   }, [displayMode, router]);
 
-  if (displayMode === null || displayMode === "standalone") {
+  if (displayMode === null) {
     return (
       <div className="flex min-h-screen items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  } else if (displayMode === "standalone") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0e4a4a]">
         <LoadingSpinner />
       </div>
     );
