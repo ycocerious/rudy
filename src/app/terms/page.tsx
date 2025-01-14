@@ -1,7 +1,7 @@
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { LegalLayout, List, Section } from "../privacy/page";
+import { LegalLayout, List, Section } from "../_components/legal";
 
 export default function TermsAndConditions() {
   return (
