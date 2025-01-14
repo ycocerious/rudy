@@ -83,7 +83,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative flex min-h-screen items-start justify-center overflow-hidden p-4 pt-16">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <CursorGlow />
 
       {/* Background Elements */}
