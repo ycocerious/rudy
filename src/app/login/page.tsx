@@ -21,7 +21,7 @@ export default function LoginPage() {
       <form>
         <Button
           formAction={loginWithGoogle}
-          className="w-full rounded bg-white px-12 py-5 font-bold text-black"
+          className="w-full rounded bg-white px-12 py-5 font-bold text-black hover:bg-white/90"
         >
           <Image
             src="/google.svg"
