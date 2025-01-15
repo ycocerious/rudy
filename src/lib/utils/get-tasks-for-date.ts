@@ -1,96 +1,66 @@
-/* eslint-disable prefer-const */
 import { weekDaysEnum } from "@/types/form-types";
 import { type Task } from "@/types/task";
+
+// Helper function to convert date to IST
+export function convertToIST(date: Date): Date {
+  // IST offset is UTC+5:30
+  const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+  const utc = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
+  return new Date(utc + istOffset);
+}
+
+// Helper function to normalize date to start of day in IST
+function normalizeToISTDate(date: Date): Date {
+  const istDate = convertToIST(date);
+  return new Date(
+    istDate.getFullYear(),
+    istDate.getMonth(),
+    istDate.getDate(),
+    0,
+    0,
+    0,
+    0,
+  );
+}
 
 export function getTasksForDate(
   tasks: Omit<Task, "dailyCountFinished">[],
   date: Date = new Date(),
 ): Omit<Task, "dailyCountFinished">[] {
-  // Normalize the input date to remove time components
-  const targetDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
+  // Convert and normalize the input date to IST
+  const targetDate = normalizeToISTDate(date);
+
+  console.log(
+    "🎯 Target Date (IST):",
+    targetDate.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
   );
 
   return tasks.filter((task) => {
     switch (task.frequency) {
       case "daily":
-        return true; // Daily tasks are always active
+        return true;
 
       case "xdays":
         if (!task.startDate || !task.xValue) return false;
 
-        const startDate = new Date(task.startDate);
+        const startDate = normalizeToISTDate(new Date(task.startDate));
         const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-        // Task is active if the number of days since start is divisible by xValue
         return diffDays % task.xValue === 0;
 
       case "weekly":
         if (!task.weekDays) return false;
 
-        const weekDay =
-          weekDaysEnum[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1];
+        // Get IST day of week
+        const istDay = targetDate.getDay();
+        const weekDay = weekDaysEnum[istDay === 0 ? 6 : istDay - 1];
         return weekDay ? task.weekDays.includes(weekDay) : false;
 
       case "monthly":
         if (!task.monthDays) return false;
-
         const targetDay = targetDate.getDate();
-        const lastDateOfMonth = new Date(
-          targetDate.getFullYear(),
-          targetDate.getMonth() + 1,
-          0,
-        ).getDate();
-
-        // Helper function to check if a date is a weekend
-        const isWeekend = (date: Date) => {
-          const day = date.getDay();
-          return day === 0 || day === 6;
-        };
-
-        // Helper function to get the first weekend date of the month
-        const getFirstWeekendDate = () => {
-          let currentDate = new Date(
-            targetDate.getFullYear(),
-            targetDate.getMonth(),
-            1,
-          );
-          while (!isWeekend(currentDate)) {
-            currentDate.setDate(currentDate.getDate() + 1);
-          }
-          return currentDate.getDate();
-        };
-
-        // Helper function to get the last weekend date of the month
-        const getLastWeekendDate = () => {
-          let currentDate = new Date(
-            targetDate.getFullYear(),
-            targetDate.getMonth() + 1,
-            0,
-          );
-          while (!isWeekend(currentDate)) {
-            currentDate.setDate(currentDate.getDate() - 1);
-          }
-          return currentDate.getDate();
-        };
-
-        return task.monthDays.some((monthDay) => {
-          // Special cases for weekend dates
-          switch (monthDay) {
-            case -1: // last date of month
-              return targetDay === lastDateOfMonth;
-            case -2: // first weekend
-              return targetDay === getFirstWeekendDate();
-            case -3: // last weekend
-              return targetDay === getLastWeekendDate();
-            default:
-              // Regular days 1-31
-              return targetDay === monthDay;
-          }
-        });
+        return task.monthDays.includes(targetDay);
 
       default:
         return false;

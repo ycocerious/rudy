@@ -15,6 +15,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
+import { convertToIST } from "@/lib/utils/get-tasks-for-date";
 import { handleTaskStateChange } from "@/lib/utils/task-mutations";
 import { api } from "@/trpc/react";
 import {
@@ -165,11 +166,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   });
 
   const onSubmit = async (data: FormValues) => {
-    const adjustedDate = data.startDate
-      ? new Date(
-          data.startDate.getTime() - data.startDate.getTimezoneOffset() * 60000,
-        )
-      : null;
+    const adjustedDate = data.startDate ? convertToIST(data.startDate) : null;
 
     if (taskType === "add") {
       toast.loading("Adding task...", { id: theOnlyToastId });
