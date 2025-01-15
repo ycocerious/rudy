@@ -170,6 +170,15 @@ export const taskRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       console.log("🔥 Add task was called");
+      const startDateISOString = input.startDate
+        ? new Date(
+            Date.UTC(
+              input.startDate.getFullYear(),
+              input.startDate.getMonth(),
+              input.startDate.getDate(),
+            ),
+          ).toISOString()
+        : null;
       const [newTask] = await ctx.db
         .insert(tasks)
         .values({
@@ -178,7 +187,7 @@ export const taskRouter = createTRPCRouter({
           category: input.category,
           dailyCountTotal: input.dailyCountTotal ?? 1,
           xValue: input.xValue ?? null,
-          startDate: input.startDate?.toISOString() ?? null,
+          startDate: startDateISOString,
           weekDays: input.weekDays ?? null,
           monthDays: input.monthDays ?? null,
           userId: ctx.userId,
@@ -233,6 +242,16 @@ export const taskRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       console.log("🔥 Edit task was called");
+      const startDateISOString = input.startDate
+        ? new Date(
+            Date.UTC(
+              input.startDate.getFullYear(),
+              input.startDate.getMonth(),
+              input.startDate.getDate(),
+            ),
+          ).toISOString()
+        : null;
+
       const [updatedTask] = await ctx.db
         .update(tasks)
         .set({
@@ -241,7 +260,7 @@ export const taskRouter = createTRPCRouter({
           category: input.category,
           dailyCountTotal: input.dailyCountTotal ?? 1,
           xValue: input.xValue ?? null,
-          startDate: input.startDate?.toISOString() ?? null,
+          startDate: startDateISOString,
           weekDays: input.weekDays ?? null,
           monthDays: input.monthDays ?? null,
         })
