@@ -23,9 +23,7 @@ function normalizeToISTDate(date: Date): Date {
   );
 }
 
-export function getTasksForToday(
-  tasks: Omit<Task, "dailyCountFinished">[],
-): Omit<Task, "dailyCountFinished">[] {
+export function getTasksForToday(tasks: Task[]): Task[] {
   const today = new Date();
   // Convert and normalize the input date to IST
   const targetDate = normalizeToISTDate(today);

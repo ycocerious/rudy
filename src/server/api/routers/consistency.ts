@@ -1,20 +1,13 @@
 import { getTasksForToday } from "@/lib/utils/get-tasks-for-date";
 import { dailyCompletions, taskCompletions, tasks } from "@/server/db/schema";
 import { type weekDaysType } from "@/types/form-types";
+import { type Task } from "@/types/task";
 import { and, eq, sql } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const consistencyRouter = createTRPCRouter({
   getCompletionData: publicProcedure.query(async ({ ctx }) => {
-    // Get today in Indian timezone
-    const today = sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`;
-
-    // Get start date (Sunday of current week - 53 weeks)
-    const startDate = sql`(
-        ${today} - 
-        CAST(EXTRACT(DOW FROM ${today}) AS INTEGER) - 
-        (53 * 7)
-      )::date`;
+    // Combine the date calculations into a single SQL expression
     const dailyStats = await ctx.db
       .select({
         completionDate: dailyCompletions.completionDate,
@@ -24,70 +17,87 @@ export const consistencyRouter = createTRPCRouter({
       .where(
         and(
           eq(dailyCompletions.userId, ctx.userId),
-          sql`${dailyCompletions.completionDate} >= ${startDate}`,
-          sql`${dailyCompletions.completionDate} <= ${today}`,
+          sql`${dailyCompletions.completionDate} BETWEEN 
+              (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date - 
+              CAST(EXTRACT(DOW FROM (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date) AS INTEGER) - 
+              (53 * 7)
+              AND
+              (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
         ),
-      );
+      )
+      // Add index hint if you have an index on completionDate
+      .orderBy(dailyCompletions.completionDate);
 
     return dailyStats;
   }),
 
   updateTodayCompletion: publicProcedure.mutation(async ({ ctx }) => {
-    console.log("🔥 Calculate today completion was called");
-
-    // Get all tasks
-    const allTasks = await ctx.db.query.tasks.findMany({
-      where: and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)),
-    });
-
-    // Convert tasks to the format expected by getTasksForDate
-    const usableTasks = allTasks.map((task) => ({
-      ...task,
-      weekDays: task.weekDays ? (task.weekDays as weekDaysType[]) : null,
-      startDate: task.startDate ? new Date(task.startDate) : null,
-    }));
-
-    // Filter for today's tasks
-    const todaysTasks = getTasksForToday(usableTasks);
-
-    // Get all completions for today
-    const todaysCompletions = await ctx.db
-      .select()
-      .from(taskCompletions)
-      .where(
+    // Get tasks and their completions in a single query
+    const tasksWithCompletions = await ctx.db
+      .select({
+        // Task fields
+        id: tasks.id,
+        name: tasks.name,
+        category: tasks.category, // Added missing category field
+        frequency: tasks.frequency,
+        weekDays: tasks.weekDays,
+        monthDays: tasks.monthDays,
+        startDate: tasks.startDate,
+        xValue: tasks.xValue,
+        dailyCountTotal: tasks.dailyCountTotal,
+        // Completion fields
+        completedCount: taskCompletions.completedCount,
+      })
+      .from(tasks)
+      .leftJoin(
+        taskCompletions,
         and(
+          eq(tasks.id, taskCompletions.taskId),
           eq(taskCompletions.userId, ctx.userId),
           sql`DATE(${taskCompletions.completedDate}) = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
         ),
-      );
+      )
+      .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)));
 
-    // Create a map of task completions
-    const completionsMap = new Map(
-      todaysCompletions.map((c) => [c.taskId, c.completedCount ?? 0]),
+    // Transform to Task type and prepare for getTasksForToday
+    const usableTasks: Task[] = tasksWithCompletions.map((task) => ({
+      id: task.id,
+      name: task.name,
+      category: task.category,
+      frequency: task.frequency,
+      weekDays: task.weekDays ? (task.weekDays as weekDaysType[]) : null,
+      monthDays: task.monthDays,
+      startDate: task.startDate ? new Date(task.startDate) : null,
+      xValue: task.xValue,
+      dailyCountTotal: task.dailyCountTotal ?? 1,
+      dailyCountFinished: task.completedCount ?? 0,
+    }));
+
+    // Rest of the function remains the same...
+    const todaysTasks = getTasksForToday(usableTasks);
+
+    const { completedTasksCount, totalTasksCount } = todaysTasks.reduce(
+      (acc, task) => {
+        if (task.frequency === "daily") {
+          acc.totalTasksCount += task.dailyCountTotal ?? 1;
+          acc.completedTasksCount += Math.min(
+            task.dailyCountFinished,
+            task.dailyCountTotal ?? 1,
+          );
+        } else {
+          acc.totalTasksCount += 1;
+          acc.completedTasksCount += task.dailyCountFinished > 0 ? 1 : 0;
+        }
+        return acc;
+      },
+      { completedTasksCount: 0, totalTasksCount: 0 },
     );
-
-    // Calculate total completed tasks
-    let completedTasksCount = 0;
-    let totalTasksCount = 0;
-
-    todaysTasks.forEach((task) => {
-      const completedCount = completionsMap.get(task.id) ?? 0;
-
-      if (task.frequency === "daily") {
-        totalTasksCount += task.dailyCountTotal;
-        completedTasksCount += Math.min(completedCount, task.dailyCountTotal);
-      } else {
-        totalTasksCount += 1;
-        completedTasksCount += completedCount > 0 ? 1 : 0;
-      }
-    });
 
     const completionPercentage =
       totalTasksCount === 0
         ? 0
         : Math.round((completedTasksCount / totalTasksCount) * 100);
 
-    // Update or insert the daily completion record
     await ctx.db
       .insert(dailyCompletions)
       .values({
@@ -97,9 +107,7 @@ export const consistencyRouter = createTRPCRouter({
       })
       .onConflictDoUpdate({
         target: [dailyCompletions.userId, dailyCompletions.completionDate],
-        set: {
-          completionPercentage,
-        },
+        set: { completionPercentage },
       });
 
     return completionPercentage;

@@ -7,6 +7,7 @@ import {
   taskFrequencyEnum,
   type weekDaysType,
 } from "@/types/form-types";
+import { type Task } from "@/types/task";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -14,90 +15,124 @@ import { z } from "zod";
 export const taskRouter = createTRPCRouter({
   getTodaysTasks: publicProcedure.query(async ({ ctx }) => {
     console.log("🔥 Get todays tasks was called");
-    const whereConditions = [
-      eq(tasks.userId, ctx.userId),
-      eq(tasks.isArchived, false),
-    ];
 
-    const userTasks = await ctx.db.query.tasks.findMany({
-      where: and(...whereConditions),
-      orderBy: [desc(tasks.createdAt)],
-    });
-
-    if (!userTasks) return [];
-
-    const usableUserTasks = userTasks.map((task) => ({
-      ...task,
-      weekDays: task.weekDays ? (task.weekDays as weekDaysType[]) : null,
-      startDate: task.startDate ? new Date(task.startDate) : null,
-    }));
-
-    const todaysCompletions = await ctx.db
+    // Combine both queries into a single join operation
+    const tasksWithCompletions = await ctx.db
       .select({
-        taskId: taskCompletions.taskId,
+        // Task fields
+        id: tasks.id,
+        name: tasks.name, // Added missing field
+        category: tasks.category, // Added missing field
+        frequency: tasks.frequency,
+        weekDays: tasks.weekDays,
+        monthDays: tasks.monthDays,
+        startDate: tasks.startDate,
+        xValue: tasks.xValue,
+        dailyCountTotal: tasks.dailyCountTotal,
+        // Completion fields
         completedCount: taskCompletions.completedCount,
       })
-      .from(taskCompletions)
-      .where(
+      .from(tasks)
+      .leftJoin(
+        taskCompletions,
         and(
-          eq(taskCompletions.userId, ctx.userId),
+          eq(tasks.id, taskCompletions.taskId),
           sql`DATE(${taskCompletions.completedDate}) = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
         ),
-      );
+      )
+      .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)))
+      .orderBy(desc(tasks.createdAt));
 
-    const completionsMap = new Map(
-      todaysCompletions.map((c) => [c.taskId, c.completedCount ?? 0]),
+    // Transform the data to match Task type
+    const usableTasks: Task[] = tasksWithCompletions.map((task) => ({
+      id: task.id,
+      name: task.name,
+      category: task.category,
+      frequency: task.frequency,
+      weekDays: task.weekDays ? (task.weekDays as weekDaysType[]) : null,
+      monthDays: task.monthDays,
+      startDate: task.startDate ? new Date(task.startDate) : null,
+      xValue: task.xValue,
+      dailyCountTotal: task.dailyCountTotal,
+      dailyCountFinished: task.completedCount ?? 0,
+    }));
+
+    return getTasksForToday(usableTasks).filter((task) =>
+      task.frequency === "daily"
+        ? task.dailyCountFinished < (task.dailyCountTotal ?? 1)
+        : task.dailyCountFinished === 0,
     );
-
-    const todaysTasks = getTasksForToday(usableUserTasks).map((task) => {
-      const completedCount = completionsMap.get(task.id) ?? 0;
-      return {
-        ...task,
-        dailyCountFinished: completedCount,
-      };
-    });
-
-    return todaysTasks.filter((task) => {
-      const completedCount = completionsMap.get(task.id) ?? 0;
-
-      return task.frequency === "daily"
-        ? completedCount < (task.dailyCountTotal ?? 1)
-        : completedCount === 0;
-    });
   }),
 
   getAllTasks: publicProcedure.query(async ({ ctx }) => {
     console.log("🔥 Get all tasks was called");
-    const whereConditions = [
-      eq(tasks.userId, ctx.userId),
-      eq(tasks.isArchived, false),
-    ];
 
-    const userTasks = await ctx.db.query.tasks.findMany({
-      where: and(...whereConditions),
-      orderBy: [desc(tasks.createdAt)],
-    });
+    // Select specific fields instead of using findMany
+    const userTasks = await ctx.db
+      .select({
+        id: tasks.id,
+        name: tasks.name,
+        category: tasks.category,
+        frequency: tasks.frequency,
+        weekDays: tasks.weekDays,
+        monthDays: tasks.monthDays,
+        startDate: tasks.startDate,
+        xValue: tasks.xValue,
+        dailyCountTotal: tasks.dailyCountTotal,
+        createdAt: tasks.createdAt,
+      })
+      .from(tasks)
+      .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)))
+      .orderBy(desc(tasks.createdAt));
 
-    if (!userTasks) {
+    // Early return if no tasks
+    if (!userTasks.length) {
       return [];
     }
 
-    const usableUserTasks = userTasks.map((task) => ({
-      ...task,
+    // Transform data in a single pass without spreading
+    return userTasks.map((task) => ({
+      id: task.id,
+      name: task.name,
+      category: task.category,
+      frequency: task.frequency,
       weekDays: task.weekDays ? (task.weekDays as weekDaysType[]) : null,
+      monthDays: task.monthDays,
       startDate: task.startDate ? new Date(task.startDate) : null,
+      xValue: task.xValue,
+      dailyCountTotal: task.dailyCountTotal,
+      createdAt: task.createdAt,
     }));
-
-    return usableUserTasks;
   }),
 
   finishTask: publicProcedure
     .input(z.string())
     .mutation(async ({ ctx, input: taskId }) => {
-      // Get the task
-      const [task] = await ctx.db
-        .select()
+      // Get task and current completion in a single query
+      const [taskWithCompletion] = await ctx.db
+        .select({
+          // Task fields
+          id: tasks.id,
+          name: tasks.name,
+          category: tasks.category,
+          frequency: tasks.frequency,
+          weekDays: tasks.weekDays,
+          monthDays: tasks.monthDays,
+          startDate: tasks.startDate,
+          xValue: tasks.xValue,
+          dailyCountTotal: tasks.dailyCountTotal,
+          // Completion fields
+          currentCompletedCount: taskCompletions.completedCount,
+        })
         .from(tasks)
+        .leftJoin(
+          taskCompletions,
+          and(
+            eq(taskCompletions.taskId, tasks.id),
+            eq(taskCompletions.userId, ctx.userId),
+            sql`DATE(${taskCompletions.completedDate}) = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
+          ),
+        )
         .where(
           and(
             eq(tasks.id, taskId),
@@ -107,21 +142,30 @@ export const taskRouter = createTRPCRouter({
         )
         .limit(1);
 
-      if (!task) {
+      if (!taskWithCompletion) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Task not found",
         });
       }
 
-      // Use upsert instead of separate select + insert/update
+      // Calculate new completion count
+      const newCompletedCount =
+        taskWithCompletion.frequency === "daily"
+          ? Math.min(
+              (taskWithCompletion.currentCompletedCount ?? 0) + 1,
+              taskWithCompletion.dailyCountTotal,
+            )
+          : 1;
+
+      // Update completion
       const [completion] = await ctx.db
         .insert(taskCompletions)
         .values({
           taskId,
           userId: ctx.userId,
           completedDate: sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
-          completedCount: 1,
+          completedCount: newCompletedCount,
         })
         .onConflictDoUpdate({
           target: [
@@ -130,14 +174,7 @@ export const taskRouter = createTRPCRouter({
             taskCompletions.completedDate,
           ],
           set: {
-            completedCount: sql`
-              CASE 
-                WHEN ${taskCompletions.completedCount} < ${task.dailyCountTotal} 
-                  AND ${task.frequency} = 'daily' 
-                THEN ${taskCompletions.completedCount} + 1 
-                ELSE ${taskCompletions.completedCount}
-              END
-            `,
+            completedCount: newCompletedCount,
           },
         })
         .returning();
@@ -149,8 +186,9 @@ export const taskRouter = createTRPCRouter({
         });
       }
 
+      // Return task with updated completion count
       return {
-        ...task,
+        ...taskWithCompletion,
         dailyCountFinished: completion.completedCount,
       };
     }),
@@ -169,7 +207,7 @@ export const taskRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("🔥 Add task was called");
+      // Only perform date adjustment if startDate exists
       const startDateISOString = input.startDate
         ? new Date(
             Date.UTC(
@@ -179,21 +217,36 @@ export const taskRouter = createTRPCRouter({
             ),
           ).toISOString()
         : null;
+
+      // Create task values object directly to avoid unnecessary object spreading
+      const taskValues = {
+        name: input.name,
+        frequency: input.frequency,
+        category: input.category,
+        dailyCountTotal: input.dailyCountTotal ?? 1,
+        xValue: input.xValue ?? null,
+        startDate: startDateISOString,
+        weekDays: input.weekDays ?? null,
+        monthDays: input.monthDays ?? null,
+        userId: ctx.userId,
+        isArchived: false,
+      } satisfies NewDbTask;
+
+      // Use a specific column list in returning() to minimize data transfer
       const [newTask] = await ctx.db
         .insert(tasks)
-        .values({
-          name: input.name,
-          frequency: input.frequency,
-          category: input.category,
-          dailyCountTotal: input.dailyCountTotal ?? 1,
-          xValue: input.xValue ?? null,
-          startDate: startDateISOString,
-          weekDays: input.weekDays ?? null,
-          monthDays: input.monthDays ?? null,
-          userId: ctx.userId,
-          isArchived: false,
-        } satisfies NewDbTask)
-        .returning();
+        .values(taskValues)
+        .returning({
+          id: tasks.id,
+          name: tasks.name,
+          frequency: tasks.frequency,
+          category: tasks.category,
+          dailyCountTotal: tasks.dailyCountTotal,
+          xValue: tasks.xValue,
+          startDate: tasks.startDate,
+          weekDays: tasks.weekDays,
+          monthDays: tasks.monthDays,
+        });
 
       return newTask;
     }),
@@ -201,7 +254,7 @@ export const taskRouter = createTRPCRouter({
   deleteTask: publicProcedure
     .input(z.string())
     .mutation(async ({ ctx, input: taskId }) => {
-      console.log("🔥 Delete task was called");
+      // Select only needed fields in returning
       const [deletedTask] = await ctx.db
         .update(tasks)
         .set({
@@ -214,7 +267,19 @@ export const taskRouter = createTRPCRouter({
             eq(tasks.isArchived, false),
           ),
         )
-        .returning();
+        .returning({
+          id: tasks.id,
+          name: tasks.name,
+          frequency: tasks.frequency,
+          category: tasks.category,
+          dailyCountTotal: tasks.dailyCountTotal,
+          xValue: tasks.xValue,
+          startDate: tasks.startDate,
+          weekDays: tasks.weekDays,
+          monthDays: tasks.monthDays,
+          userId: tasks.userId,
+          isArchived: tasks.isArchived,
+        });
 
       if (!deletedTask) {
         throw new TRPCError({
@@ -241,7 +306,7 @@ export const taskRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("🔥 Edit task was called");
+      // Prepare the date string once, outside the query
       const startDateISOString = input.startDate
         ? new Date(
             Date.UTC(
@@ -252,18 +317,22 @@ export const taskRouter = createTRPCRouter({
           ).toISOString()
         : null;
 
+      // Prepare update values object once
+      const updateValues = {
+        name: input.name,
+        frequency: input.frequency,
+        category: input.category,
+        dailyCountTotal: input.dailyCountTotal ?? 1,
+        xValue: input.xValue ?? null,
+        startDate: startDateISOString,
+        weekDays: input.weekDays ?? null,
+        monthDays: input.monthDays ?? null,
+      };
+
+      // Select only needed fields in returning
       const [updatedTask] = await ctx.db
         .update(tasks)
-        .set({
-          name: input.name,
-          frequency: input.frequency,
-          category: input.category,
-          dailyCountTotal: input.dailyCountTotal ?? 1,
-          xValue: input.xValue ?? null,
-          startDate: startDateISOString,
-          weekDays: input.weekDays ?? null,
-          monthDays: input.monthDays ?? null,
-        })
+        .set(updateValues)
         .where(
           and(
             eq(tasks.id, input.taskId),
@@ -271,7 +340,19 @@ export const taskRouter = createTRPCRouter({
             eq(tasks.isArchived, false),
           ),
         )
-        .returning();
+        .returning({
+          id: tasks.id,
+          name: tasks.name,
+          frequency: tasks.frequency,
+          category: tasks.category,
+          dailyCountTotal: tasks.dailyCountTotal,
+          xValue: tasks.xValue,
+          startDate: tasks.startDate,
+          weekDays: tasks.weekDays,
+          monthDays: tasks.monthDays,
+          userId: tasks.userId,
+          isArchived: tasks.isArchived,
+        });
 
       if (!updatedTask) {
         throw new TRPCError({
