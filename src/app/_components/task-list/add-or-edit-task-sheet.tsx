@@ -95,6 +95,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   // Reset form when originalTask changes
   useEffect(() => {
     if (taskType === "edit" && originalTask) {
+      // Reset the form whenever originalTask changes
       reset({
         name: originalTask.name,
         category: originalTask.category,
@@ -119,16 +120,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const handleEditSheetClose = () => {
     setIsSheetOpen(false);
-    reset({
-      name: originalTask?.name ?? "",
-      category: originalTask?.category ?? null,
-      frequency: originalTask?.frequency ?? null,
-      dailyCountTotal: originalTask?.dailyCountTotal ?? null,
-      xValue: originalTask?.xValue ?? null,
-      startDate: originalTask?.startDate ?? null,
-      monthDays: originalTask?.monthDays ?? null,
-      weekDays: originalTask?.weekDays ?? null,
-    });
+    reset();
   };
 
   const utils = api.useUtils();
@@ -237,15 +229,17 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       return;
     }
 
-    // Only reset when frequency actually changes, not just when form becomes dirty
-    if (frequency && frequency !== originalTask?.frequency) {
-      setValue("xValue", null);
-      setValue("startDate", null);
-      setValue("weekDays", null);
-      setValue("monthDays", null);
-      setValue("dailyCountTotal", null);
+    // Only reset dependent fields when frequency changes
+    if (frequency) {
+      if (!originalTask || frequency !== originalTask.frequency) {
+        setValue("xValue", null);
+        setValue("startDate", null);
+        setValue("weekDays", null);
+        setValue("monthDays", null);
+        setValue("dailyCountTotal", null);
+      }
     }
-  }, [frequency, setValue, originalTask?.frequency]);
+  }, [frequency, setValue, originalTask]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
