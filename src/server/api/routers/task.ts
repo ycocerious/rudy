@@ -1,5 +1,5 @@
 // @/server/api/routers/task.ts
-import { getTasksForDate } from "@/lib/utils/get-tasks-for-date";
+import { getTasksForToday } from "@/lib/utils/get-tasks-for-date";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { type NewDbTask, taskCompletions, tasks } from "@/server/db/schema";
 import {
@@ -49,7 +49,7 @@ export const taskRouter = createTRPCRouter({
       todaysCompletions.map((c) => [c.taskId, c.completedCount ?? 0]),
     );
 
-    const todaysTasks = getTasksForDate(usableUserTasks).map((task) => {
+    const todaysTasks = getTasksForToday(usableUserTasks).map((task) => {
       const completedCount = completionsMap.get(task.id) ?? 0;
       return {
         ...task,

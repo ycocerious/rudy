@@ -1,4 +1,4 @@
-import { getTasksForDate } from "@/lib/utils/get-tasks-for-date";
+import { getTasksForToday } from "@/lib/utils/get-tasks-for-date";
 import { dailyCompletions, taskCompletions, tasks } from "@/server/db/schema";
 import { type weekDaysType } from "@/types/form-types";
 import { and, eq, sql } from "drizzle-orm";
@@ -48,7 +48,7 @@ export const consistencyRouter = createTRPCRouter({
     }));
 
     // Filter for today's tasks
-    const todaysTasks = getTasksForDate(usableTasks);
+    const todaysTasks = getTasksForToday(usableTasks);
 
     // Get all completions for today
     const todaysCompletions = await ctx.db
