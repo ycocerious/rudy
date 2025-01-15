@@ -2,19 +2,25 @@ import {
   type taskCategoryEnum,
   type taskFrequencyEnum,
 } from "@/types/form-types";
+import { sql } from "drizzle-orm";
 import {
   boolean,
   date,
   index,
   integer,
   pgTable,
-  serial,
   text,
   timestamp,
   unique,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core";
-const commonIdSchema = (columnName: string) => serial(columnName).primaryKey();
+import { nanoid } from "nanoid";
+
+const commonIdSchema = (columnName: string) =>
+  text(columnName)
+    .primaryKey()
+    .$defaultFn(() => nanoid());
 
 export const tasks = pgTable(
   "tasks",
@@ -29,13 +35,16 @@ export const tasks = pgTable(
       .$type<(typeof taskCategoryEnum)[number]>()
       .notNull(),
     dailyCountTotal: integer("daily_count_total").notNull(),
-    dailyCountFinished: integer("daily_count_finished").notNull(),
     xValue: integer("x_value"),
     startDate: date("start_date"),
     weekDays: varchar("week_days").array(),
     monthDays: integer("month_days").array(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')`)
+      .notNull(),
     isArchived: boolean("is_archived").default(false).notNull(),
   },
   (table) => ({
@@ -47,13 +56,15 @@ export const taskCompletions = pgTable(
   "task_completions",
   {
     id: commonIdSchema("completion_id"),
-    taskId: integer("task_id")
+    taskId: varchar("task_id")
       .references(() => tasks.id)
       .notNull(),
     userId: varchar("user_id").notNull(),
     completedDate: date("completed_date").notNull(),
     completedCount: integer("completed_count").default(1).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')`)
+      .notNull(),
   },
   (table) => ({
     taskDateIdx: index("task_date_idx").on(
@@ -62,6 +73,11 @@ export const taskCompletions = pgTable(
       table.completedDate,
     ),
     userDateIdx: index("user_date_idx").on(table.userId, table.completedDate),
+    uniqueCompletion: uniqueIndex("unique_task_completion").on(
+      table.taskId,
+      table.userId,
+      sql`DATE(${table.completedDate})`,
+    ),
   }),
 );
 
@@ -72,7 +88,9 @@ export const feedbacks = pgTable(
     userId: varchar("user_id").notNull(),
     rating: integer("rating").notNull(),
     feedback: text("feedback"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')`)
+      .notNull(),
   },
   (table) => ({
     userIdIdx: index("feedback_user_id_idx").on(table.userId),
@@ -86,8 +104,12 @@ export const dailyCompletions = pgTable(
     userId: varchar("user_id").notNull(),
     completionDate: date("completion_date").notNull(),
     completionPercentage: integer("completion_percentage").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .default(sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')`)
+      .notNull(),
   },
   (table) => ({
     dailyCompletionsUserDateIdx: index("daily_completions_user_date_idx").on(

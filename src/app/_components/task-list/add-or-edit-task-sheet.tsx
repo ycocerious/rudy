@@ -49,7 +49,7 @@ type AddTaskSheetProps = BaseAddOrEditTaskSheetProps & {
 
 type EditTaskSheetProps = BaseAddOrEditTaskSheetProps & {
   taskType: "edit";
-  task: Task;
+  task: Omit<Task, "dailyCountFinished">;
 };
 
 type AddOrEditTaskSheetProps = AddTaskSheetProps | EditTaskSheetProps;
@@ -133,12 +133,12 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const utils = api.useUtils();
 
-  const { mutateAsync: calculateCompletion } =
-    api.consistency.calculateTodayCompletion.useMutation();
+  const { mutateAsync: updateCompletion } =
+    api.consistency.updateTodayCompletion.useMutation();
 
   const { mutateAsync: addTask } = api.task.addTask.useMutation({
     onSuccess: async () => {
-      await calculateCompletion();
+      await updateCompletion();
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
@@ -150,7 +150,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const { mutateAsync: editTask } = api.task.editTask.useMutation({
     onSuccess: async () => {
-      await calculateCompletion();
+      await updateCompletion();
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
@@ -162,7 +162,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const { mutateAsync: deleteTask } = api.task.deleteTask.useMutation({
     onSuccess: async () => {
-      await calculateCompletion();
+      await updateCompletion();
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();

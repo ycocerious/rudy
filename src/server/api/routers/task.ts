@@ -92,9 +92,8 @@ export const taskRouter = createTRPCRouter({
   }),
 
   finishTask: publicProcedure
-    .input(z.number())
+    .input(z.string())
     .mutation(async ({ ctx, input: taskId }) => {
-      console.log("🔥 Finish task was called");
       // Get the task
       const [task] = await ctx.db
         .select()
@@ -115,70 +114,45 @@ export const taskRouter = createTRPCRouter({
         });
       }
 
-      // Get today's completion
-      const [existingCompletion] = await ctx.db
-        .select()
-        .from(taskCompletions)
-        .where(
-          and(
-            eq(taskCompletions.taskId, taskId),
-            eq(taskCompletions.userId, ctx.userId),
-            sql`DATE(${taskCompletions.completedDate}) = CURRENT_DATE`,
-          ),
-        )
-        .limit(1);
+      // Use upsert instead of separate select + insert/update
+      const [completion] = await ctx.db
+        .insert(taskCompletions)
+        .values({
+          taskId,
+          userId: ctx.userId,
+          completedDate: sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
+          completedCount: 1,
+        })
+        .onConflictDoUpdate({
+          target: [
+            taskCompletions.taskId,
+            taskCompletions.userId,
+            taskCompletions.completedDate,
+          ],
+          set: {
+            completedCount: sql`
+              CASE 
+                WHEN ${taskCompletions.completedCount} < ${task.dailyCountTotal} 
+                  AND ${task.frequency} = 'daily' 
+                THEN ${taskCompletions.completedCount} + 1 
+                ELSE ${taskCompletions.completedCount}
+              END
+            `,
+          },
+        })
+        .returning();
 
-      if (existingCompletion) {
-        // For daily tasks with count
-        if (
-          task.frequency === "daily" &&
-          task.dailyCountTotal &&
-          existingCompletion.completedCount &&
-          existingCompletion.completedCount < task.dailyCountTotal
-        ) {
-          const [updated] = await ctx.db
-            .update(taskCompletions)
-            .set({
-              completedCount: sql`${taskCompletions.completedCount} + 1`,
-            })
-            .where(eq(taskCompletions.id, existingCompletion.id))
-            .returning();
-
-          if (!updated) {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to update completion count",
-            });
-          }
-
-          return {
-            ...task,
-            dailyCountFinished: updated.completedCount,
-          };
-        }
-
-        return task;
-      } else {
-        // Create new completion record
-        const [newCompletion] = await ctx.db
-          .insert(taskCompletions)
-          .values({
-            taskId,
-            userId: ctx.userId,
-            completedDate: sql`CURRENT_DATE`,
-            completedCount: 1,
-          })
-          .returning();
-
-        if (!newCompletion) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to create completion record",
-          });
-        }
-
-        return task;
+      if (!completion) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update completion",
+        });
       }
+
+      return {
+        ...task,
+        dailyCountFinished: completion.completedCount,
+      };
     }),
 
   addTask: publicProcedure
@@ -203,15 +177,12 @@ export const taskRouter = createTRPCRouter({
           frequency: input.frequency,
           category: input.category,
           dailyCountTotal: input.dailyCountTotal ?? 1,
-          dailyCountFinished: 0,
           xValue: input.xValue ?? null,
           startDate: input.startDate?.toISOString() ?? null,
           weekDays: input.weekDays ?? null,
           monthDays: input.monthDays ?? null,
           userId: ctx.userId,
           isArchived: false,
-          createdAt: new Date(),
-          updatedAt: new Date(), // Add this since it's notNull in schema
         } satisfies NewDbTask)
         .returning();
 
@@ -219,14 +190,13 @@ export const taskRouter = createTRPCRouter({
     }),
 
   deleteTask: publicProcedure
-    .input(z.number())
+    .input(z.string())
     .mutation(async ({ ctx, input: taskId }) => {
       console.log("🔥 Delete task was called");
       const [deletedTask] = await ctx.db
         .update(tasks)
         .set({
           isArchived: true,
-          updatedAt: new Date(),
         })
         .where(
           and(
@@ -250,7 +220,7 @@ export const taskRouter = createTRPCRouter({
   editTask: publicProcedure
     .input(
       z.object({
-        taskId: z.number(),
+        taskId: z.string(),
         name: z.string(),
         frequency: z.enum(taskFrequencyEnum),
         category: z.enum(taskCategoryEnum),
@@ -274,7 +244,6 @@ export const taskRouter = createTRPCRouter({
           startDate: input.startDate?.toISOString() ?? null,
           weekDays: input.weekDays ?? null,
           monthDays: input.monthDays ?? null,
-          updatedAt: new Date(),
         })
         .where(
           and(

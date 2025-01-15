@@ -28,7 +28,6 @@
     "@trpc/client": "^11.0.0-rc.446",
     "@trpc/react-query": "^11.0.0-rc.446",
     "@trpc/server": "^11.0.0-rc.446",
-    "@types/canvas-confetti": "^1.6.4",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
     "canvas-confetti": "^1.9.3",
@@ -55,6 +54,7 @@
     "zod": "^3.23.3"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.6.4",
     "@types/eslint": "^8.56.10",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",

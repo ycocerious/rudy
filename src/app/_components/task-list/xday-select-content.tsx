@@ -15,7 +15,7 @@ import { type FormValues } from "./add-or-edit-task-sheet";
 
 type XdaySelectContentProps = {
   control: Control<FormValues>;
-  originalTask?: Task;
+  originalTask?: Omit<Task, "dailyCountFinished">;
 };
 
 const X_VALUES = [2, 3, 4, 5, 6] as const;

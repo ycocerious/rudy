@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
 
 interface TaskProps {
-  task: Task;
+  task: Omit<Task, "dailyCountFinished">;
 }
 
 export const TaskItem: React.FC<TaskProps> = ({ task }) => {

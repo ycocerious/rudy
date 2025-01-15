@@ -4,6 +4,7 @@ import { theOnlyToastId } from "@/constants/uiConstants";
 import { handleTaskStateChange } from "@/lib/utils/task-mutations";
 import { api } from "@/trpc/react";
 import { type Task } from "@/types/task";
+import confetti from "canvas-confetti";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AddOrEditTaskSheet } from "./add-or-edit-task-sheet";
@@ -37,12 +38,21 @@ export const TodayTasksList = () => {
 
   const utils = api.useUtils();
 
-  const { mutateAsync: calculateCompletion } =
-    api.consistency.calculateTodayCompletion.useMutation();
+  const { mutateAsync: updateCompletion } =
+    api.consistency.updateTodayCompletion.useMutation();
 
   const { mutateAsync: finishDbTask } = api.task.finishTask.useMutation({
+    onMutate: async (taskId) => {
+      void confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        disableForReducedMotion: true,
+      });
+      return { taskId };
+    },
     onSuccess: async () => {
-      await calculateCompletion();
+      await updateCompletion();
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
       await handleTaskStateChange(utils);
@@ -96,7 +106,7 @@ export const TodayTasksList = () => {
     );
 
   //callback functions
-  const completeTask = async (id: number) => {
+  const completeTask = async (id: string) => {
     const taskToComplete = localTasks.find((task) => task.id === id);
     if (!taskToComplete) return;
 
@@ -128,10 +138,6 @@ export const TodayTasksList = () => {
       setReturnToPosition(false);
     }
     // Update database in background
-    toast.success("Hooray! Well done!", {
-      id: theOnlyToastId,
-      icon: "🎉👏",
-    });
     await finishDbTask(taskToComplete.id);
   };
 

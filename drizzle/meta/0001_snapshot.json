@@ -1,6 +1,6 @@
 {
-  "id": "bb95bc79-6d5e-48e9-a24b-17cc8360671b",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "ead4214a-40a7-482c-b717-d5e36b253791",
+  "prevId": "bb95bc79-6d5e-48e9-a24b-17cc8360671b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -228,6 +228,33 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "unique_task_completion": {
+          "name": "unique_task_completion",
+          "columns": [
+            {
+              "expression": "task_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "DATE(\"completed_date\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}

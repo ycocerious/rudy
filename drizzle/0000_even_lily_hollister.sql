@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "daily_completions" (
-	"daily_completion_id" serial PRIMARY KEY NOT NULL,
+	"daily_completion_id" text PRIMARY KEY NOT NULL,
 	"user_id" varchar NOT NULL,
 	"completion_date" date NOT NULL,
 	"completion_percentage" integer NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "daily_completions" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "feedbacks" (
-	"feedback_id" serial PRIMARY KEY NOT NULL,
+	"feedback_id" text PRIMARY KEY NOT NULL,
 	"user_id" varchar NOT NULL,
 	"rating" integer NOT NULL,
 	"feedback" text,
@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS "feedbacks" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "task_completions" (
-	"completion_id" serial PRIMARY KEY NOT NULL,
-	"task_id" integer NOT NULL,
+	"completion_id" text PRIMARY KEY NOT NULL,
+	"task_id" varchar NOT NULL,
 	"user_id" varchar NOT NULL,
 	"completed_date" date NOT NULL,
 	"completed_count" integer DEFAULT 1 NOT NULL,
@@ -26,13 +26,12 @@ CREATE TABLE IF NOT EXISTS "task_completions" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "tasks" (
-	"task_id" serial PRIMARY KEY NOT NULL,
+	"task_id" text PRIMARY KEY NOT NULL,
 	"user_id" varchar NOT NULL,
 	"name" varchar(100) NOT NULL,
 	"frequency" varchar(20) NOT NULL,
 	"category" varchar(20) NOT NULL,
 	"daily_count_total" integer NOT NULL,
-	"daily_count_finished" integer NOT NULL,
 	"x_value" integer,
 	"start_date" date,
 	"week_days" varchar[],

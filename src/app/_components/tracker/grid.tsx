@@ -25,19 +25,11 @@ export const Grid = () => {
 
     console.log("🎯 Grid Dates:", { startDate, endDate });
 
-    // Instead of converting to UTC string and back, just return the dates directly
     return { startDate, endDate };
   }, []);
 
   const { data: completionData } = api.consistency.getCompletionData.useQuery(
-    {
-      startDate: new Date(
-        dates.startDate.getTime() - dates.startDate.getTimezoneOffset() * 60000,
-      ),
-      endDate: new Date(
-        dates.endDate.getTime() - dates.endDate.getTimezoneOffset() * 60000,
-      ),
-    },
+    undefined,
     {
       gcTime: 1000 * 60 * 60 * 24,
       staleTime: 1000 * 60 * 60,

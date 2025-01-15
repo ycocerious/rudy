@@ -5,7 +5,7 @@ import {
 } from "./form-types";
 
 export type Task = {
-  id: number;
+  id: string;
   name: string;
   frequency: taskFrequencyType;
   category: taskCategoryType;

@@ -1,6 +1,6 @@
 {
-  "id": "bb95bc79-6d5e-48e9-a24b-17cc8360671b",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "0c29f0f2-b8a6-4916-835e-9f18ce8acf24",
+  "prevId": "59000250-7be3-4f62-8850-7514e064a849",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -34,17 +34,17 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')"
         }
       },
       "indexes": {
@@ -113,10 +113,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')"
         }
       },
       "indexes": {
@@ -177,10 +177,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')"
         }
       },
       "indexes": {
@@ -228,6 +228,33 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "unique_task_completion": {
+          "name": "unique_task_completion",
+          "columns": [
+            {
+              "expression": "task_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "DATE(\"completed_date\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -317,17 +344,17 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "now()"
+          "default": "(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')"
         },
         "is_archived": {
           "name": "is_archived",

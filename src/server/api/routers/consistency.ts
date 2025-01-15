@@ -2,48 +2,37 @@ import { getTasksForDate } from "@/lib/utils/get-tasks-for-date";
 import { dailyCompletions, taskCompletions, tasks } from "@/server/db/schema";
 import { type weekDaysType } from "@/types/form-types";
 import { and, eq, sql } from "drizzle-orm";
-import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const consistencyRouter = createTRPCRouter({
-  getCompletionData: publicProcedure
-    .input(
-      z.object({
-        startDate: z.date(),
-        endDate: z.date(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { startDate, endDate } = input;
-      console.log("🔥 getCompletionData called with:", {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        userId: ctx.userId,
-      });
+  getCompletionData: publicProcedure.query(async ({ ctx }) => {
+    // Get today in Indian timezone
+    const today = sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`;
 
-      const dailyStats = await ctx.db
-        .select({
-          completionDate: dailyCompletions.completionDate,
-          completionPercentage: dailyCompletions.completionPercentage,
-        })
-        .from(dailyCompletions)
-        .where(
-          and(
-            eq(dailyCompletions.userId, ctx.userId),
-            sql`${dailyCompletions.completionDate} >= ${startDate.toDateString()}::date`,
-            sql`${dailyCompletions.completionDate} <= ${endDate.toDateString()}::date`,
-          ),
-        );
+    // Get start date (Sunday of current week - 53 weeks)
+    const startDate = sql`(
+        ${today} - 
+        CAST(EXTRACT(DOW FROM ${today}) AS INTEGER) - 
+        (53 * 7)
+      )::date`;
+    const dailyStats = await ctx.db
+      .select({
+        completionDate: dailyCompletions.completionDate,
+        completionPercentage: dailyCompletions.completionPercentage,
+      })
+      .from(dailyCompletions)
+      .where(
+        and(
+          eq(dailyCompletions.userId, ctx.userId),
+          sql`${dailyCompletions.completionDate} >= ${startDate}`,
+          sql`${dailyCompletions.completionDate} <= ${today}`,
+        ),
+      );
 
-      console.log("🔥 getCompletionData results:", {
-        resultsCount: dailyStats.length,
-        results: dailyStats,
-      });
+    return dailyStats;
+  }),
 
-      return dailyStats;
-    }),
-
-  calculateTodayCompletion: publicProcedure.mutation(async ({ ctx }) => {
+  updateTodayCompletion: publicProcedure.mutation(async ({ ctx }) => {
     console.log("🔥 Calculate today completion was called");
 
     // Get all tasks
@@ -68,7 +57,7 @@ export const consistencyRouter = createTRPCRouter({
       .where(
         and(
           eq(taskCompletions.userId, ctx.userId),
-          sql`DATE(${taskCompletions.completedDate}) = CURRENT_DATE`,
+          sql`DATE(${taskCompletions.completedDate}) = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
         ),
       );
 
@@ -103,16 +92,13 @@ export const consistencyRouter = createTRPCRouter({
       .insert(dailyCompletions)
       .values({
         userId: ctx.userId,
-        completionDate: sql`CURRENT_DATE`,
+        completionDate: sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
         completionPercentage,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       })
       .onConflictDoUpdate({
         target: [dailyCompletions.userId, dailyCompletions.completionDate],
         set: {
           completionPercentage,
-          updatedAt: new Date(),
         },
       });
 

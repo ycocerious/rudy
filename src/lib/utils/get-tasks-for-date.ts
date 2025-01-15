@@ -3,9 +3,9 @@ import { weekDaysEnum } from "@/types/form-types";
 import { type Task } from "@/types/task";
 
 export function getTasksForDate(
-  tasks: Task[],
+  tasks: Omit<Task, "dailyCountFinished">[],
   date: Date = new Date(),
-): Task[] {
+): Omit<Task, "dailyCountFinished">[] {
   // Normalize the input date to remove time components
   const targetDate = new Date(
     date.getFullYear(),
