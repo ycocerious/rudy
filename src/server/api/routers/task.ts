@@ -37,7 +37,7 @@ export const taskRouter = createTRPCRouter({
         taskCompletions,
         and(
           eq(tasks.id, taskCompletions.taskId),
-          sql`DATE(${taskCompletions.completedDate}) = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
+          sql`DATE(${taskCompletions.completedDate} AT TIME ZONE 'Asia/Kolkata') = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
         ),
       )
       .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)))

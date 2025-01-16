@@ -17,14 +17,46 @@ export function convertToIST(date: Date): Date {
 }
 
 export function getTasksForToday(tasks: Task[]): Task[] {
+  // Get current time in IST
   const today = new Date();
-  // Convert and normalize the input date to IST
-  const targetDate = convertToIST(today);
 
-  console.log(
-    "🎯 Target Date (IST):",
-    targetDate.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+  // Convert to IST string with explicit timezone info
+  const istString = today.toLocaleString("en-US", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+
+  // Parse the string parts manually to ensure correct timezone
+  const [datePart, timePart] = istString.split(", ");
+  const [month, day, year] = datePart!.split("/");
+  const [hours, minutes, seconds] = timePart!.split(":");
+
+  // Create date using UTC to preserve the time
+  const istDate = new Date(
+    Date.UTC(
+      Number(year),
+      Number(month) - 1, // months are 0-based
+      Number(day),
+      Number(hours),
+      Number(minutes),
+      Number(seconds),
+    ),
   );
+
+  console.log("🔥 Raw today:", today.toISOString());
+  console.log("🔥 IST string:", istString);
+  console.log("🔥 IST Date:", istDate.toISOString());
+
+  // Now normalize this IST date
+  const targetDate = convertToIST(istDate);
+
+  console.log("🔥 Final target date:", targetDate.toISOString());
 
   return tasks.filter((task) => {
     switch (task.frequency) {
@@ -34,22 +66,15 @@ export function getTasksForToday(tasks: Task[]): Task[] {
       case "xdays":
         if (!task.startDate || !task.xValue) return false;
 
-        // Convert both dates to IST for comparison
         const startDate = convertToIST(new Date(task.startDate));
-        const normalizedTargetDate = convertToIST(targetDate);
+        if (targetDate < startDate) return false;
 
-        console.log("🔥 Start date (IST):", startDate.toISOString());
-        console.log(
-          "🔥 Target date (IST):",
-          normalizedTargetDate.toISOString(),
-        );
-
-        if (normalizedTargetDate < startDate) return false;
-
-        // Calculate difference in days in IST
-        const diffTime = normalizedTargetDate.getTime() - startDate.getTime();
+        const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
+        console.log("🔥 For task:", task.name);
+        console.log("🔥 Start date:", startDate.toISOString());
+        console.log("🔥 Target date:", targetDate.toISOString());
         console.log("🔥 Diff days:", diffDays);
         console.log("🔥 X value:", task.xValue);
         console.log("🔥 Remainder:", diffDays % task.xValue);
