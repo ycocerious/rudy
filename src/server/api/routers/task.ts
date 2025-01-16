@@ -65,7 +65,7 @@ export const taskRouter = createTRPCRouter({
   }),
 
   getAllTasks: publicProcedure.query(async ({ ctx }) => {
-    console.log("🔥 Get all tasks was called");
+    console.log("🔥 Get all tasks function was called");
 
     // Select specific fields instead of using findMany
     const userTasks = await ctx.db
