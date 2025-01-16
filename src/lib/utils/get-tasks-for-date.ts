@@ -3,10 +3,17 @@ import { type Task } from "@/types/task";
 
 // Helper function to convert date to IST
 export function convertToIST(date: Date): Date {
-  // IST offset is UTC+5:30
-  const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
-  const utc = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
-  return new Date(utc + istOffset);
+  return new Date(
+    Date.UTC(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      5, // IST offset hours
+      30, // IST offset minutes
+      0,
+      0,
+    ),
+  );
 }
 
 // Helper function to normalize date to start of day in IST
@@ -42,6 +49,8 @@ export function getTasksForToday(tasks: Task[]): Task[] {
         if (!task.startDate || !task.xValue) return false;
 
         const startDate = normalizeToISTDate(new Date(task.startDate));
+        if (targetDate < startDate) return false;
+
         const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 

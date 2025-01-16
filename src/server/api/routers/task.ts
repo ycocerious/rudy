@@ -214,9 +214,15 @@ export const taskRouter = createTRPCRouter({
               input.startDate.getFullYear(),
               input.startDate.getMonth(),
               input.startDate.getDate(),
+              5, // IST offset hours
+              30, // IST offset minutes
+              0,
+              0,
             ),
           ).toISOString()
         : null;
+
+      console.log("🔥 Start date ISO string:", startDateISOString);
 
       // Create task values object directly to avoid unnecessary object spreading
       const taskValues = {
@@ -313,9 +319,14 @@ export const taskRouter = createTRPCRouter({
               input.startDate.getFullYear(),
               input.startDate.getMonth(),
               input.startDate.getDate(),
+              5, // IST offset hours
+              30, // IST offset minutes
+              0,
+              0,
             ),
           ).toISOString()
         : null;
+      console.log("🔥 Start date ISO string:", startDateISOString);
 
       // Prepare update values object once
       const updateValues = {
