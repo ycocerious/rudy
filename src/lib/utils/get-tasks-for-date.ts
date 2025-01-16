@@ -34,11 +34,25 @@ export function getTasksForToday(tasks: Task[]): Task[] {
       case "xdays":
         if (!task.startDate || !task.xValue) return false;
 
+        // Convert both dates to IST for comparison
         const startDate = convertToIST(new Date(task.startDate));
-        if (targetDate < startDate) return false;
+        const normalizedTargetDate = convertToIST(targetDate);
 
-        const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
+        console.log("🔥 Start date (IST):", startDate.toISOString());
+        console.log(
+          "🔥 Target date (IST):",
+          normalizedTargetDate.toISOString(),
+        );
+
+        if (normalizedTargetDate < startDate) return false;
+
+        // Calculate difference in days in IST
+        const diffTime = normalizedTargetDate.getTime() - startDate.getTime();
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        console.log("🔥 Diff days:", diffDays);
+        console.log("🔥 X value:", task.xValue);
+        console.log("🔥 Remainder:", diffDays % task.xValue);
 
         return diffDays % task.xValue === 0;
 
