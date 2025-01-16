@@ -16,24 +16,10 @@ export function convertToIST(date: Date): Date {
   );
 }
 
-// Helper function to normalize date to start of day in IST
-function normalizeToISTDate(date: Date): Date {
-  const istDate = convertToIST(date);
-  return new Date(
-    istDate.getFullYear(),
-    istDate.getMonth(),
-    istDate.getDate(),
-    0,
-    0,
-    0,
-    0,
-  );
-}
-
 export function getTasksForToday(tasks: Task[]): Task[] {
   const today = new Date();
   // Convert and normalize the input date to IST
-  const targetDate = normalizeToISTDate(today);
+  const targetDate = convertToIST(today);
 
   console.log(
     "🎯 Target Date (IST):",
@@ -48,7 +34,7 @@ export function getTasksForToday(tasks: Task[]): Task[] {
       case "xdays":
         if (!task.startDate || !task.xValue) return false;
 
-        const startDate = normalizeToISTDate(new Date(task.startDate));
+        const startDate = convertToIST(new Date(task.startDate));
         if (targetDate < startDate) return false;
 
         const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
