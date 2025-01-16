@@ -56,7 +56,7 @@ export function getTasksForToday(tasks: Task[]): Task[] {
   // Now normalize this IST date
   const targetDate = convertToIST(istDate);
 
-  console.log("🔥 Final target date:", targetDate.toISOString());
+  console.log("🔥 Final target date is:", targetDate.toISOString());
 
   return tasks.filter((task) => {
     switch (task.frequency) {
