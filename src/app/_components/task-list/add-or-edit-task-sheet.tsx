@@ -130,30 +130,40 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     api.consistency.updateTodayCompletion.useMutation();
 
   const { mutateAsync: addTask } = api.task.addTask.useMutation({
+    onMutate: () => {
+      toast.loading("Adding task...", { id: theOnlyToastId });
+      handleAddSheetClose();
+    },
     onSuccess: async () => {
       await updateCompletion();
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
       await utils.task.getAllTasks.invalidate();
-      handleAddSheetClose();
       toast.success("Added Task Successfully", { id: theOnlyToastId });
     },
   });
 
   const { mutateAsync: editTask } = api.task.editTask.useMutation({
+    onMutate: () => {
+      toast.loading("Saving changes...", { id: theOnlyToastId });
+      handleEditSheetClose();
+    },
     onSuccess: async () => {
       await updateCompletion();
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
       await utils.task.getAllTasks.invalidate();
-      handleEditSheetClose();
       toast.success("Edited Task Successfully", { id: theOnlyToastId });
     },
   });
 
   const { mutateAsync: deleteTask } = api.task.deleteTask.useMutation({
+    onMutate: () => {
+      toast.loading("Deleting task...", { id: theOnlyToastId });
+      handleEditSheetClose();
+    },
     onSuccess: async () => {
       await updateCompletion();
       await handleTaskStateChange(utils);
@@ -169,7 +179,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
     const adjustedDate = data.startDate ? convertToIST(data.startDate) : null;
 
     if (taskType === "add") {
-      toast.loading("Adding task...", { id: theOnlyToastId });
       try {
         await addTask({
           name: data.name.trim(),
@@ -186,7 +195,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
         toast.error("Failed to add task", { id: theOnlyToastId });
       }
     } else {
-      toast.loading("Saving changes...", { id: theOnlyToastId });
       try {
         await editTask({
           taskId: originalTask!.id,
@@ -208,7 +216,6 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
 
   const handleDelete = async () => {
     if (taskType === "edit" && originalTask) {
-      toast.loading("Deleting task...", { id: theOnlyToastId });
       try {
         await deleteTask(originalTask.id);
       } catch (error) {

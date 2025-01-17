@@ -49,10 +49,6 @@ export function getTasksForToday(tasks: Task[]): Task[] {
     ),
   );
 
-  console.log("🔥 Raw today:", today.toISOString());
-  console.log("🔥 IST string:", istString);
-  console.log("🔥 IST Date:", istDate.toISOString());
-
   // Now normalize this IST date
   const targetDate = convertToIST(istDate);
 
@@ -71,13 +67,6 @@ export function getTasksForToday(tasks: Task[]): Task[] {
 
         const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        console.log("🔥 For task:", task.name);
-        console.log("🔥 Start date:", startDate.toISOString());
-        console.log("🔥 Target date:", targetDate.toISOString());
-        console.log("🔥 Diff days:", diffDays);
-        console.log("🔥 X value:", task.xValue);
-        console.log("🔥 Remainder:", diffDays % task.xValue);
 
         return diffDays % task.xValue === 0;
 
