@@ -16,7 +16,8 @@ export default function LoginPage() {
         Welcome to <span className="text-primary">Rudy!</span>
       </h1>
       <p className="text-md mb-10 px-6 text-center">
-        The simplest way to build habits and systems in your life
+        A minimalist habit tracker - track only your sleep, exercise, and
+        nutrition
       </p>
       <form>
         <Button

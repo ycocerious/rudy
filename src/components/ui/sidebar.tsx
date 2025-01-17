@@ -70,13 +70,20 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
   const { open, onOpenChange } = useSidebar();
+  const isMobile = useIsMobile();
 
   return (
     <Button
       ref={ref}
       variant="ghost"
       size="icon"
-      className={cn("h-6 w-6", className)}
+      className={cn(
+        "h-6 w-6 transition-opacity duration-300",
+        // Add delay-300 to wait for sidebar to close
+        !isMobile && open && "pointer-events-none opacity-0",
+        !isMobile && !open && "delay-300",
+        className,
+      )}
       onClick={() => onOpenChange(!open)}
       {...props}
     >
@@ -89,7 +96,6 @@ SidebarTrigger.displayName = "SidebarTrigger";
 
 const Sidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
   ({ className, children }, ref) => {
-    const isMobile = useIsMobile();
     const { open, onOpenChange } = useSidebar();
 
     const sidebar = (
@@ -101,23 +107,15 @@ const Sidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
       </div>
     );
 
-    if (isMobile) {
-      return (
-        <Sheet open={open} onOpenChange={onOpenChange}>
-          <SheetContent
-            className="w-[260px] border-border p-0 md:w-[--sidebar-width] [&>button]:hidden"
-            side="left"
-          >
-            {sidebar}
-          </SheetContent>
-        </Sheet>
-      );
-    }
-
     return (
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[--sidebar-width] transition-all duration-300 ease-in-out md:block [[data-sidebar=closed]_&]:left-[calc(var(--sidebar-width)*-1)]">
-        {sidebar}
-      </aside>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent
+          className="w-[260px] border-border p-0 md:w-[--sidebar-width] [&>button]:hidden"
+          side="left"
+        >
+          {sidebar}
+        </SheetContent>
+      </Sheet>
     );
   },
 );

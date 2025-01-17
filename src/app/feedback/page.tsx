@@ -44,7 +44,7 @@ export default function LeaveFeedback() {
       <form onSubmit={handleSubmit} className="w-[80%] space-y-6">
         <div className="flex flex-col items-center justify-center">
           <label className="mb-2 block text-sm font-medium">
-            How would you rate your experience?
+            How&apos;d you like Rudy? 🙆‍♀️
           </label>
           <div className="flex space-x-2">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -64,7 +64,7 @@ export default function LeaveFeedback() {
         <div className="flex items-center justify-center">
           <Textarea
             id="feedback"
-            placeholder="Tell me about your experience..."
+            placeholder="Tell us about it!"
             value={feedback}
             onChange={handleFeedbackChange}
             className="w-full border-border bg-card text-card-foreground"
