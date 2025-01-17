@@ -7,17 +7,17 @@ import { motion } from "framer-motion";
 import { Apple, Download, Dumbbell, Moon } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { CursorGlow } from "./landing_page/cursor-glow";
-import { DotMatrix } from "./landing_page/dot-matrix";
-import { FeatureIcon } from "./landing_page/feature-icon";
-import PWAInstallPrompt from "./pwa-install";
+import { CursorGlow } from "../_components/landing_page/cursor-glow";
+import { DotMatrix } from "../_components/landing_page/dot-matrix";
+import { FeatureIcon } from "../_components/landing_page/feature-icon";
+import PWAInstallPrompt from "../_components/pwa-install";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-export default function Home() {
+export default function Landing() {
   const { width } = useWindowSize();
 
   const isMobile = width < 640;
@@ -142,7 +142,7 @@ export default function Home() {
                   )}
                 >
                   <Image
-                    src="/qr_code.png"
+                    src="/qr_code_updated.png"
                     alt="QR Code to install Rudy"
                     fill
                     className="rounded-xl"
