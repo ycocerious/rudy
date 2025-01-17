@@ -1,6 +1,34 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { theOnlyToastId } from "@/constants/uiConstants";
 import Image from "next/image";
+import { useFormStatus } from "react-dom";
+import toast from "react-hot-toast";
 import { loginWithGoogle } from "./actions";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  if (pending) {
+    toast.loading("Connecting to Google...", {
+      id: theOnlyToastId,
+    });
+  }
+
+  return (
+    <Button className="w-full rounded bg-white px-12 py-5 font-bold text-black hover:bg-white/90">
+      <Image
+        src="/google.svg"
+        alt="Google logo"
+        width={20}
+        height={20}
+        className="mr-2"
+      />
+      <p className="text-base">Log in with Google</p>
+    </Button>
+  );
+}
 
 export default function LoginPage() {
   return (
@@ -19,20 +47,8 @@ export default function LoginPage() {
         A minimalist habit tracker - track only your sleep, exercise, and
         nutrition
       </p>
-      <form>
-        <Button
-          formAction={loginWithGoogle}
-          className="w-full rounded bg-white px-12 py-5 font-bold text-black hover:bg-white/90"
-        >
-          <Image
-            src="/google.svg"
-            alt="Google logo"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          <p className="text-base">Log in with Google</p>
-        </Button>
+      <form action={loginWithGoogle}>
+        <SubmitButton />
       </form>
     </div>
   );
