@@ -1,16 +1,25 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useWindowSize } from "@/hooks/useWindowSize";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Apple, Download, Dumbbell, Moon } from "lucide-react";
+import { Apple, Dumbbell, Moon } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { CursorGlow } from "../_components/landing_page/cursor-glow";
 import { DotMatrix } from "../_components/landing_page/dot-matrix";
 import { FeatureIcon } from "../_components/landing_page/feature-icon";
 import PWAInstallPrompt from "../_components/pwa-install";
+import { LoadingSpinner } from "../_components/tracker/loading-spinner";
+
+// Dynamic import with no SSR
+const InstallationUI = dynamic(
+  () => import("@/app/_components/landing_page/installation-ui"),
+  {
+    ssr: false,
+    loading: () => <LoadingSpinner />,
+  },
+);
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -121,61 +130,11 @@ export default function Landing() {
             nutrition
           </p>
 
-          {isDesktop ? (
-            <div className="flex flex-col items-center gap-4">
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5, type: "spring" }}
-                className="group relative"
-              >
-                <div
-                  className={cn(
-                    "absolute inset-0 rounded-xl bg-primary/20 blur-xl",
-                    "transition-all group-hover:bg-primary/30",
-                  )}
-                />
-                <div
-                  className={cn(
-                    "relative aspect-square w-56 rounded-xl border border-border bg-card",
-                    "transition-colors group-hover:border-primary",
-                  )}
-                >
-                  <Image
-                    src="/qr_code_updated.png"
-                    alt="QR Code to install Rudy"
-                    fill
-                    className="rounded-xl"
-                    priority
-                  />
-                </div>
-              </motion.div>
-              <p className="mt-3 text-2xl text-primary">
-                Scan with your phone to install!
-              </p>
-            </div>
-          ) : (
-            <motion.div
-              initial={{ y: 0 }}
-              animate={{ y: [-8, 0] }}
-              transition={{
-                repeat: Infinity,
-                repeatType: "reverse",
-                duration: 0.6,
-                ease: "easeInOut",
-              }}
-            >
-              <Button
-                onClick={handleButtonClick}
-                className="h-12 w-[70%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
-              >
-                <Download className="mr-2 h-6 w-6" />
-                <p className="text-md font-semibold">
-                  {isIOS ? "Install on iOS" : "Install on Android"}
-                </p>
-              </Button>
-            </motion.div>
-          )}
+          <InstallationUI
+            isDesktop={isDesktop}
+            isIOS={isIOS}
+            handleButtonClick={handleButtonClick}
+          />
 
           {/* Core Features */}
           <div className="mt-12 flex justify-center sm:mt-14 md:mt-14">
