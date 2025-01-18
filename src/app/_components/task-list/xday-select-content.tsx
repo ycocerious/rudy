@@ -1,11 +1,4 @@
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { areDatesEqual } from "@/lib/utils/referential-equality-checks";
 import { type Task } from "@/types/task";
 import { addDays, format, startOfDay } from "date-fns";
@@ -27,8 +20,7 @@ export const XdaySelectContent = ({
   const xValue = useWatch<FormValues, "xValue">({
     control,
     name: "xValue",
-    defaultValue: undefined,
-  }) as number | undefined;
+  });
   const startDate = useWatch({
     control,
     name: "startDate",
@@ -46,31 +38,33 @@ export const XdaySelectContent = ({
       <Controller
         name="xValue"
         control={control}
-        rules={{
-          required: true,
-        }}
+        rules={{ required: true }}
         render={({ field }) => (
-          <Select
-            onValueChange={(value) => field.onChange(Number(value))}
-            value={String(field.value ?? "")}
-          >
-            <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
-              <SelectValue placeholder="Select value of x" />
-            </SelectTrigger>
-            <SelectContent>
+          <div className="flex flex-col gap-2">
+            <p className="text-md font-medium text-black">Repeat Every:</p>
+            <div className="flex flex-wrap gap-2">
               {X_VALUES.map((value) => (
-                <SelectItem key={value} value={value.toString()}>
-                  Every {value} days
-                </SelectItem>
+                <button
+                  type="button"
+                  key={value}
+                  onClick={() => {
+                    field.onChange(field.value === value ? null : value);
+                  }}
+                  className={`text-md h-11 w-[18%] rounded-lg border text-sm font-medium text-primary-foreground ${
+                    field.value === value ? "bg-primary" : "bg-foreground"
+                  }`}
+                >
+                  {value} days
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+          </div>
         )}
       />
 
       {xValue && (
-        <div className="w-[70%]">
-          <p className="ml-1 text-sm text-popover-foreground">
+        <div className="w-[80%]">
+          <p className="text-md ml-1 font-medium text-black">
             Select start date:
           </p>
           <Controller
@@ -79,9 +73,7 @@ export const XdaySelectContent = ({
             rules={{
               required: true,
               validate: (value) => {
-                // If we're in edit mode and this field is being changed
                 if (originalTask?.startDate && value) {
-                  // Only validate if the startDate field is actually being modified
                   if (value !== startDate) {
                     const areDatesTheSame = areDatesEqual(
                       value,
@@ -90,12 +82,9 @@ export const XdaySelectContent = ({
                         ignoreTime: true,
                       },
                     );
-                    // const isXValueSame = xValue === originalTask.xValue;
-
                     return !areDatesTheSame;
                   }
                 }
-                // If we're not changing this field, always return true
                 return true;
               },
             }}
@@ -113,7 +102,7 @@ export const XdaySelectContent = ({
       )}
 
       {xValue && startDate && today <= startDate && (
-        <p className="ml-1 text-sm text-popover-foreground">
+        <p className="text-md text-black">
           Task will repeat every {xValue} days, starting from{" "}
           {format(startDate, "MMMM d, yyyy")}
         </p>

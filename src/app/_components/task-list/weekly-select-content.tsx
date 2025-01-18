@@ -17,13 +17,11 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
       <Controller
         name="weekDays"
         control={control}
-        rules={{
-          required: true,
-        }}
+        rules={{ required: true }}
         render={({ field }) => (
           <div className="mt-4">
-            <p className="ml-1 text-popover-foreground">Select days:</p>
-            <div className="flex flex-wrap">
+            <p className="text-md mb-2 font-medium text-black">Select Days:</p>
+            <div className="flex flex-wrap gap-2">
               {weekDaysEnum.map((day) => (
                 <button
                   type="button"
@@ -38,7 +36,7 @@ export const WeeklySelectContent = ({ control }: WeeklySelectContentProps) => {
                       field.onChange([...currentValue, day]);
                     }
                   }}
-                  className={`m-1 h-10 w-24 rounded-lg border text-sm text-primary-foreground ${
+                  className={`ml-0 h-11 w-[30%] rounded-lg border text-sm font-medium text-primary-foreground ${
                     weekDays?.includes(day) ? "bg-primary" : "bg-foreground"
                   }`}
                 >

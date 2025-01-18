@@ -1,13 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Sheet,
   SheetContent,
   SheetFooter,
@@ -324,7 +317,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                             }, 0);
                           }
                         }}
-                        className="h-12 border-popover-foreground text-popover-foreground placeholder:text-gray-950"
+                        className="h-12 border-popover-foreground text-base font-medium text-popover-foreground placeholder:text-gray-400"
                       />
                       {error && (
                         <p className="text-sm text-destructive">
@@ -340,19 +333,29 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value ?? undefined}
-                  >
-                    <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
-                      <SelectValue placeholder="Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sleep">Sleep</SelectItem>
-                      <SelectItem value="nutrition">Nutrition</SelectItem>
-                      <SelectItem value="exercise">Exercise</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex flex-col justify-center gap-2">
+                    <p className="text-md font-medium text-black">Category:</p>
+                    <div className="flex flex-wrap gap-[2%]">
+                      {["sleep", "nutrition", "exercise"].map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => {
+                            const newValue = field.value === cat ? null : cat;
+                            field.onChange(newValue);
+                            if (!newValue) {
+                              setValue("frequency", null);
+                            }
+                          }}
+                          className={`h-11 w-[31%] rounded-lg border text-sm font-medium text-primary-foreground ${
+                            field.value === cat ? "bg-primary" : "bg-foreground"
+                          }`}
+                        >
+                          {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
               />
 
@@ -362,22 +365,33 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value ?? undefined}
-                    >
-                      <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
-                        <SelectValue placeholder="Select Repetition frequency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="daily">Repeat daily</SelectItem>
-                        <SelectItem value="weekly">Repeat weekly</SelectItem>
-                        <SelectItem value="monthly">Repeat monthly</SelectItem>
-                        <SelectItem value="xdays">
-                          Repeat x days once
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex flex-col gap-2">
+                      <p className="text-md font-medium text-black">
+                        Frequency:
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {["daily", "weekly", "monthly", "xdays"].map((freq) => (
+                          <button
+                            key={freq}
+                            type="button"
+                            onClick={() => {
+                              field.onChange(
+                                field.value === freq ? null : freq,
+                              );
+                            }}
+                            className={`h-11 w-[23%] rounded-lg border text-sm font-medium text-primary-foreground ${
+                              field.value === freq
+                                ? "bg-primary"
+                                : "bg-foreground"
+                            }`}
+                          >
+                            {freq === "xdays"
+                              ? "X Days"
+                              : freq.charAt(0).toUpperCase() + freq.slice(1)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 />
               )}
@@ -416,7 +430,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
                   )}
                   <Button
                     type="submit"
-                    className="w-[35%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
+                    className="h-10 w-[35%] bg-[#09c3d2] font-medium text-accent-foreground hover:bg-primary"
                     disabled={!isTaskValid}
                   >
                     Save
@@ -452,7 +466,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
             {taskType === "add" && (
               <Button
                 type="submit"
-                className="w-[35%] bg-[#09c3d2] text-accent-foreground hover:bg-primary"
+                className="h-10 w-[35%] bg-[#09c3d2] font-medium text-accent-foreground hover:bg-primary"
                 disabled={!isTaskValid}
               >
                 Add Task

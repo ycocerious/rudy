@@ -1,10 +1,3 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { type Control, Controller } from "react-hook-form";
 import { type FormValues } from "./add-or-edit-task-sheet";
 
@@ -13,30 +6,34 @@ type DailySelectContentProps = {
 };
 
 export const DailySelectContent = ({ control }: DailySelectContentProps) => {
+  const dailyOptions = [1, 2, 3, 4, 5];
+
   return (
-    <div className="space-y-4">
-      <Controller
-        name="dailyCountTotal"
-        control={control}
-        rules={{ required: true }}
-        render={({ field }) => (
-          <Select
-            onValueChange={(value) => field.onChange(Number(value))}
-            value={String(field.value ?? "")}
-          >
-            <SelectTrigger className="h-12 w-full border-popover-foreground text-popover-foreground">
-              <SelectValue placeholder="How many times a day?" />
-            </SelectTrigger>
-            <SelectContent>
-              {[1, 2, 3, 4, 5].map((value) => (
-                <SelectItem key={value} value={value.toString()}>
-                  {value === 1 ? "once" : `${value} times`}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      />
-    </div>
+    <Controller
+      name="dailyCountTotal"
+      control={control}
+      rules={{ required: true }}
+      render={({ field }) => (
+        <div className="flex flex-col gap-2">
+          <p className="text-md font-medium text-black">Times per day:</p>
+          <div className="flex flex-wrap gap-2">
+            {dailyOptions.map((value) => (
+              <button
+                type="button"
+                key={value}
+                onClick={() => {
+                  field.onChange(field.value === value ? null : value);
+                }}
+                className={`h-11 w-[18%] rounded-lg border text-sm font-medium text-primary-foreground ${
+                  field.value === value ? "bg-primary" : "bg-foreground"
+                }`}
+              >
+                {value === 1 ? "Once" : `${value} times`}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    />
   );
 };
