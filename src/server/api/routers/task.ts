@@ -14,7 +14,7 @@ import { z } from "zod";
 
 export const taskRouter = createTRPCRouter({
   getTodaysTasks: publicProcedure
-    .input(z.object({ clientDate: z.string() }))
+    .input(z.object({ clientDateString: z.string() }))
     .query(async ({ ctx, input }) => {
       console.log("🔥 Get todays tasks was called on date:", input);
 
@@ -39,7 +39,7 @@ export const taskRouter = createTRPCRouter({
           taskCompletions,
           and(
             eq(tasks.id, taskCompletions.taskId),
-            eq(taskCompletions.completedDate, input.clientDate),
+            eq(taskCompletions.completedDate, input.clientDateString),
           ),
         )
         .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)))
@@ -59,10 +59,11 @@ export const taskRouter = createTRPCRouter({
         dailyCountFinished: task.completedCount ?? 0,
       }));
 
-      return getTasksForToday(usableTasks, input.clientDate).filter((task) =>
-        task.frequency === "daily"
-          ? task.dailyCountFinished < (task.dailyCountTotal ?? 1)
-          : task.dailyCountFinished === 0,
+      return getTasksForToday(usableTasks, input.clientDateString).filter(
+        (task) =>
+          task.frequency === "daily"
+            ? task.dailyCountFinished < (task.dailyCountTotal ?? 1)
+            : task.dailyCountFinished === 0,
       );
     }),
 

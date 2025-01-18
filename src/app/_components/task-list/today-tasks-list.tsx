@@ -27,7 +27,7 @@ export const TodayTasksList = () => {
   const todayString = formatDateToYYYYMMDD(today.toString());
   //trpc related
   const { data: tasks, isLoading } = api.task.getTodaysTasks.useQuery(
-    { clientDate: todayString },
+    { clientDateString: todayString },
     {
       gcTime: 1000 * 60 * 60 * 24, // 24 hours
       staleTime: 1000 * 60 * 60, // 1 hour
@@ -55,7 +55,7 @@ export const TodayTasksList = () => {
       return { taskId };
     },
     onSuccess: async () => {
-      await updateCompletion();
+      await updateCompletion({ clientDateString: todayString });
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
       await handleTaskStateChange(utils);

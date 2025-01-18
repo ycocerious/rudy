@@ -1,6 +1,7 @@
 "use client";
 
 import { blueShades } from "@/constants/uiConstants";
+import { formatDateToYYYYMMDD } from "@/lib/utils/format-date";
 import { useStartAndEndDate } from "@/lib/utils/use-start-and-end-date";
 import { api } from "@/trpc/react";
 import { eachDayOfInterval, format, getDay } from "date-fns";
@@ -8,9 +9,14 @@ import { useMemo } from "react";
 
 export const Grid = () => {
   const { startDate, endDate } = useStartAndEndDate();
+  const startDateString = formatDateToYYYYMMDD(startDate.toString());
+  const endDateString = formatDateToYYYYMMDD(endDate.toString());
 
   const { data: completionData } = api.consistency.getCompletionData.useQuery(
-    undefined,
+    {
+      startDateString: startDateString,
+      endDateString: endDateString,
+    },
     {
       gcTime: 1000 * 60 * 60 * 24,
       staleTime: 1000 * 60 * 60,

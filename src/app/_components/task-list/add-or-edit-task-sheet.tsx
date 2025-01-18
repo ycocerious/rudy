@@ -66,6 +66,9 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const today = new Date();
+  const todayString = formatDateToYYYYMMDD(today.toString());
+
   const {
     control,
     handleSubmit,
@@ -128,7 +131,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       handleAddSheetClose();
     },
     onSuccess: async () => {
-      await updateCompletion();
+      await updateCompletion({ clientDateString: todayString });
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
@@ -143,7 +146,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       handleEditSheetClose();
     },
     onSuccess: async () => {
-      await updateCompletion();
+      await updateCompletion({ clientDateString: todayString });
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
@@ -158,7 +161,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
       handleEditSheetClose();
     },
     onSuccess: async () => {
-      await updateCompletion();
+      await updateCompletion({ clientDateString: todayString });
       await handleTaskStateChange(utils);
       await utils.task.getTodaysTasks.invalidate();
       await utils.consistency.getCompletionData.invalidate();
