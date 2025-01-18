@@ -25,7 +25,6 @@ export const consistencyRouter = createTRPCRouter({
               (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
         ),
       )
-      // Add index hint if you have an index on completionDate
       .orderBy(dailyCompletions.completionDate);
 
     return dailyStats;

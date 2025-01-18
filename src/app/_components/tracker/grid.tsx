@@ -1,32 +1,13 @@
 "use client";
 
 import { blueShades } from "@/constants/uiConstants";
+import { useStartAndEndDate } from "@/lib/utils/use-start-and-end-date";
 import { api } from "@/trpc/react";
-import { eachDayOfInterval, format, getDay, startOfDay } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
-import { useEffect, useMemo } from "react";
+import { eachDayOfInterval, format, getDay } from "date-fns";
+import { useMemo } from "react";
 
 export const Grid = () => {
-  const dates = useMemo(() => {
-    const timeZone = "Asia/Kolkata";
-    const now = new Date();
-    const today = toZonedTime(startOfDay(now), timeZone);
-    const endDate = today;
-
-    const currentWeekSunday = startOfDay(
-      toZonedTime(new Date(today), timeZone),
-    );
-    while (getDay(currentWeekSunday) !== 0) {
-      currentWeekSunday.setDate(currentWeekSunday.getDate() - 1);
-    }
-
-    const startDate = new Date(currentWeekSunday);
-    startDate.setDate(currentWeekSunday.getDate() - 53 * 7);
-
-    console.log("🎯 Grid Dates:", { startDate, endDate });
-
-    return { startDate, endDate };
-  }, []);
+  const { startDate, endDate } = useStartAndEndDate();
 
   const { data: completionData } = api.consistency.getCompletionData.useQuery(
     undefined,
@@ -36,13 +17,6 @@ export const Grid = () => {
       refetchOnWindowFocus: false,
     },
   );
-
-  useEffect(() => {
-    console.log("🎯 Grid Query Success:", {
-      dataLength: completionData?.length,
-      data: completionData,
-    });
-  }, [completionData]);
 
   const contributionData = useMemo(() => {
     const data = Array.from({ length: 7 }, () =>
@@ -58,32 +32,29 @@ export const Grid = () => {
       ]),
     );
 
-    eachDayOfInterval({ start: dates.startDate, end: dates.endDate }).forEach(
-      (date) => {
-        const dayOfWeek = getDay(date);
-        const week = Math.floor(
-          (date.getTime() - dates.startDate.getTime()) /
-            (7 * 24 * 60 * 60 * 1000),
-        );
+    eachDayOfInterval({ start: startDate, end: endDate }).forEach((date) => {
+      const dayOfWeek = getDay(date);
+      const week = Math.floor(
+        (date.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
+      );
 
-        if (week < 54 && dayOfWeek < 7) {
-          const percentage = completionMap.get(format(date, "yyyy-MM-dd")) ?? 0;
-          const shadeIndex =
-            percentage === 0
-              ? 0
-              : percentage <= 25
-                ? 1
-                : percentage <= 50
-                  ? 2
-                  : percentage <= 75
-                    ? 3
-                    : 4;
-          data[dayOfWeek]![week] = shadeIndex;
-        }
-      },
-    );
+      if (week < 54 && dayOfWeek < 7) {
+        const percentage = completionMap.get(format(date, "yyyy-MM-dd")) ?? 0;
+        const shadeIndex =
+          percentage === 0
+            ? 0
+            : percentage <= 25
+              ? 1
+              : percentage <= 50
+                ? 2
+                : percentage <= 75
+                  ? 3
+                  : 4;
+        data[dayOfWeek]![week] = shadeIndex;
+      }
+    });
     return data;
-  }, [completionData, dates.startDate, dates.endDate]);
+  }, [completionData, startDate, endDate]);
 
   const weekIndexes = Array.from({ length: 54 }, (_, i) => i);
   const today = new Date();

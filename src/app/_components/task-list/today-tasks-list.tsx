@@ -1,6 +1,7 @@
 "use client";
 
 import { theOnlyToastId } from "@/constants/uiConstants";
+import { formatDateToYYYYMMDD } from "@/lib/utils/format-date";
 import { handleTaskStateChange } from "@/lib/utils/task-mutations";
 import { api } from "@/trpc/react";
 import { type Task } from "@/types/task";
@@ -22,9 +23,11 @@ export const TodayTasksList = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [returnToPosition, setReturnToPosition] = useState<boolean>(false);
 
+  const today = new Date();
+  const todayString = formatDateToYYYYMMDD(today.toString());
   //trpc related
   const { data: tasks, isLoading } = api.task.getTodaysTasks.useQuery(
-    undefined,
+    todayString,
     {
       gcTime: 1000 * 60 * 60 * 24, // 24 hours
       staleTime: 1000 * 60 * 60, // 1 hour

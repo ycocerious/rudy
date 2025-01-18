@@ -13,56 +13,58 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 export const taskRouter = createTRPCRouter({
-  getTodaysTasks: publicProcedure.query(async ({ ctx }) => {
-    console.log("🔥 Get todays tasks was called");
+  getTodaysTasks: publicProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      console.log("🔥 Get todays tasks was called on date:", input);
 
-    // Combine both queries into a single join operation
-    const tasksWithCompletions = await ctx.db
-      .select({
-        // Task fields
-        id: tasks.id,
-        name: tasks.name, // Added missing field
-        category: tasks.category, // Added missing field
-        frequency: tasks.frequency,
-        weekDays: tasks.weekDays,
-        monthDays: tasks.monthDays,
-        startDate: tasks.startDate,
-        xValue: tasks.xValue,
-        dailyCountTotal: tasks.dailyCountTotal,
-        // Completion fields
-        completedCount: taskCompletions.completedCount,
-      })
-      .from(tasks)
-      .leftJoin(
-        taskCompletions,
-        and(
-          eq(tasks.id, taskCompletions.taskId),
-          sql`DATE(${taskCompletions.completedDate} AT TIME ZONE 'Asia/Kolkata') = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
-        ),
-      )
-      .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)))
-      .orderBy(desc(tasks.createdAt));
+      // Combine both queries into a single join operation
+      const tasksWithCompletions = await ctx.db
+        .select({
+          // Task fields
+          id: tasks.id,
+          name: tasks.name, // Added missing field
+          category: tasks.category, // Added missing field
+          frequency: tasks.frequency,
+          weekDays: tasks.weekDays,
+          monthDays: tasks.monthDays,
+          startDate: tasks.startDate,
+          xValue: tasks.xValue,
+          dailyCountTotal: tasks.dailyCountTotal,
+          // Completion fields
+          completedCount: taskCompletions.completedCount,
+        })
+        .from(tasks)
+        .leftJoin(
+          taskCompletions,
+          and(
+            eq(tasks.id, taskCompletions.taskId),
+            eq(taskCompletions.completedDate, input),
+          ),
+        )
+        .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)))
+        .orderBy(desc(tasks.createdAt));
 
-    // Transform the data to match Task type
-    const usableTasks: Task[] = tasksWithCompletions.map((task) => ({
-      id: task.id,
-      name: task.name,
-      category: task.category,
-      frequency: task.frequency,
-      weekDays: task.weekDays ? (task.weekDays as weekDaysType[]) : null,
-      monthDays: task.monthDays,
-      startDate: task.startDate ? new Date(task.startDate) : null,
-      xValue: task.xValue,
-      dailyCountTotal: task.dailyCountTotal,
-      dailyCountFinished: task.completedCount ?? 0,
-    }));
+      // Transform the data to match Task type
+      const usableTasks: Task[] = tasksWithCompletions.map((task) => ({
+        id: task.id,
+        name: task.name,
+        category: task.category,
+        frequency: task.frequency,
+        weekDays: task.weekDays ? (task.weekDays as weekDaysType[]) : null,
+        monthDays: task.monthDays,
+        startDate: task.startDate ? new Date(task.startDate) : null,
+        xValue: task.xValue,
+        dailyCountTotal: task.dailyCountTotal,
+        dailyCountFinished: task.completedCount ?? 0,
+      }));
 
-    return getTasksForToday(usableTasks).filter((task) =>
-      task.frequency === "daily"
-        ? task.dailyCountFinished < (task.dailyCountTotal ?? 1)
-        : task.dailyCountFinished === 0,
-    );
-  }),
+      return getTasksForToday(usableTasks).filter((task) =>
+        task.frequency === "daily"
+          ? task.dailyCountFinished < (task.dailyCountTotal ?? 1)
+          : task.dailyCountFinished === 0,
+      );
+    }),
 
   getAllTasks: publicProcedure.query(async ({ ctx }) => {
     console.log("🔥 Get all tasks function was called");
