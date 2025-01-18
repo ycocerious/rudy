@@ -8,7 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { theOnlyToastId } from "@/constants/uiConstants";
-import { convertToIST } from "@/lib/utils/get-tasks-for-date";
+import { formatDateToYYYYMMDD } from "@/lib/utils/format-date";
 import { handleTaskStateChange } from "@/lib/utils/task-mutations";
 import { api } from "@/trpc/react";
 import {
@@ -169,8 +169,10 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
   });
 
   const onSubmit = async (data: FormValues) => {
-    const adjustedDate = data.startDate ? convertToIST(data.startDate) : null;
-
+    let startDateString: string | null = null;
+    if (data.startDate) {
+      startDateString = formatDateToYYYYMMDD(data.startDate.toString());
+    }
     if (taskType === "add") {
       try {
         await addTask({
@@ -179,7 +181,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           dailyCountTotal: data.dailyCountTotal,
           xValue: data.xValue,
           category: data.category!,
-          startDate: adjustedDate,
+          startDate: startDateString ?? null,
           monthDays: data.monthDays,
           weekDays: data.weekDays,
         });
@@ -196,7 +198,7 @@ export const AddOrEditTaskSheet = (props: AddOrEditTaskSheetProps) => {
           dailyCountTotal: data.dailyCountTotal,
           xValue: data.xValue,
           category: data.category!,
-          startDate: adjustedDate,
+          startDate: startDateString ?? null,
           monthDays: data.monthDays,
           weekDays: data.weekDays,
         });

@@ -14,7 +14,7 @@ import { z } from "zod";
 
 export const taskRouter = createTRPCRouter({
   getTodaysTasks: publicProcedure
-    .input(z.string())
+    .input(z.object({ clientDate: z.string() }))
     .query(async ({ ctx, input }) => {
       console.log("🔥 Get todays tasks was called on date:", input);
 
@@ -39,7 +39,7 @@ export const taskRouter = createTRPCRouter({
           taskCompletions,
           and(
             eq(tasks.id, taskCompletions.taskId),
-            eq(taskCompletions.completedDate, input),
+            eq(taskCompletions.completedDate, input.clientDate),
           ),
         )
         .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)))
@@ -59,7 +59,7 @@ export const taskRouter = createTRPCRouter({
         dailyCountFinished: task.completedCount ?? 0,
       }));
 
-      return getTasksForToday(usableTasks).filter((task) =>
+      return getTasksForToday(usableTasks, input.clientDate).filter((task) =>
         task.frequency === "daily"
           ? task.dailyCountFinished < (task.dailyCountTotal ?? 1)
           : task.dailyCountFinished === 0,
@@ -203,29 +203,12 @@ export const taskRouter = createTRPCRouter({
         category: z.enum(taskCategoryEnum),
         dailyCountTotal: z.number().nullable(),
         xValue: z.number().nullable(),
-        startDate: z.date().nullable(),
+        startDate: z.string().nullable(),
         weekDays: z.array(z.string()).nullable(),
         monthDays: z.array(z.number()).nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Only perform date adjustment if startDate exists
-      const startDateISOString = input.startDate
-        ? new Date(
-            Date.UTC(
-              input.startDate.getFullYear(),
-              input.startDate.getMonth(),
-              input.startDate.getDate(),
-              5, // IST offset hours
-              30, // IST offset minutes
-              0,
-              0,
-            ),
-          ).toISOString()
-        : null;
-
-      console.log("🔥 Start date ISO string:", startDateISOString);
-
       // Create task values object directly to avoid unnecessary object spreading
       const taskValues = {
         name: input.name,
@@ -233,7 +216,7 @@ export const taskRouter = createTRPCRouter({
         category: input.category,
         dailyCountTotal: input.dailyCountTotal ?? 1,
         xValue: input.xValue ?? null,
-        startDate: startDateISOString,
+        startDate: input.startDate,
         weekDays: input.weekDays ?? null,
         monthDays: input.monthDays ?? null,
         userId: ctx.userId,
@@ -308,28 +291,12 @@ export const taskRouter = createTRPCRouter({
         category: z.enum(taskCategoryEnum),
         dailyCountTotal: z.number().nullable(),
         xValue: z.number().nullable(),
-        startDate: z.date().nullable(),
+        startDate: z.string().nullable(),
         weekDays: z.array(z.string()).nullable(),
         monthDays: z.array(z.number()).nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Prepare the date string once, outside the query
-      const startDateISOString = input.startDate
-        ? new Date(
-            Date.UTC(
-              input.startDate.getFullYear(),
-              input.startDate.getMonth(),
-              input.startDate.getDate(),
-              5, // IST offset hours
-              30, // IST offset minutes
-              0,
-              0,
-            ),
-          ).toISOString()
-        : null;
-      console.log("🔥 Start date ISO string:", startDateISOString);
-
       // Prepare update values object once
       const updateValues = {
         name: input.name,
@@ -337,7 +304,7 @@ export const taskRouter = createTRPCRouter({
         category: input.category,
         dailyCountTotal: input.dailyCountTotal ?? 1,
         xValue: input.xValue ?? null,
-        startDate: startDateISOString,
+        startDate: input.startDate,
         weekDays: input.weekDays ?? null,
         monthDays: input.monthDays ?? null,
       };
