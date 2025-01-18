@@ -60,7 +60,7 @@ export const TodayTasksList = () => {
       await utils.consistency.getCompletionData.invalidate();
       await handleTaskStateChange(utils);
     },
-    onError: (_, taskId) => {
+    onError: (_, { taskId }) => {
       toast.error("Failed to complete task. Please try again.", {
         id: theOnlyToastId,
       });
@@ -141,7 +141,10 @@ export const TodayTasksList = () => {
       setReturnToPosition(false);
     }
     // Update database in background
-    await finishDbTask(taskToComplete.id);
+    await finishDbTask({
+      taskId: taskToComplete.id,
+      clientDateString: todayString,
+    });
   };
 
   const sortedTasks = localTasks.sort((a, b) => {

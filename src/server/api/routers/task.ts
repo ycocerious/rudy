@@ -9,7 +9,7 @@ import {
 } from "@/types/form-types";
 import { type Task } from "@/types/task";
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 export const taskRouter = createTRPCRouter({
@@ -109,8 +109,8 @@ export const taskRouter = createTRPCRouter({
   }),
 
   finishTask: publicProcedure
-    .input(z.string())
-    .mutation(async ({ ctx, input: taskId }) => {
+    .input(z.object({ taskId: z.string(), clientDateString: z.string() }))
+    .mutation(async ({ ctx, input }) => {
       // Get task and current completion in a single query
       const [taskWithCompletion] = await ctx.db
         .select({
@@ -133,12 +133,12 @@ export const taskRouter = createTRPCRouter({
           and(
             eq(taskCompletions.taskId, tasks.id),
             eq(taskCompletions.userId, ctx.userId),
-            sql`DATE(${taskCompletions.completedDate}) = (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
+            eq(taskCompletions.completedDate, input.clientDateString),
           ),
         )
         .where(
           and(
-            eq(tasks.id, taskId),
+            eq(tasks.id, input.taskId),
             eq(tasks.userId, ctx.userId),
             eq(tasks.isArchived, false),
           ),
@@ -165,9 +165,9 @@ export const taskRouter = createTRPCRouter({
       const [completion] = await ctx.db
         .insert(taskCompletions)
         .values({
-          taskId,
+          taskId: input.taskId,
           userId: ctx.userId,
-          completedDate: sql`(CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::date`,
+          completedDate: input.clientDateString,
           completedCount: newCompletedCount,
         })
         .onConflictDoUpdate({
