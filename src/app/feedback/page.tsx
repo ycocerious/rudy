@@ -39,7 +39,7 @@ export default function LeaveFeedback() {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4 text-foreground">
       <h1 className="mb-8 w-[80%] text-center text-2xl font-bold text-primary">
-        Leave a Feedback
+        Leave a Review
       </h1>
       <form onSubmit={handleSubmit} className="w-[80%] space-y-6">
         <div className="flex flex-col items-center justify-center">

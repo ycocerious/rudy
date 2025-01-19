@@ -33,7 +33,7 @@ export async function AppSidebar() {
             href="/feedback"
             className="text-primary transition-colors hover:text-accent"
           >
-            Leave A Feedback!
+            Leave A Review!
           </Link>
         </SidebarItem>
       </SidebarContent>

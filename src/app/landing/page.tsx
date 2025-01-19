@@ -70,11 +70,9 @@ export default function Landing() {
   }, []);
 
   const handleInstall = async () => {
-    console.log("Handling install");
     if (!deferredPrompt) return;
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log("Outcome:", outcome);
     if (outcome === "accepted") {
       setShowInstallPrompt(false);
     }
@@ -82,7 +80,6 @@ export default function Landing() {
   };
 
   const handleButtonClick = async () => {
-    console.log("Handling button click");
     if (isIOS) {
       setShowInstallPrompt(true);
     } else {

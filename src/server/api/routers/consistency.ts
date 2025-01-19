@@ -15,6 +15,7 @@ export const consistencyRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      console.log("✅ Get Completion Data was called");
       const dailyStats = await ctx.db
         .select({
           completionDate: dailyCompletions.completionDate,
@@ -57,7 +58,7 @@ export const consistencyRouter = createTRPCRouter({
           and(
             eq(tasks.id, taskCompletions.taskId),
             eq(taskCompletions.userId, ctx.userId),
-            sql`{taskCompletions.completedDate} = ${input.clientDateString}::date`,
+            sql`${taskCompletions.completedDate} = ${input.clientDateString}::date`,
           ),
         )
         .where(and(eq(tasks.userId, ctx.userId), eq(tasks.isArchived, false)));

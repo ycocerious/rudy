@@ -14,8 +14,6 @@ export const useStartAndEndDate = () => {
 
     const endDate = today;
 
-    console.log("🎯 Grid Dates:", { startDate, endDate });
-
     return { startDate, endDate };
   }, []); // Empty dependency array since we don't depend on any external values
 };
