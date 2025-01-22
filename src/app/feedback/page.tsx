@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
-import { StarIcon } from "lucide-react";
+import { ArrowLeft, StarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import toast from "react-hot-toast";
@@ -38,6 +38,15 @@ export default function LeaveFeedback() {
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4 text-foreground">
+      <div className="absolute left-4 top-5 w-[80%]">
+        <Button
+          variant="ghost"
+          onClick={() => router.push("/")}
+          className="mb-4 border border-border"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </Button>
+      </div>
       <h1 className="mb-8 w-[80%] text-center text-2xl font-bold text-primary">
         Leave a Review
       </h1>
